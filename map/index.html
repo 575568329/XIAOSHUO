@@ -39,7 +39,7 @@
             border-radius: 10px;
             color: #fff;
             border: 1px solid #4a4a6a;
-            max-height: 400px;
+            max-height: 350px;
             overflow-y: auto;
         }
         .legend h3 { font-size: 14px; margin-bottom: 10px; color: #ffd700; }
@@ -102,6 +102,9 @@
         .ol-control button:hover {
             background: #3a3a5a !important;
         }
+        
+        /* 隐藏底图版权 */
+        .ol-attribution { display: none; }
     </style>
 </head>
 <body>
@@ -248,159 +251,200 @@
             }
         };
         
-        // SVG地图内容
-        const svgContent = `
-        <svg width="1400" height="1000" viewBox="0 0 1400 1000" xmlns="http://www.w3.org/2000/svg">
-            <!-- 海洋背景 -->
-            <rect width="1400" height="1000" fill="#1a3a5c"/>
-            
-            <!-- 大陆主体 -->
-            <path d="M150,100 L400,70 L600,90 L850,80 L1050,130 L1150,250
-                     L1180,400 L1150,550 L1050,680 L900,780 L700,830 
-                     L500,850 L320,800 L200,680 L130,520 L110,350 L120,200 Z" 
-                  fill="#3d5a4a" stroke="#5a7a6a" stroke-width="4"/>
-            
-            <!-- 北极冰盖 -->
-            <ellipse cx="500" cy="45" rx="250" ry="40" fill="#d8e8f0" opacity="0.9"/>
-            <text x="500" y="50" text-anchor="middle" fill="#555" font-size="12">❄️ 北极冰盖</text>
-            
-            <!-- 冰龙遗迹 -->
-            <circle cx="500" cy="45" r="20" fill="#b8d4e3" stroke="#fff" stroke-width="2" class="region" data-id="iceDragon"/>
-            
-            <!-- 1. 北境地区 -->
-            <path d="M200,110 L420,95 L560,110 L580,220 L480,260 L350,240 L240,200 Z" 
-                  fill="#7a9aaa" stroke="#9abaca" stroke-width="2" class="region" data-id="north"/>
-            <text x="390" y="175" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">北境荒原</text>
-            
-            <!-- 2. 风暴高原 -->
-            <path d="M800,95 L980,110 L1050,200 L1000,280 L880,250 L820,180 Z" 
-                  fill="#6a8a9a" stroke="#8aaaaa" stroke-width="2" class="region" data-id="storm"/>
-            <text x="920" y="185" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">风暴高原</text>
-            
-            <!-- 3. 主山脉 -->
-            <path d="M220,220 L380,200 L480,230 L520,320 L440,380 L340,350 L260,290 Z" 
-                  fill="#8a7a6a" stroke="#aa9a8a" stroke-width="2" class="region" data-id="mountain"/>
-            <text x="370" y="290" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">🏔️ 主山脉</text>
-            
-            <!-- 4. 森林区 -->
-            <path d="M540,200 L720,190 L850,230 L870,340 L760,400 L640,370 L560,310 Z" 
-                  fill="#4a7a4a" stroke="#6a9a6a" stroke-width="2" class="region" data-id="forest"/>
-            <text x="700" y="295" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">🌲 古老森林</text>
-            
-            <!-- 5. 中部平原 -->
-            <path d="M240,360 L440,380 L550,420 L580,540 L480,600 L350,570 L260,480 Z" 
-                  fill="#8aaa6a" stroke="#aaca8a" stroke-width="2" class="region" data-id="plains"/>
-            <text x="410" y="480" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">🏰 中部平原</text>
-            
-            <!-- 6. 火山群岛（东侧海外） -->
-            <ellipse cx="1100" cy="380" rx="70" ry="55" fill="#aa5a3a" stroke="#ca7a5a" stroke-width="2" class="region" data-id="volcano"/>
-            <text x="1100" y="385" text-anchor="middle" fill="#fff" font-size="11">🌋 火山群岛</text>
-            
-            <!-- 7. 沙漠区 -->
-            <path d="M280,580 L480,560 L580,610 L620,720 L500,780 L360,750 L280,660 Z" 
-                  fill="#d4a855" stroke="#e4c875" stroke-width="2" class="region" data-id="desert"/>
-            <text x="440" y="670" text-anchor="middle" fill="#333" font-size="14" font-weight="bold">🏜️ 沙漠区</text>
-            
-            <!-- 8. 深渊边境 -->
-            <path d="M880,360 L1000,400 L1050,520 L1000,620 L900,580 L850,470 Z" 
-                  fill="#5a4a6a" stroke="#7a6a8a" stroke-width="2" class="region" data-id="abyss"/>
-            <text x="940" y="490" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">深渊边境</text>
-            
-            <!-- 9. 裂缝荒原 -->
-            <path d="M420,780 L600,750 L720,800 L760,920 L640,980 L480,950 L400,870 Z" 
-                  fill="#4a3a3a" stroke="#6a5a5a" stroke-width="2" class="region" data-id="rift"/>
-            <text x="580" y="865" text-anchor="middle" fill="#ff5555" font-size="14" font-weight="bold">⚡ 裂缝荒原</text>
-            
-            <!-- 裂缝标记 -->
-            <g stroke="#ff3333" stroke-width="3" opacity="0.9">
-                <line x1="520" y1="830" x2="540" y2="860"/>
-                <line x1="560" y1="820" x2="580" y2="870"/>
-                <line x1="610" y1="840" x2="630" y2="890"/>
-            </g>
-            
-            <!-- 10. 龙族圣地 -->
-            <path d="M760,920 L920,890 L1020,950 L1000,1020 L880,1050 L780,990 Z" 
-                  fill="#c0c0c0" stroke="#e0e0e0" stroke-width="2" class="region" data-id="sanctuary"/>
-            <text x="880" y="970" text-anchor="middle" fill="#333" font-size="14" font-weight="bold">⛩️ 龙族圣地</text>
-            
-            <!-- 11. 南方森林 -->
-            <path d="M620,980 L760,960 L820,1030 L790,1100 L680,1120 L600,1070 Z" 
-                  fill="#3a6a3a" stroke="#5a8a5a" stroke-width="2" class="region" data-id="southForest"/>
-            <text x="700" y="1040" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">🌳 南方森林</text>
-            
-            <!-- 南极冰盖 -->
-            <ellipse cx="650" cy="1150" rx="280" ry="45" fill="#d8e8f0" opacity="0.9"/>
-            <text x="650" y="1155" text-anchor="middle" fill="#555" font-size="12">❄️ 南极冰盖</text>
-            
-            <!-- 河流 -->
-            <!-- 银龙河 -->
-            <path d="M420,320 Q470,410 520,490 Q580,560 680,600 Q780,640 880,660" 
-                  stroke="#4a90d9" stroke-width="10" fill="none" opacity="0.5"/>
-            <text x="580" y="450" fill="#4a90d9" font-size="10" transform="rotate(-25,580,450)">银龙河 →</text>
-            
-            <!-- 深渊河 -->
-            <path d="M460,350 Q490,470 510,590 Q530,710 550,830" 
-                  stroke="#4a90d9" stroke-width="8" fill="none" opacity="0.5"/>
-            <text x="520" y="590" fill="#4a90d9" font-size="10" transform="rotate(85,520,590)">深渊河 ↓</text>
-            
-            <!-- 北境河 -->
-            <path d="M920,160 Q880,120 840,100" 
-                  stroke="#4a90d9" stroke-width="6" fill="none" opacity="0.5"/>
-            
-            <!-- 裂隙河 -->
-            <path d="M880,970 Q920,1000 960,1020 Q1000,1050 1050,1070" 
-                  stroke="#4a90d9" stroke-width="6" fill="none" opacity="0.5"/>
-            
-            <!-- 城市标记 -->
-            <circle cx="410" cy="480" r="12" fill="#ffd700" stroke="#fff" stroke-width="3" class="marker" data-id="capital"/>
-            <text x="410" y="510" text-anchor="middle" fill="#ffd700" font-size="11">王都</text>
-            
-            <circle cx="700" cy="295" r="10" fill="#81c784" stroke="#fff" stroke-width="2" class="marker" data-id="elfCity"/>
-            <text x="700" y="325" text-anchor="middle" fill="#81c784" font-size="11">精灵城</text>
-            
-            <circle cx="370" cy="290" r="10" fill="#ffb74d" stroke="#fff" stroke-width="2" class="marker" data-id="dwarfFort"/>
-            <text x="370" y="320" text-anchor="middle" fill="#ffb74d" font-size="11">矮人堡</text>
-            
-            <circle cx="880" cy="970" r="10" fill="#ffd700" stroke="#fff" stroke-width="2" class="marker" data-id="altar"/>
-        </svg>`;
-        
-        // 创建SVG图层
-        const svgLayer = new ol.layer.Image({
-            source: new ol.source.ImageStatic({
-                url: 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgContent))),
-                imageExtent: [0, 0, 1400, 1000],
-                imageSize: [1400, 1000]
+        // 区域样式
+        const styles = {
+            human: new ol.style.Style({
+                fill: new ol.style.Fill({ color: 'rgba(79, 195, 247, 0.6)' }),
+                stroke: new ol.style.Stroke({ color: '#4fc3f7', width: 2 })
+            }),
+            elf: new ol.style.Style({
+                fill: new ol.style.Fill({ color: 'rgba(129, 199, 132, 0.6)' }),
+                stroke: new ol.style.Stroke({ color: '#81c784', width: 2 })
+            }),
+            dwarf: new ol.style.Style({
+                fill: new ol.style.Fill({ color: 'rgba(255, 183, 77, 0.6)' }),
+                stroke: new ol.style.Stroke({ color: '#ffb74d', width: 2 })
+            }),
+            orc: new ol.style.Style({
+                fill: new ol.style.Fill({ color: 'rgba(229, 115, 115, 0.6)' }),
+                stroke: new ol.style.Stroke({ color: '#e57373', width: 2 })
+            }),
+            dragon: new ol.style.Style({
+                fill: new ol.style.Fill({ color: 'rgba(186, 104, 200, 0.6)' }),
+                stroke: new ol.style.Stroke({ color: '#ba68c8', width: 2 })
+            }),
+            abyss: new ol.style.Style({
+                fill: new ol.style.Fill({ color: 'rgba(149, 117, 205, 0.6)' }),
+                stroke: new ol.style.Stroke({ color: '#9575cd', width: 2 })
+            }),
+            rift: new ol.style.Style({
+                fill: new ol.style.Fill({ color: 'rgba(255, 82, 82, 0.6)' }),
+                stroke: new ol.style.Stroke({ color: '#ff5252', width: 2 })
+            }),
+            ice: new ol.style.Style({
+                fill: new ol.style.Fill({ color: 'rgba(216, 232, 240, 0.8)' }),
+                stroke: new ol.style.Stroke({ color: '#b8d4e3', width: 2 })
+            }),
+            city: new ol.style.Style({
+                image: new ol.style.Circle({
+                    radius: 8,
+                    fill: new ol.style.Fill({ color: '#ffd700' }),
+                    stroke: new ol.style.Stroke({ color: '#fff', width: 2 })
+                })
+            }),
+            river: new ol.style.Style({
+                stroke: new ol.style.Stroke({ color: '#4a90d9', width: 4, opacity: 0.7 })
             })
+        };
+        
+        // 坐标转换（简单墨卡托投影）
+        function toCoord(lon, lat) {
+            return ol.proj.fromLonLat([lon, lat]);
+        }
+        
+        // 创建区域多边形
+        function createPolygon(coords, style, id) {
+            const feature = new ol.Feature({
+                geometry: new ol.geom.Polygon([coords.map(c => toCoord(c[0], c[1]))]),
+                id: id
+            });
+            feature.setStyle(style);
+            return feature;
+        }
+        
+        // 创建河流线
+        function createLine(coords, style) {
+            const feature = new ol.Feature({
+                geometry: new ol.geom.LineString(coords.map(c => toCoord(c[0], c[1])))
+            });
+            feature.setStyle(style);
+            return feature;
+        }
+        
+        // 创建城市点
+        function createPoint(lon, lat, style, id) {
+            const feature = new ol.Feature({
+                geometry: new ol.geom.Point(toCoord(lon, lat)),
+                id: id
+            });
+            feature.setStyle(style);
+            return feature;
+        }
+        
+        // 区域数据（经纬度坐标）
+        const features = [];
+        
+        // 北极冰盖
+        features.push(createPolygon([
+            [-40, 75], [40, 75], [40, 85], [-40, 85]
+        ], styles.ice, 'iceDragon'));
+        
+        // 北境荒原
+        features.push(createPolygon([
+            [-20, 55], [20, 58], [25, 50], [15, 45], [0, 47], [-15, 50]
+        ], styles.orc, 'north'));
+        
+        // 风暴高原
+        features.push(createPolygon([
+            [35, 52], [55, 55], [60, 48], [50, 42], [38, 45]
+        ], styles.dragon, 'storm'));
+        
+        // 主山脉
+        features.push(createPolygon([
+            [-25, 45], [5, 42], [15, 38], [10, 32], [-5, 34], [-20, 38]
+        ], styles.dwarf, 'mountain'));
+        
+        // 古老森林
+        features.push(createPolygon([
+            [18, 42], [45, 40], [52, 32], [42, 27], [28, 30], [20, 35]
+        ], styles.elf, 'forest'));
+        
+        // 中部平原
+        features.push(createPolygon([
+            [-20, 35], [12, 38], [20, 30], [15, 22], [0, 24], [-15, 28]
+        ], styles.human, 'plains'));
+        
+        // 火山群岛
+        features.push(createPolygon([
+            [60, 35], [70, 38], [72, 32], [65, 28], [58, 30]
+        ], styles.dragon, 'volcano'));
+        
+        // 沙漠区
+        features.push(createPolygon([
+            [-18, 22], [15, 25], [22, 15], [12, 8], [-5, 10], [-15, 15]
+        ], styles.human, 'desert'));
+        
+        // 深渊边境
+        features.push(createPolygon([
+            [48, 28], [62, 32], [65, 22], [55, 15], [45, 20]
+        ], styles.abyss, 'abyss'));
+        
+        // 裂缝荒原
+        features.push(createPolygon([
+            [5, 8], [30, 12], [38, 2], [28, -8], [10, -5], [2, 2]
+        ], styles.rift, 'rift'));
+        
+        // 龙族圣地
+        features.push(createPolygon([
+            [32, -5], [52, 0], [55, -12], [42, -18], [30, -12]
+        ], styles.dragon, 'sanctuary'));
+        
+        // 南方森林
+        features.push(createPolygon([
+            [15, -10], [35, -8], [38, -22], [25, -28], [12, -20]
+        ], styles.elf, 'southForest'));
+        
+        // 河流
+        features.push(createLine([
+            [0, 40], [8, 32], [15, 25], [25, 18], [35, 12]
+        ], styles.river));
+        
+        features.push(createLine([
+            [5, 38], [10, 28], [12, 18], [14, 8]
+        ], styles.river));
+        
+        // 城市
+        features.push(createPoint(0, 30, styles.city, 'capital'));
+        features.push(createPoint(35, 35, styles.city, 'elfCity'));
+        features.push(createPoint(-5, 38, styles.city, 'dwarfFort'));
+        features.push(createPoint(42, -10, styles.city, 'altar'));
+        
+        // 创建矢量图层
+        const vectorSource = new ol.source.Vector({
+            features: features
         });
         
-        // 创建地图
+        const vectorLayer = new ol.layer.Vector({
+            source: vectorSource
+        });
+        
+        // 创建地图（使用简化的世界地图背景）
         const map = new ol.Map({
             target: 'map',
-            layers: [svgLayer],
-            view: new ol.View({
-                projection: new ol.proj.Projection({
-                    code: 'xkcd-image',
-                    units: 'pixels',
-                    extent: [0, 0, 1400, 1000]
+            layers: [
+                // 简单的海洋背景
+                new ol.layer.Tile({
+                    source: new ol.source.XYZ({
+                        url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        attributions: []
+                    }),
+                    opacity: 0.3
                 }),
-                center: [700, 500],
-                zoom: 1,
-                minZoom: 0.5,
-                maxZoom: 4,
-                extent: [-200, -200, 1600, 1200]
-            }),
-            controls: ol.control.defaults.defaults().extend([
-                new ol.control.ScaleLine()
-            ])
+                vectorLayer
+            ],
+            view: new ol.View({
+                center: ol.proj.fromLonLat([15, 25]),
+                zoom: 3,
+                minZoom: 2,
+                maxZoom: 8
+            })
         });
         
         // 弹窗覆盖层
         const popup = new ol.Overlay({
             element: document.getElementById('popup'),
             autoPan: {
-                animation: {
-                    duration: 250
-                }
+                animation: { duration: 250 }
             }
         });
         map.addOverlay(popup);
@@ -441,51 +485,13 @@
             
             if (feature) {
                 const id = feature.get('id');
-                showPopup(id, evt.coordinate);
+                if (id) {
+                    showPopup(id, evt.coordinate);
+                }
             } else {
                 closePopup();
             }
         });
-        
-        // 添加可点击区域
-        const regions = [
-            { id: 'iceDragon', coords: [[490, 55], [510, 55], [510, 35], [490, 35]] },
-            { id: 'north', coords: [[200, 110], [560, 110], [580, 220], [480, 260], [350, 240], [240, 200]] },
-            { id: 'storm', coords: [[800, 95], [1050, 200], [1000, 280], [880, 250], [820, 180]] },
-            { id: 'mountain', coords: [[220, 220], [520, 320], [440, 380], [340, 350], [260, 290]] },
-            { id: 'forest', coords: [[540, 200], [870, 340], [760, 400], [640, 370], [560, 310]] },
-            { id: 'plains', coords: [[240, 360], [580, 540], [480, 600], [350, 570], [260, 480]] },
-            { id: 'volcano', coords: [[1030, 380], [1100, 325], [1170, 380], [1100, 435]] },
-            { id: 'desert', coords: [[280, 580], [620, 720], [500, 780], [360, 750], [280, 660]] },
-            { id: 'abyss', coords: [[880, 360], [1050, 520], [1000, 620], [900, 580], [850, 470]] },
-            { id: 'rift', coords: [[420, 780], [760, 920], [640, 980], [480, 950], [400, 870]] },
-            { id: 'sanctuary', coords: [[760, 920], [1020, 950], [1000, 1020], [880, 1050], [780, 990]] },
-            { id: 'southForest', coords: [[620, 980], [820, 1030], [790, 1100], [680, 1120], [600, 1070]] },
-            { id: 'capital', coords: [[400, 470], [420, 470], [420, 490], [400, 490]] },
-            { id: 'elfCity', coords: [[690, 285], [710, 285], [710, 305], [690, 305]] },
-            { id: 'dwarfFort', coords: [[360, 280], [380, 280], [380, 300], [360, 300]] },
-            { id: 'altar', coords: [[870, 960], [890, 960], [890, 980], [870, 980]] }
-        ];
-        
-        const vectorSource = new ol.source.Vector();
-        
-        regions.forEach(r => {
-            const polygon = new ol.geom.Polygon([r.coords.map(c => [c[0], 1000 - c[1]])]);
-            const feature = new ol.Feature({
-                geometry: polygon,
-                id: r.id
-            });
-            vectorSource.addFeature(feature);
-        });
-        
-        const vectorLayer = new ol.layer.Vector({
-            source: vectorSource,
-            style: new ol.style.Style({
-                fill: new ol.style.Fill({ color: 'rgba(0, 0, 0, 0)' }),
-                stroke: new ol.style.Stroke({ color: 'rgba(0, 0, 0, 0)' })
-            })
-        });
-        map.addLayer(vectorLayer);
         
         // 鼠标样式
         map.on('pointermove', function(e) {
