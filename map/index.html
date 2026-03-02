@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -20,18 +20,12 @@
             border: 1px solid #4a4a6a;
             z-index: 1000;
             max-width: 320px;
+            max-height: 90vh;
+            overflow-y: auto;
         }
         .panel h1 { color: #ffd700; font-size: 18px; margin-bottom: 5px; }
         .panel p { font-size: 12px; color: #aaa; line-height: 1.5; }
         .panel .status { margin-top: 10px; font-size: 11px; color: #81c784; }
-        .panel .stats { 
-            margin-top: 10px; 
-            font-size: 10px; 
-            color: #87ceeb; 
-            border-top: 1px solid #4a4a6a; 
-            padding-top: 8px;
-            line-height: 1.8;
-        }
         .legend {
             position: fixed;
             bottom: 10px;
@@ -42,250 +36,278 @@
             color: #fff;
             border: 1px solid #4a4a6a;
             z-index: 1000;
-            max-height: 50vh;
-            overflow-y: auto;
             font-size: 11px;
         }
         .legend h3 { color: #ffd700; margin-bottom: 8px; }
         .legend-item { display: flex; align-items: center; margin: 2px 0; }
         .legend-color { width: 12px; height: 12px; border-radius: 2px; margin-right: 5px; }
+        .controls {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(26, 26, 46, 0.95);
+            padding: 12px;
+            border-radius: 10px;
+            color: #fff;
+            border: 1px solid #4a4a6a;
+            z-index: 1000;
+            font-size: 11px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .controls h3 { color: #ffd700; margin-bottom: 8px; }
+        .controls label { display: block; margin: 4px 0; cursor: pointer; }
+        .controls input { margin-right: 5px; }
     </style>
 </head>
 <body>
     <div class="panel">
-        <h1>🦞 世界地图</h1>
-        <p>全区域省级边界整合<br>拖拽移动 | 滚轮缩放</p>
+        <h1>🦞 龙虾系统 - 世界地图</h1>
+        <p>西方奇幻版 v6 | 指环王/冰与火之歌风格</p>
         <div class="status" id="status">加载中...</div>
-        <div class="stats" id="stats"></div>
+        <div id="info" style="margin-top:10px;font-size:10px;color:#87ceeb;line-height:1.6;"></div>
     </div>
+    
     <div class="legend">
-        <h3>🗺️ 图例</h3>
-        <div class="legend-item"><div class="legend-color" style="background:#4fc3f7"></div>人类已开发</div>
-        <div class="legend-item"><div class="legend-color" style="background:#81c784"></div>精灵/农业</div>
-        <div class="legend-item"><div class="legend-color" style="background:#ffb74d"></div>矮人/要塞</div>
-        <div class="legend-item"><div class="legend-color" style="background:#e57373"></div>兽人区域</div>
-        <div class="legend-item"><div class="legend-color" style="background:#ba68c8"></div>龙裔区域</div>
-        <div class="legend-item"><div class="legend-color" style="background:#9575cd"></div>深渊族</div>
-        <div class="legend-item"><div class="legend-color" style="background:#d4a855"></div>沙漠区</div>
-        <div class="legend-item"><div class="legend-color" style="background:#ff8a65"></div>未开发-中危</div>
-        <div class="legend-item"><div class="legend-color" style="background:#ef5350"></div>未开发-高危</div>
+        <h3>🗺️ 种族图例</h3>
+        <div class="legend-item"><div class="legend-color" style="background:#4fc3f7"></div>人类 🟦</div>
+        <div class="legend-item"><div class="legend-color" style="background:#e57373"></div>兽人 🔴</div>
+        <div class="legend-item"><div class="legend-color" style="background:#81c784"></div>精灵 🟩</div>
+        <div class="legend-item"><div class="legend-color" style="background:#ffb74d"></div>矮人 🟧</div>
+        <div class="legend-item"><div class="legend-color" style="background:#ba68c8"></div>龙裔 💜</div>
+        <div class="legend-item"><div class="legend-color" style="background:#26c6da"></div>海妖族 🧜</div>
+        <div class="legend-item"><div class="legend-color" style="background:#7e57c2"></div>深渊族 💜</div>
+        <div class="legend-item"><div class="legend-color" style="background:#a1887f"></div>地精 🟤</div>
+        <div style="border-top:1px solid #4a4a6a;margin:6px 0;padding-top:6px;">
+            <div class="legend-item"><div class="legend-color" style="background:#5d4037"></div>未开发区域</div>
+            <div class="legend-item"><div class="legend-color" style="background:#90a4ae"></div>永冬冰原 ❄️</div>
+        </div>
     </div>
+    
+    <div class="controls">
+        <h3>🔍 筛选</h3>
+        <label><input type="checkbox" checked data-race="human"> 人类</label>
+        <label><input type="checkbox" checked data-race="orc"> 兽人</label>
+        <label><input type="checkbox" checked data-race="elf"> 精灵</label>
+        <label><input type="checkbox" checked data-race="dwarf"> 矮人</label>
+        <label><input type="checkbox" checked data-race="dragon"> 龙裔</label>
+        <label><input type="checkbox" checked data-race="mermaid"> 海妖族</label>
+        <label><input type="checkbox" checked data-race="abyss"> 深渊族</label>
+        <label><input type="checkbox" checked data-race="goblin"> 地精</label>
+        <label><input type="checkbox" checked data-race="undeveloped"> 未开发</label>
+    </div>
+    
     <div id="map"></div>
     
     <script>
+        // ========== 西方奇幻命名配置 v6 ==========
+        // 参考：指环王、冰与火之歌
+        
+        const CONFIG = {
+            races: {
+                'human': { name: '人类', color: '#4fc3f7' },
+                'orc': { name: '兽人', color: '#e57373' },
+                'elf': { name: '精灵', color: '#81c784' },
+                'dwarf': { name: '矮人', color: '#ffb74d' },
+                'dragon': { name: '龙裔', color: '#ba68c8' },
+                'mermaid': { name: '海妖族', color: '#26c6da' },
+                'abyss': { name: '深渊族', color: '#7e57c2' },
+                'goblin': { name: '地精', color: '#a1887f' },
+                'undeveloped': { name: '未开发', color: '#5d4037' },
+                'none': { name: '无人区', color: '#90a4ae' }
+            },
+            
+            regions: {
+                '北京市': { name: '龙石城', race: 'human', blood: '平原血脉', status: '已开发', danger: '低', desc: '人类王国首都，龙石王座所在地。城市：龙石城（王都）、龙石港、王领卫城。资源：铁矿、粮食、黄金。魔兽：无。禁飞：限制。环境：平原都市。' },
+                '天津市': { name: '龙石港', race: 'human', blood: '平原血脉', status: '已开发', danger: '低', desc: '王都门户，繁忙的贸易港口。城市：龙石港、塘沽、汉沽。资源：鱼类、盐、木材。魔兽：无。禁飞：允许。环境：海港城市。' },
+                '河北省': { name: '王领平原', race: 'human', blood: '平原血脉', status: '已开发', danger: '低', desc: '王都直辖领地。城市：王领城、保定、邯郸、邢台。资源：粮食、马匹、棉花。魔兽：野狼、野猪。禁飞：允许。环境：肥沃平原。' },
+                '山东省': { name: '金麦平原', race: 'human', blood: '平原血脉', status: '已开发', danger: '低', desc: '王国粮仓。城市：金麦城、青岛港、烟台、潍坊。资源：黄金麦、铁矿、盐。魔兽：野猪、狼群。禁飞：允许。环境：平原农田。' },
+                '辽宁省': { name: '凛冬要塞', race: 'human', blood: '北境血脉', status: '已开发', danger: '低-中', desc: '北境守护。城市：凛冬城、大连港、鞍山、抚顺。资源：铁矿、毛皮、木材。魔兽：雪狼、霜熊。禁飞：限制。环境：山地要塞。' },
+                '上海市': { name: '翡翠港', race: 'human', blood: '平原血脉', status: '已开发', danger: '低', desc: '东方最大贸易港。城市：翡翠港、浦东、浦西、松江。资源：丝绸、茶叶、瓷器。魔兽：无。禁飞：允许。环境：河口港城。' },
+                '江苏省': { name: '翡翠平原', race: 'human', blood: '平原血脉', status: '已开发', danger: '低', desc: '王国粮仓。城市：翡翠城、苏州、无锡、常州、扬州。资源：稻米、丝绸、鱼。魔兽：水蛇、野鸭。禁飞：允许。环境：水乡平原。' },
+                '浙江省': { name: '银叶平原', race: 'human', blood: '平原血脉', status: '已开发', danger: '低', desc: '丝绸之府。城市：银叶城、宁波港、温州、绍兴、嘉兴。资源：茶叶、丝绸、竹。魔兽：山猫、野兔。禁飞：允许。环境：丘陵平原。' },
+                '福建省': { name: '风暴海岸', race: 'undeveloped', status: '未开发', danger: '低', desc: '人类与海妖族缓冲区。资源：鱼类、盐。魔兽：风暴鸟、海妖。禁飞：限制。环境：风暴海岸。' },
+                '广东省': { name: '风暴海湾', race: 'undeveloped', status: '未开发', danger: '低', desc: '风暴频发的未开发海湾。' },
+                '香港特别行政区': { name: '自由港', race: 'undeveloped', status: '未开发', danger: '低', desc: '人类与海妖族缓冲区。资源：珍珠、鱼类。魔兽：无。禁飞：允许。环境：岛屿。' },
+                '澳门特别行政区': { name: '明珠港', race: 'undeveloped', status: '未开发', danger: '低', desc: '人类与海妖族缓冲区。资源：珍珠、珊瑚。魔兽：无。禁飞：允许。环境：岛屿。' },
+                '海南省': { name: '烈焰岛', race: 'undeveloped', status: '未开发', danger: '高', desc: '高风险火山岛。资源：火晶、硫磺、火山石。魔兽：炎龙、火蜥蜴、熔岩巨兽。禁飞：禁止。环境：火山岛屿。' },
+                '重庆市': { name: '铁壁要塞', race: 'human', blood: '平原血脉', status: '部分开发', danger: '低-中', desc: '西南要塞。城市：铁壁城、万州、涪陵、永川。资源：铁矿、铜、石材。魔兽：山狼、岩蜥。禁飞：限制。环境：山地要塞。' },
+                '台湾省': { name: '龙晶岛', race: 'undeveloped', status: '未开发', danger: '中', desc: '人类与大海缓冲区。资源：龙晶、硫磺。魔兽：火蜥蜴、岩龙。禁飞：限制。环境：火山岛屿。' },
+                '甘肃省': { name: '赤血高坡', race: 'orc', blood: '战吼兽人', status: '部分开发', danger: '中高', desc: '兽人核心。城市：赤血城、天水、白银、武威。资源：铜矿、马匹、毛皮。魔兽：血狼、战獒、秃鹫。禁飞：允许。环境：黄土高原。' },
+                '宁夏回族自治区': { name: '骸骨高地', race: 'orc', blood: '战吼兽人', status: '部分开发', danger: '中', desc: '战吼氏族。城市：骸骨城、石嘴山、吴忠。资源：铁矿、骨头制品。魔兽：骨狼、秃鹫、沙蛇。禁飞：允许。环境：黄土丘陵。' },
+                '内蒙古自治区': { name: '血蹄草原', race: 'orc', blood: '狩猎兽人', status: '部分开发', danger: '中', desc: '狩猎氏族。城市：血蹄城、包头、鄂尔多斯、赤峰。资源：马匹、牛羊、毛皮。魔兽：草原狼、猛犸、狮鹫。禁飞：允许。环境：草原牧场。' },
+                'Mongolia': { name: '霜狼草原', race: 'orc', blood: '智慧兽人', status: '部分开发', danger: '中高', desc: '兽人帝国核心。城市：霜狼城、达尔汗、乔巴山。资源：马匹、毛皮、象牙。魔兽：霜狼、猛犸、雪狮。禁飞：允许。环境：大草原。' },
+                'Kazakhstan': { name: '骨原荒野', race: 'orc', blood: '血爪兽人', status: '部分开发', danger: '中', desc: '血爪氏族。城市：骨原城、阿拉木图、奇姆肯特。资源：骨制品、铁矿。魔兽：骨龙、沙狼、秃鹫。禁飞：允许。环境：荒野草原。' },
+                'Myanmar': { name: '月影森林', race: 'elf', blood: '高等精灵', status: '部分开发', danger: '中', desc: '高等精灵。城市：月影城、仰光、曼德勒。资源：魔法木材、药草、月光石。魔兽：月狼、影豹、树精。禁飞：限制。环境：热带雨林。' },
+                'Laos': { name: '星落密林', race: 'elf', blood: '木精灵', status: '部分开发', danger: '中', desc: '木精灵。城市：星落城、琅勃拉邦、巴色。资源：星石、药草、香料。魔兽：星兽、森林巨蟒、精灵猫。禁飞：限制。环境：热带密林。' },
+                'Thailand': { name: '银叶王国', race: 'elf', blood: '木精灵', status: '部分开发', danger: '中', desc: '木精灵王国。城市：银叶城、清迈、普吉、芭提雅。资源：银叶木、宝石、香料。魔兽：银叶蛇、精灵鹰、树人。禁飞：限制。环境：热带森林。' },
+                'Cambodia': { name: '暗影沼泽', race: 'elf', blood: '暗夜精灵', status: '部分开发', danger: '中高', desc: '暗夜精灵。城市：暗影城、暹粒、西哈努克。资源：暗影草、毒药、黑珍珠。魔兽：暗影鳄、沼泽巨蟒、水鬼。禁飞：禁止。环境：沼泽湿地。' },
+                'Vietnam': { name: '晨曦海岸', race: 'elf', blood: '月精灵', status: '部分开发', danger: '低-中', desc: '月精灵。城市：晨曦城、胡志明市、岘港、海防。资源：珍珠、鱼类、香料。魔兽：海妖、晨曦鸟、水龙。禁飞：允许。环境：海岸平原。' },
+                'Sri Lanka': { name: '月神圣地', race: 'elf', blood: '月精灵', status: '圣地', danger: '低', desc: '月神圣地。城市：月神殿、康提、加勒。资源：月光石、圣水、魔法水晶。魔兽：月神使者。禁飞：禁止。环境：圣岛。' },
+                'India': { name: '铁锤山脉', race: 'dwarf', blood: '山脉矮人', status: '部分开发', danger: '中', desc: '山脉矮人。城市：铁锤城（地下）、孟买港、加尔各答、班加罗尔。资源：铁矿、秘银、宝石。魔兽：洞穴巨魔、岩龙、地底蠕虫。禁飞：禁止。环境：高山地下城。' },
+                'Bhutan': { name: '雷鸣要塞', race: 'dwarf', blood: '山脉矮人', status: '部分开发', danger: '中', desc: '山脉矮人。城市：雷鸣城（地下）、帕罗、普那卡。资源：雷铁、铜矿、宝石。魔兽：雷鸟、岩石巨人、山狼。禁飞：限制。环境：高山要塞。' },
+                'Kyrgyzstan': { name: '深渊矿坑', race: 'dwarf', blood: '深渊矮人', status: '部分开发', danger: '中高', desc: '深渊矮人。城市：深渊城（地下）、奥什、贾拉拉巴德。资源：深渊石、黑铁、魔晶。魔兽：深渊蠕虫、暗影巨魔、地底龙。禁飞：禁止。环境：地下矿坑。' },
+                'Tajikistan': { name: '灰岩矿区', race: 'dwarf', blood: '灰矮人', status: '部分开发', danger: '高', desc: '灰矮人。城市：灰岩城（地下）、苦盏、库尔干秋别。资源：灰岩、铜矿、硫磺。魔兽：灰岩巨人、洞穴蜘蛛、地底蛇。禁飞：禁止。环境：荒芜矿区。' },
+                '西藏自治区': { name: '霜龙圣地', race: 'dragon', blood: '银龙裔', status: '部分开发', danger: '低-中', desc: '银龙裔。城市：霜龙殿、日喀则、林芝、那曲。资源：霜晶、龙骨、秘银。魔兽：霜龙、雪狮、冰原狼。禁飞：限制。环境：高原雪山。' },
+                'Uzbekistan': { name: '炎龙火山', race: 'dragon', blood: '红龙裔', status: '部分开发', danger: '中', desc: '红龙裔。城市：炎龙城、撒马尔罕、布哈拉。资源：炎晶、硫磺、火宝石。魔兽：炎龙、火蜥蜴、熔岩巨兽。禁飞：限制。环境：火山地带。' },
+                'Turkmenistan': { name: '风暴荒原', race: 'dragon', blood: '蓝龙裔', status: '部分开发', danger: '中', desc: '蓝龙裔。城市：风暴城、土库曼纳巴德、达沙古兹。资源：风暴晶、铜矿、盐。魔兽：蓝龙、风暴鸟、雷电兽。禁飞：禁止。环境：风暴荒原。' },
+                'Indonesia': { name: '珊瑚群岛', race: 'mermaid', blood: '海妖族', status: '已开发', danger: '低', desc: '海妖族主群岛。城市：珊瑚城、泗水、万隆、棉兰。资源：珊瑚、珍珠、海盐。魔兽：海妖、珊瑚巨兽、海龙。禁飞：允许。环境：珊瑚岛屿。' },
+                'Malaysia': { name: '珍珠半岛', race: 'mermaid', blood: '海妖族', status: '已开发', danger: '低', desc: '海妖族半岛。城市：珍珠城、槟城、新山、怡保。资源：珍珠、珍珠贝、珊瑚。魔兽：海妖、巨型章鱼、海蛇。禁飞：允许。环境：半岛海岸。' },
+                'Singapore': { name: '明珠港', race: 'mermaid', blood: '海妖族', status: '已开发', danger: '低', desc: '海妖族贸易港。城市：明珠港、裕廊、榜鹅。资源：珍珠、香料、丝绸。魔兽：无。禁飞：允许。环境：岛屿港城。' },
+                'Philippines': { name: '贝壳群岛', race: 'mermaid', blood: '海妖族', status: '已开发', danger: '低', desc: '海妖族群岛。城市：贝壳城、宿务、达沃、奎松。资源：贝壳、珍珠、珊瑚。魔兽：贝壳巨兽、海妖、飞鱼。禁飞：允许。环境：群岛海域。' },
+                'Brunei': { name: '珊瑚礁', race: 'undeveloped', status: '未开发', danger: '低', desc: '海妖族内部缓冲区。资源：珊瑚、珍珠。魔兽：珊瑚蛇。禁飞：允许。环境：珊瑚礁岛。' },
+                'East Timor': { name: '晨曦岛', race: 'undeveloped', status: '未开发', danger: '低', desc: '海妖族内部缓冲区。资源：珍珠、鱼类。魔兽：晨曦海豚。禁飞：允许。环境：热带岛屿。' },
+                'Maldives': { name: '碧海环礁', race: 'mermaid', blood: '海妖族', status: '已开发', danger: '低', desc: '海妖族环礁。城市：碧海城、阿杜、库鲁德希。资源：珊瑚、珍珠、海盐。魔兽：海妖、珊瑚巨兽、海龙。禁飞：允许。环境：珊瑚环礁。' },
+                'Israel': { name: '深渊裂隙', race: 'abyss', blood: '裂隙深渊', status: '禁地', danger: '极高', desc: '【位面裂隙】通往恶魔位面。资源：深渊石、恶魔晶、暗影矿。魔兽：恶魔、深渊巨兽、暗影龙。禁飞：禁止。环境：位面裂缝。' },
+                'Palestine': { name: '裂隙边缘', race: 'abyss', blood: '裂隙深渊', status: '禁地', danger: '极高', desc: '深渊裂隙外围。资源：深渊矿、暗影草。魔兽：暗影兽、深渊爬虫、恶魔。禁飞：禁止。环境：裂隙外围。' },
+                'Iraq': { name: '深红荒原', race: 'abyss', blood: '深红深渊', status: '未开发', danger: '极高', desc: '深渊族深处。资源：血晶、红石、硫磺。魔兽：血魔、深渊巨兽、红龙。禁飞：禁止。环境：赤红荒原。' },
+                'Lebanon': { name: '苍白山谷', race: 'abyss', blood: '苍白深渊', status: '未开发', danger: '高', desc: '深渊族隐秘山谷。资源：苍白石、暗影矿。魔兽：苍白幽灵、暗影兽、山谷巨魔。禁飞：禁止。环境：苍白山谷。' },
+                'Saudi Arabia': { name: '金币绿洲', race: 'goblin', blood: '商会地精', status: '已开发', danger: '低', desc: '地精圣地。城市：金币城、吉达、麦加、麦地那。资源：黄金、宝石、石油。魔兽：沙漠狼、沙蛇、狮鹫。禁飞：允许。环境：沙漠绿洲。' },
+                'United Arab Emirates': { name: '商业之城', race: 'goblin', blood: '商会地精', status: '已开发', danger: '低', desc: '地精商业中心。城市：商业城、阿布扎比、沙迦。资源：黄金、宝石、香料。魔兽：无。禁飞：允许。环境：沙漠都市。' },
+                'Qatar': { name: '宝石港', race: 'goblin', blood: '商会地精', status: '已开发', danger: '低', desc: '地精宝石贸易。城市：宝石港、赖扬、沃克拉。资源：宝石、珍珠、石油。魔兽：无。禁飞：允许。环境：半岛港城。' },
+                'Bahrain': { name: '珍珠岛', race: 'goblin', blood: '商会地精', status: '已开发', danger: '低', desc: '地精珍珠产地。城市：珍珠城、穆哈拉格、里法。资源：珍珠、珊瑚、宝石。魔兽：无。禁飞：允许。环境：海岛。' },
+                'Kuwait': { name: '黑金港', race: 'goblin', blood: '商会地精', status: '已开发', danger: '低', desc: '地精石油港口。城市：黑金城、杰赫拉、艾哈迈迪。资源：石油、黄金、盐。魔兽：沙漠狼、沙蛇。禁飞：允许。环境：沙漠港城。' },
+                'Oman': { name: '商队驿站', race: 'goblin', blood: '游商地精', status: '已开发', danger: '低', desc: '地精贸易站。城市：驿站城、苏哈尔、塞拉莱。资源：香料、宝石、骆驼。魔兽：沙漠狼、沙蛇、狮鹫。禁飞：允许。环境：沙漠驿站。' },
+                'Yemen': { name: '小金币绿洲', race: 'undeveloped', status: '未开发', danger: '中', desc: '地精内部缓冲区。资源：黄金、香料。魔兽：沙漠狼、沙蛇。禁飞：允许。环境：山地绿洲。' },
+                'Cyprus': { name: '碧海驿站', race: 'undeveloped', status: '未开发', danger: '中', desc: '地精与深渊族缓冲区。资源：铜矿、葡萄酒。魔兽：海妖、地中海巨蛇。禁飞：允许。环境：海岛。' },
+                '山西省': { name: '风沙荒原', race: 'undeveloped', status: '未开发', danger: '中', desc: '人类与兽人缓冲区。资源：铁矿、煤矿。魔兽：风沙狼、沙蛇、秃鹫。禁飞：限制。环境：黄土荒原。' },
+                '陕西省': { name: '烈焰荒原', race: 'undeveloped', status: '未开发', danger: '中', desc: '人类与兽人缓冲区。资源：煤矿、铁矿、硫磺。魔兽：火蜥蜴、沙狼、岩龙。禁飞：限制。环境：干旱荒原。' },
+                '云南省': { name: '翡翠密林', race: 'undeveloped', status: '未开发', danger: '中', desc: '🎮 主角起始。人类与精灵缓冲区。资源：翡翠、药草、魔法木材。魔兽：翡翠蟒、丛林豹、树精。禁飞：限制。环境：热带密林。' },
+                '广西壮族自治区': { name: '翠谷密林', race: 'undeveloped', status: '未开发', danger: '中', desc: '人类与精灵缓冲区。资源：翡翠、药草、香料。魔兽：翠谷蟒、森林狼、树精。禁飞：限制。环境：热带密林。' },
+                '河南省': { name: '中原荒地', race: 'undeveloped', status: '未开发', danger: '低-中', desc: '人类内部未开发。资源：铁矿、粮食废墟。魔兽：野狼、亡灵、食尸鬼。禁飞：允许。环境：荒芜平原。' },
+                '湖北省': { name: '黑水沼泽', race: 'undeveloped', status: '未开发', danger: '低', desc: '人类与矮人缓冲区。资源：药草、毒药、黑珍珠。魔兽：黑水鳄、沼泽蟒、水鬼。禁飞：限制。环境：沼泽湿地。' },
+                '四川省': { name: '龙爪山脉', race: 'undeveloped', status: '未开发', danger: '中高', desc: '人类与龙裔缓冲区。资源：铁矿、铜矿、宝石。魔兽：岩龙、山狼、狮鹫。禁飞：限制。环境：险峻山脉。' },
+                '青海省': { name: '龙脊高原', race: 'undeveloped', status: '未开发', danger: '高', desc: '龙裔血脉之间。资源：秘银、霜晶、龙骨。魔兽：霜龙、雪狮、冰原狼。禁飞：限制。环境：高原雪山。' },
+                '新疆维吾尔自治区': { name: '死亡荒漠', race: 'undeveloped', status: '未开发', danger: '高', desc: '兽人与龙裔缓冲区。资源：死亡晶、沙金、骨制品。魔兽：骨龙、沙暴巨兽、死亡蠕虫。禁飞：禁止。环境：死亡沙漠。' },
+                'Afghanistan': { name: '霜骨山脉', race: 'undeveloped', status: '未开发', danger: '高', desc: '兽人与深渊族缓冲区。资源：霜骨、铁矿、宝石。魔兽：霜骨龙、雪狼、冰原巨魔。禁飞：限制。环境：雪山山脉。' },
+                'Iran': { name: '骸骨高原', race: 'undeveloped', status: '未开发', danger: '高', desc: '兽人与深渊族缓冲区。资源：骨制品、铁矿、硫磺。魔兽：骸骨巨兽、沙狼、秃鹫。禁飞：限制。环境：焦土高原。' },
+                'Nepal': { name: '云巅山脉', race: 'undeveloped', status: '未开发', danger: '极高', desc: '精灵与矮人缓冲区。资源：云晶、秘银、圣水。魔兽：云龙、雪人、狮鹫。禁飞：限制。环境：极高山脉。' },
+                'Bangladesh': { name: '黑沼泽', race: 'undeveloped', status: '未开发', danger: '中', desc: '精灵血脉之间。资源：黑珍珠、毒药、沼气。魔兽：黑沼巨蟒、沼泽鳄、水鬼。禁飞：禁止。环境：热带沼泽。' },
+                'Pakistan': { name: '灼热荒漠', race: 'undeveloped', status: '未开发', danger: '高', desc: '龙裔与深渊族缓冲区。资源：火晶、沙金、盐。魔兽：火蜥蜴、沙狼、岩龙。禁飞：限制。环境：灼热沙漠。' },
+                'Syria': { name: '绝望荒漠', race: 'undeveloped', status: '未开发', danger: '极高', desc: '深渊族外围。资源：绝望石、骨制品。魔兽：绝望幽灵、沙暴巨兽、死亡蠕虫。禁飞：禁止。环境：绝望沙漠。' },
+                'Jordan': { name: '焦土荒原', race: 'undeveloped', status: '未开发', danger: '高', desc: '深渊族外围。资源：焦石、铁矿。魔兽：焦土巨兽、沙狼、火蜥蜴。禁飞：限制。环境：焦土荒原。' },
+                'Turkey': { name: '黑石高原', race: 'undeveloped', status: '未开发', danger: '高', desc: '深渊族北方。资源：黑石、铁矿、铜矿。魔兽：黑石巨人、岩龙、狮鹫。禁飞：限制。环境：黑石高原。' },
+                'Georgia': { name: '霜刃山脉', race: 'undeveloped', status: '未开发', danger: '极高', desc: '深渊族东北。资源：霜铁、宝石、毛皮。魔兽：霜刃龙、雪狼、冰原巨魔。禁飞：限制。环境：雪山山脉。' },
+                'Armenia': { name: '火山高原', race: 'undeveloped', status: '未开发', danger: '高', desc: '深渊族东北。资源：火山石、硫磺、铜矿。魔兽：火蜥蜴、岩龙、熔岩巨兽。禁飞：限制。环境：火山高原。' },
+                'Azerbaijan': { name: '黑海荒原', race: 'undeveloped', status: '未开发', danger: '高', desc: '深渊族东北。资源：石油、黑石、盐。魔兽：黑海巨兽、沼泽狼、水鬼。禁飞：限制。环境：荒凉海岸。' },
+                '吉林省': { name: '霜松森林', race: 'undeveloped', status: '未开发', danger: '中', desc: '人类北境之间。资源：霜松木、毛皮、药草。魔兽：霜狼、雪鹿、松鼠。禁飞：允许。环境：寒带森林。' },
+                '黑龙江省': { name: '极北荒原', race: 'undeveloped', status: '未开发', danger: '中高', desc: '人类北境与冰原之间。资源：毛皮、象牙、霜晶。魔兽：猛犸、霜狼、雪狮。禁飞：限制。环境：极北荒原。' },
+                '安徽省': { name: '银雾城', race: 'human', blood: '平原血脉', status: '已开发', danger: '低', desc: '银雾笼罩的神秘城市。城市：银雾城、芜湖、蚌埠、安庆。资源：银矿、粮食、丝绸。魔兽：无。禁飞：限制。环境：平原都市。' },
+                '湖南省': { name: '翠叶森林', race: 'undeveloped', status: '未开发', danger: '中', desc: '人类内部。资源：木材、药草、竹。魔兽：翠叶蛇、森林狼、山猫。禁飞：允许。环境：亚热带森林。' },
+                '江西省': { name: '迷雾森林', race: 'undeveloped', status: '未开发', danger: '中', desc: '人类内部。资源：迷雾草、药草、魔法木材。魔兽：迷雾兽、森林巨蟒、树精。禁飞：限制。环境：迷雾森林。' },
+                '贵州省': { name: '云雾高原', race: 'undeveloped', status: '未开发', danger: '中', desc: '人类与精灵之间。资源：云雾茶、药草、银矿。魔兽：云雾豹、高原狼、山鹰。禁飞：限制。环境：云雾高原。' },
+                'South Korea': { name: '晨曦半岛', race: 'undeveloped', status: '未开发', danger: '低-中', desc: '人类半岛。资源：鱼类、珍珠、铜矿。魔兽：晨曦鸟、海妖、半岛狼。禁飞：允许。环境：半岛海岸。' },
+                'North Korea': { name: '雾隐山脉', race: 'undeveloped', status: '未开发', danger: '中', desc: '人类与大海之间。资源：铁矿、铜矿、毛皮。魔兽：雾隐狼、山狮、狮鹫。禁飞：限制。环境：雾中山脉。' },
+                'Japan': { name: '日出群岛', race: 'undeveloped', status: '未开发', danger: '低', desc: '日出之地。资源：鱼类、珍珠、硫磺。魔兽：日出龙、海妖、火山巨兽。禁飞：允许。环境：火山群岛。' },
+                'Russia': { name: '永冬冰原', race: 'none', status: '无人区', danger: '极高', desc: '无人区。资源：永冻冰、霜晶、古兽骨。魔兽：霜龙、冰原巨兽、永冬幽灵。禁飞：禁止。环境：永恒冰原。' },
+            },
+                '天津市': { name: '龙石港', race: 'human', blood: '平原血脉', status: '已开发', danger: '低', desc: '王都门户，繁忙的贸易港口。' },
+                '河北省': { name: '王领平原', race: 'human', blood: '平原血脉', status: '已开发', danger: '低', desc: '王都直辖领地。' },
+                '山东省': { name: '金麦平原', race: 'human', blood: '平原血脉', status: '已开发', danger: '低', desc: '王国粮仓。' },
+                '辽宁省': { name: '凛冬要塞', race: 'human', blood: '北境血脉', status: '已开发', danger: '低-中', desc: '北境守护。' },
+                '上海市': { name: '翡翠港', race: 'human', blood: '平原血脉', status: '已开发', danger: '低', desc: '东方最大贸易港。' },
+                '江苏省': { name: '翡翠平原', race: 'human', blood: '平原血脉', status: '已开发', danger: '低', desc: '碧绿如翡翠的平原。' },
+                '浙江省': { name: '银叶平原', race: 'human', blood: '平原血脉', status: '已开发', danger: '低', desc: '银叶树遍布。' },
+                '福建省': { name: '风暴海岸', race: 'human', blood: '平原血脉', status: '已开发', danger: '低', desc: '风暴频发的海岸。' },
+                '广东省': { name: '风暴海湾', race: 'undeveloped', status: '未开发', danger: '低', desc: '风暴频发的未开发海湾。' },
+                '香港特别行政区': { name: '自由港', race: 'human', blood: '平原血脉', status: '已开发', danger: '低', desc: '自由贸易港。' },
+                '澳门特别行政区': { name: '明珠港', race: 'human', blood: '平原血脉', status: '已开发', danger: '低', desc: '南方明珠。' },
+                '海南省': { name: '烈焰岛', race: 'undeveloped', status: '未开发', danger: '高', desc: '火山活跃的危险岛屿。' },
+                '重庆市': { name: '铁壁要塞', race: 'human', blood: '平原血脉', status: '部分开发', danger: '低-中', desc: '铁壁般坚固的要塞。' },
+                '台湾省': { name: '龙晶岛', race: 'human', blood: '平原血脉', status: '已开发', danger: '低', desc: '盛产龙晶的神秘岛屿。' },
+                
+                // ===== 兽人帝国 =====
+                '甘肃省': { name: '赤血高坡', race: 'orc', blood: '战吼兽人', status: '部分开发', danger: '中高', desc: '赤红色的黄土高坡。' },
+                '宁夏回族自治区': { name: '骸骨高地', race: 'orc', blood: '战吼兽人', status: '部分开发', danger: '中', desc: '骸骨遍布的高地。' },
+                '内蒙古自治区': { name: '血蹄草原', race: 'orc', blood: '狩猎兽人', status: '部分开发', danger: '中', desc: '血蹄兽人的狩猎场。' },
+                'Mongolia': { name: '霜狼草原', race: 'orc', blood: '智慧兽人', status: '部分开发', danger: '中高', desc: '霜狼氏族的圣地。' },
+                'Kazakhstan': { name: '骨原荒野', race: 'orc', blood: '血爪兽人', status: '部分开发', danger: '中', desc: '白骨遍布的荒野。' },
+                
+                // ===== 精灵领地 =====
+                'Myanmar': { name: '月影森林', race: 'elf', blood: '高等精灵', status: '部分开发', danger: '中', desc: '月光永恒的森林。' },
+                'Laos': { name: '星落密林', race: 'elf', blood: '木精灵', status: '部分开发', danger: '中', desc: '星光洒落的密林。' },
+                'Thailand': { name: '银叶王国', race: 'elf', blood: '木精灵', status: '部分开发', danger: '中', desc: '银叶树王国。' },
+                'Cambodia': { name: '暗影沼泽', race: 'elf', blood: '暗夜精灵', status: '部分开发', danger: '中高', desc: '永恒黑暗的沼泽。' },
+                'Vietnam': { name: '晨曦海岸', race: 'elf', blood: '月精灵', status: '部分开发', danger: '低-中', desc: '晨曦初照的海岸。' },
+                'Sri Lanka': { name: '月神圣地', race: 'elf', blood: '月精灵', status: '圣地', danger: '低', desc: '月神的居所。' },
+                
+                // ===== 矮人王国 =====
+                'India': { name: '铁锤山脉', race: 'dwarf', blood: '山脉矮人', status: '部分开发', danger: '中', desc: '铁锤氏族的地下王国。' },
+                'Bhutan': { name: '雷鸣要塞', race: 'dwarf', blood: '山脉矮人', status: '部分开发', danger: '中', desc: '雷鸣般的锻造声。' },
+                'Kyrgyzstan': { name: '深渊矿坑', race: 'dwarf', blood: '深渊矮人', status: '部分开发', danger: '中高', desc: '深入地底的矿坑。' },
+                'Tajikistan': { name: '灰岩矿区', race: 'dwarf', blood: '灰矮人', status: '部分开发', danger: '高', desc: '被放逐者的矿区。' },
+                
+                // ===== 龙裔领地 =====
+                '西藏自治区': { name: '霜龙圣地', race: 'dragon', blood: '银龙裔', status: '部分开发', danger: '低-中', desc: '银龙裔守护的圣地。' },
+                'Uzbekistan': { name: '炎龙火山', race: 'dragon', blood: '红龙裔', status: '部分开发', danger: '中', desc: '火焰永不止息。' },
+                'Turkmenistan': { name: '风暴荒原', race: 'dragon', blood: '蓝龙裔', status: '部分开发', danger: '中', desc: '雷电风暴肆虐。' },
+                
+                // ===== 海妖族 =====
+                'Indonesia': { name: '珊瑚群岛', race: 'mermaid', blood: '海妖族', status: '已开发', danger: '低', desc: '珊瑚构筑的主群岛。' },
+                'Malaysia': { name: '珍珠半岛', race: 'mermaid', blood: '海妖族', status: '已开发', danger: '低', desc: '珍珠般璀璨。' },
+                'Singapore': { name: '明珠港', race: 'mermaid', blood: '海妖族', status: '已开发', danger: '低', desc: '海上明珠。' },
+                'Philippines': { name: '贝壳群岛', race: 'mermaid', blood: '海妖族', status: '已开发', danger: '低', desc: '贝壳遍布的群岛。' },
+                'Brunei': { name: '珊瑚礁', race: 'mermaid', blood: '海妖族', status: '已开发', danger: '低', desc: '美丽的珊瑚礁。' },
+                'East Timor': { name: '晨曦岛', race: 'mermaid', blood: '海妖族', status: '已开发', danger: '低', desc: '东方最先见晨曦。' },
+                'Maldives': { name: '碧海环礁', race: 'mermaid', blood: '海妖族', status: '已开发', danger: '低', desc: '碧海环绕的环礁。' },
+                
+                // ===== 深渊族领地 =====
+                'Israel': { name: '深渊裂隙', race: 'abyss', blood: '裂隙深渊', status: '禁地', danger: '极高', desc: '【位面裂隙】。资源：深渊石、恶魔晶。魔兽：恶魔、深渊巨兽、暗影龙。禁飞：禁止（位面不稳定）。环境：位面裂缝。' },
+                'Palestine': { name: '裂隙边缘', race: 'abyss', blood: '裂隙深渊', status: '禁地', danger: '极高', desc: '深渊裂隙外围。' },
+                'Iraq': { name: '深红荒原', race: 'abyss', blood: '深红深渊', status: '未开发', danger: '极高', desc: '赤红如血的荒原。' },
+                'Lebanon': { name: '苍白山谷', race: 'abyss', blood: '苍白深渊', status: '未开发', danger: '高', desc: '苍白无色的山谷。' },
+                
+                // ===== 地精圣地 =====
+                'Saudi Arabia': { name: '金币绿洲', race: 'goblin', blood: '商会地精', status: '已开发', danger: '低', desc: '沙漠中的黄金绿洲。' },
+                'United Arab Emirates': { name: '商业之城', race: 'goblin', blood: '商会地精', status: '已开发', danger: '低', desc: '商业帝国心脏。' },
+                'Qatar': { name: '宝石港', race: 'goblin', blood: '商会地精', status: '已开发', danger: '低', desc: '宝石交易港。' },
+                'Bahrain': { name: '珍珠岛', race: 'goblin', blood: '商会地精', status: '已开发', danger: '低', desc: '珍珠养殖中心。' },
+                'Kuwait': { name: '黑金港', race: 'goblin', blood: '商会地精', status: '已开发', danger: '低', desc: '黑金贸易港。' },
+                'Oman': { name: '商队驿站', race: 'goblin', blood: '游商地精', status: '已开发', danger: '低', desc: '商队歇脚处。' },
+                'Yemen': { name: '小金币绿洲', race: 'goblin', blood: '商会地精', status: '已开发', danger: '低', desc: '小型聚居地。' },
+                'Cyprus': { name: '碧海驿站', race: 'goblin', blood: '游商地精', status: '已开发', danger: '低', desc: '海上贸易驿站。' },
+                
+                // ===== 未开发缓冲区 =====
+                '山西省': { name: '风沙荒原', race: 'undeveloped', status: '未开发', danger: '中', desc: '人类与兽人之间。' },
+                '陕西省': { name: '烈焰荒原', race: 'undeveloped', status: '未开发', danger: '中', desc: '烈日炙烤的荒原。' },
+                '云南省': { name: '翡翠密林', race: 'undeveloped', status: '未开发', danger: '中', desc: '🎮 主角起始。翠绿的神秘密林。' },
+                '广西壮族自治区': { name: '翠谷密林', race: 'undeveloped', status: '未开发', danger: '中', desc: '人类与精灵之间。' },
+                '河南省': { name: '中原荒地', race: 'undeveloped', status: '未开发', danger: '低-中', desc: '曾经繁华的荒地。' },
+                '湖北省': { name: '黑水沼泽', race: 'undeveloped', status: '未开发', danger: '低', desc: '低风险沼泽。资源：药草、毒药。魔兽：黑水鳄、沼泽蟒。禁飞：限制（迷雾）。' },
+                '四川省': { name: '龙爪山脉', race: 'undeveloped', status: '未开发', danger: '中高', desc: '人类与龙裔之间。' },
+                '青海省': { name: '龙脊高原', race: 'undeveloped', status: '未开发', danger: '高', desc: '龙裔血脉之间。' },
+                '新疆维吾尔自治区': { name: '死亡荒漠', race: 'undeveloped', status: '未开发', danger: '高', desc: '兽人与龙裔之间。' },
+                'Afghanistan': { name: '霜骨山脉', race: 'undeveloped', status: '未开发', danger: '高', desc: '兽人与深渊族之间。' },
+                'Iran': { name: '骸骨高原', race: 'undeveloped', status: '未开发', danger: '高', desc: '焦土高原。' },
+                'Nepal': { name: '云巅山脉', race: 'undeveloped', status: '未开发', danger: '极高', desc: '精灵与矮人之间。' },
+                'Bangladesh': { name: '黑沼泽', race: 'undeveloped', status: '未开发', danger: '中', desc: '精灵血脉之间。' },
+                'Pakistan': { name: '灼热荒漠', race: 'undeveloped', status: '未开发', danger: '高', desc: '龙裔与深渊族之间。' },
+                'Syria': { name: '绝望荒漠', race: 'undeveloped', status: '未开发', danger: '极高', desc: '深渊族外围。' },
+                'Jordan': { name: '焦土荒原', race: 'undeveloped', status: '未开发', danger: '高', desc: '深渊族外围。' },
+                'Turkey': { name: '黑石高原', race: 'undeveloped', status: '未开发', danger: '高', desc: '深渊族北方。' },
+                'Georgia': { name: '霜刃山脉', race: 'undeveloped', status: '未开发', danger: '极高', desc: '深渊族东北。' },
+                'Armenia': { name: '火山高原', race: 'undeveloped', status: '未开发', danger: '高', desc: '深渊族东北。' },
+                'Azerbaijan': { name: '黑海荒原', race: 'undeveloped', status: '未开发', danger: '高', desc: '深渊族东北。' },
+                '吉林省': { name: '霜松森林', race: 'undeveloped', status: '未开发', danger: '中', desc: '人类北境之间。' },
+                '黑龙江省': { name: '极北荒原', race: 'undeveloped', status: '未开发', danger: '中高', desc: '人类北境与冰原之间。' },
+                '安徽省': { name: '银雾城', race: 'human', blood: '平原血脉', status: '已开发', danger: '低', desc: '银雾笼罩的神秘城市。资源：银矿、粮食、丝绸。魔兽：无。禁飞：限制（迷雾）。' },
+                '湖南省': { name: '翠叶森林', race: 'undeveloped', status: '未开发', danger: '中', desc: '人类内部。' },
+                '江西省': { name: '迷雾森林', race: 'undeveloped', status: '未开发', danger: '中', desc: '人类内部。' },
+                '贵州省': { name: '云雾高原', race: 'undeveloped', status: '未开发', danger: '中', desc: '人类与精灵之间。' },
+                'South Korea': { name: '晨曦半岛', race: 'undeveloped', status: '未开发', danger: '低-中', desc: '人类半岛。' },
+                'North Korea': { name: '雾隐山脉', race: 'undeveloped', status: '未开发', danger: '中', desc: '人类与大海之间。' },
+                'Japan': { name: '日出群岛', race: 'undeveloped', status: '未开发', danger: '低', desc: '日出之地的群岛。' },
+                'Russia': { name: '永冬冰原', race: 'none', status: '无人区', danger: '极高', desc: '永恒冬日。资源：永冻冰、霜晶、古兽骨。魔兽：霜龙、冰原巨兽、永冬幽灵。禁飞：禁止（极寒）。环境：极地冰原。' }
+            }
+        };
+        
+        // ========== 地图核心代码 ==========
         const chart = echarts.init(document.getElementById('map'));
         const statusEl = document.getElementById('status');
-        const statsEl = document.getElementById('stats');
+        const infoEl = document.getElementById('info');
         
-        function setStatus(text) { statusEl.textContent = text; }
-        function setStats(regions) {
-            const total = Object.values(regions).reduce((a,b) => a + b, 0);
-            let html = `<b>总计: ${total} 区域</b><br>`;
-            Object.keys(regions).forEach(k => html += `${k}: ${regions[k]} | `);
-            statsEl.innerHTML = html.slice(0, -3);
-        }
-        
-        // ========== 区域数据 ==========
-        
-        // ========== 世界观设定 ==========
-        // 核心（中国）：各种族居住地，已开发，低风险
-        // 第一圈（周边）：海洋、低/中风险未开发区
-        // 第二圈（外围）：高风险区
-        // 最外围：深渊禁地
-        
-        // 中部平原（中国）- 核心居住区，各种族混居
-        const chinaData = {
-            // 人类王国 - 核心
-            '北京市': { name: '龙虾城', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', products: '龙虾符文、魔法装备、王都特产', monsters: '无（城内安全）', flight: '✅ 可飞行', desc: '人类王国的首都，龙虾系统的诞生地。繁华的商业中心和政治心脏。' },
-            '天津市': { name: '王家直辖地', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', products: '海盐、鱼类、船只', monsters: '无', flight: '✅ 可飞行', desc: '王都门户，重要的港口城市和贸易枢纽。' },
-            '河北省': { name: '寒风原', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', products: '皮毛、小麦', monsters: '无', flight: '✅ 可飞行', desc: '王都周边平原，人类主要居住区。' },
-            '河南省': { name: '王家直辖地', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', products: '粮食、布匹、兵器', monsters: '无', flight: '✅ 可飞行', desc: '中原腹地，人类文明的中心。' },
-            '山东省': { name: '东部农场', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', products: '小麦、海盐、鱼类', monsters: '无', flight: '✅ 可飞行', desc: '东海岸的农业重镇。' },
-            '江苏省': { name: '东部农场', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', products: '小麦、稻米、蔬菜', monsters: '无', flight: '✅ 可飞行', desc: '肥沃的平原，王国的粮仓。' },
-            '上海市': { name: '银龙河渡口', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', products: '河鲜、丝绸、魔法道具', monsters: '无', flight: '✅ 可飞行', desc: '银龙河入海口的重要港口。' },
-            '浙江省': { name: '金麦城', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', products: '黄金麦、茶叶、丝绸', monsters: '无', flight: '✅ 可飞行', desc: '富庶的农业区，盛产黄金麦。' },
-            '安徽省': { name: '药草谷', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', products: '珍稀药草、炼金材料', monsters: '无', flight: '✅ 可飞行', desc: '盛产珍稀药草的山谷。' },
-            '广东省': { name: '河口城', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', products: '香料、宝石、海外奇珍', monsters: '无', flight: '✅ 可飞行', desc: '南方最大的港口城市。' },
-            '香港特别行政区': { name: '河口城', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', products: '香料、丝绸、海外奇珍', monsters: '无', flight: '✅ 可飞行', desc: '南方自由港。' },
-            '澳门特别行政区': { name: '河口城', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', products: '娱乐服务', monsters: '无', flight: '✅ 可飞行', desc: '南方娱乐之都。' },
-            '广西壮族自治区': { name: '边境哨站', color: '#81c784', status: '已开发', danger: '低', race: '人类/精灵', products: '热带水果、香料', monsters: '无', flight: '✅ 可飞行', desc: '西南边境，精灵贸易点。' },
-            '海南省': { name: '珊瑚岛', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', products: '珍珠、珊瑚、热带水果', monsters: '无', flight: '✅ 可飞行', desc: '热带海岛，度假胜地。' },
-            
-            // 精灵领地 - 森林
-            '福建省': { name: '月影镇', color: '#81c784', status: '已开发', danger: '低', race: '精灵', products: '月光茶、精灵工艺品', monsters: '无', flight: '✅ 可飞行', desc: '精灵的主要居住地，与人类和平共处。' },
-            '江西省': { name: '精灵森林', color: '#81c784', status: '已开发', danger: '低', race: '精灵', products: '古木、灵果、精灵草药', monsters: '无', flight: '✅ 可飞行', desc: '精灵王国的核心森林。' },
-            '湖南省': { name: '精灵湿地', color: '#81c784', status: '已开发', danger: '低', race: '精灵', products: '水稻、莲藕、水精灵晶石', monsters: '无', flight: '✅ 可飞行', desc: '水精灵的家园。' },
-            '云南省': { name: '古精灵森林', color: '#81c784', status: '已开发', danger: '低', race: '精灵', products: '古木、珍稀草药', monsters: '无', flight: '✅ 可飞行', desc: '最古老的精灵领地。' },
-            '贵州省': { name: '精灵山地', color: '#81c784', status: '已开发', danger: '低', race: '精灵', products: '山珍、灵石', monsters: '无', flight: '✅ 可飞行', desc: '山地精灵的家园。' },
-            '湖北省': { name: '精灵沼泽', color: '#81c784', status: '已开发', danger: '低', race: '精灵', products: '沼泽草药、水晶石', monsters: '无', flight: '✅ 可飞行', desc: '沼泽精灵的领地。' },
-            
-            // 矮人领地 - 山脉
-            '重庆市': { name: '矮人要塞', color: '#ffb74d', status: '已开发', danger: '低', race: '矮人', products: '矮人兵器、赤岩矿', monsters: '无', flight: '✅ 可飞行', desc: '矮人的主要要塞。' },
-            '四川省': { name: '矮人矿坑', color: '#ffb74d', status: '已开发', danger: '低', race: '矮人', products: '矿石、矮人兵器', monsters: '无', flight: '✅ 可飞行', desc: '矮人的矿区。' },
-            '西藏自治区': { name: '矮人山脉', color: '#ffb74d', status: '已开发', danger: '低', race: '矮人', products: '矮人兵器、山铜矿、宝石', monsters: '无', flight: '✅ 可飞行', desc: '矮人的主山脉领地。' },
-            '新疆维吾尔自治区': { name: '矮人西域', color: '#ffb74d', status: '已开发', danger: '低', race: '矮人', products: '宝石、山铜矿', monsters: '无', flight: '✅ 可飞行', desc: '西域矮人领地。' },
-            '青海省': { name: '矮人高原', color: '#ffb74d', status: '已开发', danger: '低', race: '矮人', products: '高原矿石、矮人工艺品', monsters: '无', flight: '✅ 可飞行', desc: '高原矮人领地。' },
-            '甘肃省': { name: '矮人走廊', color: '#ffb74d', status: '已开发', danger: '低', race: '矮人', products: '矿石、兵器', monsters: '无', flight: '✅ 可飞行', desc: '连接东西的矮人走廊。' },
-            
-            // 龙裔领地 - 边缘
-            '台湾省': { name: '红龙岛', color: '#ba68c8', status: '已开发', danger: '低', race: '红龙裔', products: '火晶石、龙血草', monsters: '无', flight: '✅ 可飞行', desc: '红龙裔的岛屿家园。' },
-            '内蒙古自治区': { name: '蓝龙草原', color: '#ba68c8', status: '已开发', danger: '低', race: '蓝龙裔', products: '雷电晶石、龙鳞', monsters: '无', flight: '✅ 可飞行', desc: '蓝龙裔的草原领地。' },
-            
-            // 哥布林领地 - 矿区
-            '山西省': { name: '哥布林矿区', color: '#a1887f', status: '已开发', danger: '低', race: '哥布林', products: '铁矿、煤炭、哥布林机械', monsters: '无', flight: '✅ 可飞行', desc: '哥布林的矿区家园。他们是天生的商人。' },
-            '陕西省': { name: '哥布林山地', color: '#a1887f', status: '已开发', danger: '低', race: '哥布林', products: '矿石、机械零件', monsters: '无', flight: '✅ 可飞行', desc: '哥布林的山地领地。' },
-            '宁夏回族自治区': { name: '哥布林要塞', color: '#a1887f', status: '已开发', danger: '低', race: '哥布林', products: '哥布林兵器、机械', monsters: '无', flight: '✅ 可飞行', desc: '哥布林的要塞城市。' },
-            
-            // 北方边境 - 部分开发
-            '辽宁省': { name: '北方要塞', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', products: '黑石、兵器', monsters: '无', flight: '✅ 可飞行', desc: '北方边境要塞。' },
-            '吉林省': { name: '北方森林', color: '#81c784', status: '已开发', danger: '低', race: '人类/精灵', products: '木材、草药', monsters: '无', flight: '✅ 可飞行', desc: '北方森林居住区。' },
-            '黑龙江省': { name: '极北哨站', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', products: '皮毛、冰鱼', monsters: '无', flight: '✅ 可飞行', desc: '最北端的哨站。' }
-        };
-        
-        // 北境荒原（俄罗斯）- 外围高风险区，几乎无人居住
-        const russiaData = {
-            // 冰霜荒原（中央联邦管区）- 中高风险
-            'Moscow': { name: '冰霜废墟', color: '#ff8a65', status: '未开发', danger: '中高', race: '冰原生物', products: '远古遗物（稀有）', monsters: '冰原狼、霜巨人', flight: '⚠️ 极寒', desc: '远古文明的废墟，几乎无人居住。' },
-            'Moscow Oblast': { name: '冰霜废墟', color: '#ff8a65', status: '未开发', danger: '中高', race: '冰原生物', products: '远古遗物', monsters: '冰原狼', flight: '⚠️ 极寒', desc: '废墟周边的冰原。' },
-            'Belgorod Oblast': { name: '冰原边境', color: '#ffb74d', status: '部分开发', danger: '中', race: '矮人', products: '皮毛、矿石', monsters: '冰原狼', flight: '✅ 可飞行', desc: '与矮人领地接壤的边境。' },
-            'Bryansk Oblast': { name: '冰原边境', color: '#ffb74d', status: '部分开发', danger: '中', race: '矮人', products: '皮毛', monsters: '冰原狼', flight: '✅ 可飞行', desc: '边境哨站区域。' },
-            'Ivanovo Oblast': { name: '冰霜废墟', color: '#ff8a65', status: '未开发', danger: '中高', race: '冰原生物', products: '无', monsters: '冰原狼、霜巨人', flight: '⚠️ 极寒', desc: '远古废墟。' },
-            'Kaluga Oblast': { name: '冰霜废墟', color: '#ff8a65', status: '未开发', danger: '中高', race: '冰原生物', products: '无', monsters: '冰原狼', flight: '⚠️ 极寒', desc: '废墟区域。' },
-            'Kostroma Oblast': { name: '冰霜废墟', color: '#ff8a65', status: '未开发', danger: '中高', race: '冰原生物', products: '无', monsters: '冰原狼', flight: '⚠️ 极寒', desc: '废墟区域。' },
-            'Kursk Oblast': { name: '冰原边境', color: '#ffb74d', status: '部分开发', danger: '中', race: '矮人', products: '皮毛', monsters: '冰原狼', flight: '✅ 可飞行', desc: '边境区域。' },
-            'Lipetsk Oblast': { name: '冰霜废墟', color: '#ff8a65', status: '未开发', danger: '中高', race: '冰原生物', products: '无', monsters: '冰原狼', flight: '⚠️ 极寒', desc: '废墟区域。' },
-            'Oryol Oblast': { name: '冰霜废墟', color: '#ff8a65', status: '未开发', danger: '中高', race: '冰原生物', products: '无', monsters: '冰原狼', flight: '⚠️ 极寒', desc: '废墟区域。' },
-            'Ryazan Oblast': { name: '冰霜废墟', color: '#ff8a65', status: '未开发', danger: '中高', race: '冰原生物', products: '无', monsters: '冰原狼', flight: '⚠️ 极寒', desc: '废墟区域。' },
-            'Smolensk Oblast': { name: '冰霜废墟', color: '#ff8a65', status: '未开发', danger: '中高', race: '冰原生物', products: '无', monsters: '冰原狼', flight: '⚠️ 极寒', desc: '废墟区域。' },
-            'Tambov Oblast': { name: '冰霜废墟', color: '#ff8a65', status: '未开发', danger: '中高', race: '冰原生物', products: '无', monsters: '冰原狼', flight: '⚠️ 极寒', desc: '废墟区域。' },
-            'Tula Oblast': { name: '冰霜废墟', color: '#ff8a65', status: '未开发', danger: '中高', race: '冰原生物', products: '无', monsters: '冰原狼', flight: '⚠️ 极寒', desc: '废墟区域。' },
-            'Tver Oblast': { name: '冰霜废墟', color: '#ff8a65', status: '未开发', danger: '中高', race: '冰原生物', products: '无', monsters: '冰原狼', flight: '⚠️ 极寒', desc: '废墟区域。' },
-            'Vladimir Oblast': { name: '冰霜废墟', color: '#ff8a65', status: '未开发', danger: '中高', race: '冰原生物', products: '无', monsters: '冰原狼', flight: '⚠️ 极寒', desc: '废墟区域。' },
-            'Voronezh Oblast': { name: '冰霜废墟', color: '#ff8a65', status: '未开发', danger: '中高', race: '冰原生物', products: '无', monsters: '冰原狼', flight: '⚠️ 极寒', desc: '废墟区域。' },
-            'Yaroslavl Oblast': { name: '冰霜废墟', color: '#ff8a65', status: '未开发', danger: '中高', race: '冰原生物', products: '无', monsters: '冰原狼', flight: '⚠️ 极寒', desc: '废墟区域。' },
-            
-            // 北方冰原（西北联邦管区）- 高风险
-            'Saint Petersburg': { name: '冰封港口', color: '#e57373', status: '未开发', danger: '高', race: '冰原巨兽', products: '远古遗物（极稀有）', monsters: '冰原巨兽、霜龙', flight: '❌ 极寒风暴', desc: '远古冰封港口，极度危险。' },
-            'Leningrad Oblast': { name: '北方冰原', color: '#e57373', status: '未开发', danger: '高', race: '冰原巨兽', products: '无', monsters: '冰原巨兽', flight: '❌ 极寒风暴', desc: '北方冰原。' },
-            'Arkhangelsk Oblast': { name: '极北冰原', color: '#e57373', status: '未开发', danger: '高', race: '冰原巨兽', products: '无', monsters: '冰原巨兽、霜龙', flight: '❌ 极寒风暴', desc: '极北冰原。' },
-            'Kaliningrad Oblast': { name: '深渊入口', color: '#7e57c2', status: '禁地', danger: '极高', race: '深渊族', products: '深渊晶石', monsters: '深渊巨兽', flight: '❌ 禁飞', desc: '【深渊入口】通往深渊的门户，极度危险。' },
-            'Republic of Karelia': { name: '极北冰原', color: '#e57373', status: '未开发', danger: '高', race: '冰原巨兽', products: '无', monsters: '冰原巨兽', flight: '❌ 极寒风暴', desc: '极北冰原。' },
-            'Komi Republic': { name: '极北冰原', color: '#e57373', status: '未开发', danger: '高', race: '冰原巨兽', products: '无', monsters: '冰原巨兽、霜龙', flight: '❌ 极寒风暴', desc: '极北冰原。' },
-            'Murmansk Oblast': { name: '极北冰原', color: '#e57373', status: '未开发', danger: '高', race: '冰原巨兽', products: '无', monsters: '冰原巨兽', flight: '❌ 极寒风暴', desc: '极北冰原。' },
-            'Novgorod Oblast': { name: '北方冰原', color: '#e57373', status: '未开发', danger: '高', race: '冰原巨兽', products: '无', monsters: '冰原巨兽', flight: '❌ 极寒风暴', desc: '北方冰原。' },
-            'Pskov Oblast': { name: '深渊边境', color: '#9575cd', status: '禁地', danger: '极高', race: '深渊族', products: '深渊晶石', monsters: '深渊巨兽', flight: '❌ 禁飞', desc: '【深渊边境】深渊的最外围。' },
-            'Vologda Oblast': { name: '北方冰原', color: '#e57373', status: '未开发', danger: '高', race: '冰原巨兽', products: '无', monsters: '冰原巨兽', flight: '❌ 极寒风暴', desc: '北方冰原。' },
-            'Nenets Autonomous Okrug': { name: '极北冰原', color: '#e57373', status: '未开发', danger: '高', race: '冰原巨兽', products: '无', monsters: '冰原巨兽、霜龙', flight: '❌ 极寒风暴', desc: '极北冰原。' },
-            
-            // 南方草原（南部联邦管区）- 中高风险
-            'Krasnodar Krai': { name: '南方荒原', color: '#ff8a65', status: '未开发', danger: '中高', race: '野兽', products: '无', monsters: '草原巨兽', flight: '✅ 可飞行', desc: '南方荒原。' },
-            'Astrakhan Oblast': { name: '南方荒原', color: '#ff8a65', status: '未开发', danger: '中高', race: '野兽', products: '无', monsters: '草原巨兽', flight: '✅ 可飞行', desc: '南方荒原。' },
-            'Volgograd Oblast': { name: '南方荒原', color: '#ff8a65', status: '未开发', danger: '中高', race: '野兽', products: '无', monsters: '草原巨兽', flight: '✅ 可飞行', desc: '南方荒原。' },
-            'Rostov Oblast': { name: '南方荒原', color: '#ff8a65', status: '未开发', danger: '中高', race: '野兽', products: '无', monsters: '草原巨兽', flight: '✅ 可飞行', desc: '南方荒原。' },
-            'Republic of Adygea': { name: '南方荒原', color: '#ff8a65', status: '未开发', danger: '中高', race: '野兽', products: '无', monsters: '草原巨兽', flight: '✅ 可飞行', desc: '南方荒原。' },
-            'Republic of Kalmykia': { name: '南方荒原', color: '#ff8a65', status: '未开发', danger: '中高', race: '野兽', products: '无', monsters: '草原巨兽', flight: '✅ 可飞行', desc: '南方荒原。' },
-            'Republic of Crimea': { name: '深渊岛', color: '#7e57c2', status: '禁地', danger: '极高', race: '深渊族', products: '深渊晶石', monsters: '深渊巨兽', flight: '❌ 禁飞', desc: '【深渊岛】深渊在黑海的延伸。' },
-            'Sevastopol': { name: '深渊岛', color: '#7e57c2', status: '禁地', danger: '极高', race: '深渊族', products: '深渊晶石', monsters: '深渊巨兽', flight: '❌ 禁飞', desc: '【深渊岛】深渊在黑海的延伸。' },
-            
-            // 高加索山区（北高加索联邦管区）- 高风险
-            'Republic of Dagestan': { name: '深渊山脉', color: '#9575cd', status: '禁地', danger: '极高', race: '深渊族', products: '深渊晶石', monsters: '深渊巨兽', flight: '❌ 禁飞', desc: '【深渊山脉】深渊的延伸。' },
-            'Republic of Ingushetia': { name: '深渊山脉', color: '#9575cd', status: '禁地', danger: '极高', race: '深渊族', products: '深渊晶石', monsters: '深渊巨兽', flight: '❌ 禁飞', desc: '【深渊山脉】深渊的延伸。' },
-            'Kabardino-Balkar Republic': { name: '深渊山脉', color: '#9575cd', status: '禁地', danger: '极高', race: '深渊族', products: '深渊晶石', monsters: '深渊巨兽', flight: '❌ 禁飞', desc: '【深渊山脉】深渊的延伸。' },
-            'Karachay-Cherkess Republic': { name: '深渊山脉', color: '#9575cd', status: '禁地', danger: '极高', race: '深渊族', products: '深渊晶石', monsters: '深渊巨兽', flight: '❌ 禁飞', desc: '【深渊山脉】深渊的延伸。' },
-            'Republic of North Ossetia-Alania': { name: '深渊山脉', color: '#9575cd', status: '禁地', danger: '极高', race: '深渊族', products: '深渊晶石', monsters: '深渊巨兽', flight: '❌ 禁飞', desc: '【深渊山脉】深渊的延伸。' },
-            'Chechen Republic': { name: '深渊山脉', color: '#9575cd', status: '禁地', danger: '极高', race: '深渊族', products: '深渊晶石', monsters: '深渊巨兽', flight: '❌ 禁飞', desc: '【深渊山脉】深渊的延伸。' },
-            'Stavropol Krai': { name: '深渊边境', color: '#9575cd', status: '禁地', danger: '极高', race: '深渊族', products: '深渊晶石', monsters: '深渊巨兽', flight: '❌ 禁飞', desc: '【深渊边境】深渊的最外围。' },
-            
-            // 伏尔加区 - 中风险
-            'Republic of Bashkortostan': { name: '荒原', color: '#ff8a65', status: '未开发', danger: '中', race: '野兽', products: '无', monsters: '草原巨兽', flight: '✅ 可飞行', desc: '伏尔加荒原。' },
-            'Republic of Mari El': { name: '荒原', color: '#ff8a65', status: '未开发', danger: '中', race: '野兽', products: '无', monsters: '草原巨兽', flight: '✅ 可飞行', desc: '伏尔加荒原。' },
-            'Republic of Mordovia': { name: '荒原', color: '#ff8a65', status: '未开发', danger: '中', race: '野兽', products: '无', monsters: '草原巨兽', flight: '✅ 可飞行', desc: '伏尔加荒原。' },
-            'Republic of Tatarstan': { name: '荒原', color: '#ff8a65', status: '未开发', danger: '中', race: '野兽', products: '无', monsters: '草原巨兽', flight: '✅ 可飞行', desc: '伏尔加荒原。' },
-            'Udmurt Republic': { name: '荒原', color: '#ff8a65', status: '未开发', danger: '中', race: '野兽', products: '无', monsters: '草原巨兽', flight: '✅ 可飞行', desc: '伏尔加荒原。' },
-            'Chuvash Republic': { name: '荒原', color: '#ff8a65', status: '未开发', danger: '中', race: '野兽', products: '无', monsters: '草原巨兽', flight: '✅ 可飞行', desc: '伏尔加荒原。' },
-            'Perm Krai': { name: '北方荒原', color: '#ff8a65', status: '未开发', danger: '中高', race: '冰原生物', products: '无', monsters: '冰原狼', flight: '⚠️ 极寒', desc: '北方荒原。' },
-            'Kirov Oblast': { name: '荒原', color: '#ff8a65', status: '未开发', danger: '中', race: '野兽', products: '无', monsters: '草原巨兽', flight: '✅ 可飞行', desc: '伏尔加荒原。' },
-            'Nizhny Novgorod Oblast': { name: '荒原', color: '#ff8a65', status: '未开发', danger: '中', race: '野兽', products: '无', monsters: '草原巨兽', flight: '✅ 可飞行', desc: '伏尔加荒原。' },
-            'Orenburg Oblast': { name: '荒原', color: '#ff8a65', status: '未开发', danger: '中', race: '野兽', products: '无', monsters: '草原巨兽', flight: '✅ 可飞行', desc: '伏尔加荒原。' },
-            'Penza Oblast': { name: '荒原', color: '#ff8a65', status: '未开发', danger: '中', race: '野兽', products: '无', monsters: '草原巨兽', flight: '✅ 可飞行', desc: '伏尔加荒原。' },
-            'Samara Oblast': { name: '荒原', color: '#ff8a65', status: '未开发', danger: '中', race: '野兽', products: '无', monsters: '草原巨兽', flight: '✅ 可飞行', desc: '伏尔加荒原。' },
-            'Saratov Oblast': { name: '荒原', color: '#ff8a65', status: '未开发', danger: '中', race: '野兽', products: '无', monsters: '草原巨兽', flight: '✅ 可飞行', desc: '伏尔加荒原。' },
-            'Ulyanovsk Oblast': { name: '荒原', color: '#ff8a65', status: '未开发', danger: '中', race: '野兽', products: '无', monsters: '草原巨兽', flight: '✅ 可飞行', desc: '伏尔加荒原。' },
-            
-            // 乌拉尔区 - 中高风险
-            'Sverdlovsk Oblast': { name: '北方荒原', color: '#ff8a65', status: '未开发', danger: '中高', race: '冰原生物', products: '无', monsters: '冰原狼', flight: '⚠️ 极寒', desc: '北方荒原。' },
-            'Chelyabinsk Oblast': { name: '北方荒原', color: '#ff8a65', status: '未开发', danger: '中高', race: '冰原生物', products: '无', monsters: '冰原狼', flight: '⚠️ 极寒', desc: '北方荒原。' },
-            'Tyumen Oblast': { name: '北方荒原', color: '#ff8a65', status: '未开发', danger: '中高', race: '冰原生物', products: '无', monsters: '冰原狼', flight: '⚠️ 极寒', desc: '北方荒原。' },
-            'Khanty-Mansi Autonomous Okrug': { name: '极北荒原', color: '#e57373', status: '未开发', danger: '高', race: '冰原巨兽', products: '无', monsters: '冰原巨兽、霜龙', flight: '❌ 极寒风暴', desc: '极北荒原。' },
-            'Yamalo-Nenets Autonomous Okrug': { name: '极北荒原', color: '#e57373', status: '未开发', danger: '高', race: '冰原巨兽', products: '无', monsters: '冰原巨兽、霜龙', flight: '❌ 极寒风暴', desc: '极北荒原。' },
-            'Kurgan Oblast': { name: '北方荒原', color: '#ff8a65', status: '未开发', danger: '中高', race: '冰原生物', products: '无', monsters: '冰原狼', flight: '⚠️ 极寒', desc: '北方荒原。' },
-            
-            // 西伯利亚区 - 高风险
-            'Altai Republic': { name: '西伯利亚荒原', color: '#e57373', status: '未开发', danger: '高', race: '远古生物', products: '远古晶石（极稀有）', monsters: '远古巨兽、霜龙', flight: '❌ 极寒风暴', desc: '西伯利亚荒原，远古生物的领地。' },
-            'Altai Krai': { name: '西伯利亚荒原', color: '#e57373', status: '未开发', danger: '高', race: '远古生物', products: '无', monsters: '远古巨兽', flight: '❌ 极寒风暴', desc: '西伯利亚荒原。' },
-            'Irkutsk Oblast': { name: '西伯利亚荒原', color: '#e57373', status: '未开发', danger: '高', race: '远古生物', products: '无', monsters: '远古巨兽', flight: '❌ 极寒风暴', desc: '西伯利亚荒原。' },
-            'Kemerovo Oblast': { name: '西伯利亚荒原', color: '#e57373', status: '未开发', danger: '高', race: '远古生物', products: '无', monsters: '远古巨兽', flight: '❌ 极寒风暴', desc: '西伯利亚荒原。' },
-            'Krasnoyarsk Krai': { name: '西伯利亚荒原', color: '#e57373', status: '未开发', danger: '高', race: '远古生物', products: '无', monsters: '远古巨兽、霜龙', flight: '❌ 极寒风暴', desc: '西伯利亚荒原。' },
-            'Novosibirsk Oblast': { name: '西伯利亚荒原', color: '#e57373', status: '未开发', danger: '高', race: '远古生物', products: '无', monsters: '远古巨兽', flight: '❌ 极寒风暴', desc: '西伯利亚荒原。' },
-            'Omsk Oblast': { name: '西伯利亚荒原', color: '#e57373', status: '未开发', danger: '高', race: '远古生物', products: '无', monsters: '远古巨兽', flight: '❌ 极寒风暴', desc: '西伯利亚荒原。' },
-            'Tomsk Oblast': { name: '西伯利亚荒原', color: '#e57373', status: '未开发', danger: '高', race: '远古生物', products: '无', monsters: '远古巨兽', flight: '❌ 极寒风暴', desc: '西伯利亚荒原。' },
-            'Tuva Republic': { name: '西伯利亚荒原', color: '#e57373', status: '未开发', danger: '高', race: '远古生物', products: '无', monsters: '远古巨兽', flight: '❌ 极寒风暴', desc: '西伯利亚荒原。' },
-            'Republic of Khakassia': { name: '西伯利亚荒原', color: '#e57373', status: '未开发', danger: '高', race: '远古生物', products: '无', monsters: '远古巨兽', flight: '❌ 极寒风暴', desc: '西伯利亚荒原。' },
-            
-            // 远东区 - 极高风险
-            'Republic of Buryatia': { name: '远东荒原', color: '#ef5350', status: '禁地', danger: '极高', race: '远古龙族', products: '远古龙晶（传说）', monsters: '远古龙族', flight: '❌ 龙族禁飞', desc: '【远东禁地】传说远古龙族沉睡之地。' },
-            'Republic of Sakha (Yakutia)': { name: '远东荒原', color: '#ef5350', status: '禁地', danger: '极高', race: '远古龙族', products: '远古龙晶（传说）', monsters: '远古龙族', flight: '❌ 龙族禁飞', desc: '【远东禁地】传说远古龙族沉睡之地。' },
-            'Zabaykalsky Krai': { name: '远东荒原', color: '#ef5350', status: '禁地', danger: '极高', race: '远古龙族', products: '远古龙晶（传说）', monsters: '远古龙族', flight: '❌ 龙族禁飞', desc: '【远东禁地】传说远古龙族沉睡之地。' },
-            'Kamchatka Krai': { name: '远东荒原', color: '#ef5350', status: '禁地', danger: '极高', race: '远古龙族', products: '远古龙晶（传说）', monsters: '远古龙族', flight: '❌ 龙族禁飞', desc: '【远东禁地】传说远古龙族沉睡之地。' },
-            'Primorsky Krai': { name: '远东荒原', color: '#ef5350', status: '禁地', danger: '极高', race: '远古龙族', products: '远古龙晶（传说）', monsters: '远古龙族', flight: '❌ 龙族禁飞', desc: '【远东禁地】传说远古龙族沉睡之地。' },
-            'Khabarovsk Krai': { name: '远东荒原', color: '#ef5350', status: '禁地', danger: '极高', race: '远古龙族', products: '远古龙晶（传说）', monsters: '远古龙族', flight: '❌ 龙族禁飞', desc: '【远东禁地】传说远古龙族沉睡之地。' },
-            'Amur Oblast': { name: '远东荒原', color: '#ef5350', status: '禁地', danger: '极高', race: '远古龙族', products: '远古龙晶（传说）', monsters: '远古龙族', flight: '❌ 龙族禁飞', desc: '【远东禁地】传说远古龙族沉睡之地。' },
-            'Magadan Oblast': { name: '远东荒原', color: '#ef5350', status: '禁地', danger: '极高', race: '远古龙族', products: '远古龙晶（传说）', monsters: '远古龙族', flight: '❌ 龙族禁飞', desc: '【远东禁地】传说远古龙族沉睡之地。' },
-            'Sakhalin Oblast': { name: '远东荒原', color: '#ef5350', status: '禁地', danger: '极高', race: '远古龙族', products: '远古龙晶（传说）', monsters: '远古龙族', flight: '❌ 龙族禁飞', desc: '【远东禁地】传说远古龙族沉睡之地。' },
-            'Jewish Autonomous Oblast': { name: '远东荒原', color: '#ef5350', status: '禁地', danger: '极高', race: '远古龙族', products: '远古龙晶（传说）', monsters: '远古龙族', flight: '❌ 龙族禁飞', desc: '【远东禁地】传说远古龙族沉睡之地。' },
-            'Chukotka Autonomous Okrug': { name: '远东荒原', color: '#ef5350', status: '禁地', danger: '极高', race: '远古龙族', products: '远古龙晶（传说）', monsters: '远古龙族', flight: '❌ 龙族禁飞', desc: '【远东禁地】传说远古龙族沉睡之地。' }
-        };
-        
-        // ========== 危险等级分布 ==========
-        // 核心（中国）：已开发，低风险 - 各种族居住地
-        // 第一圈（周边）：部分开发，低-中风险 - 东南亚、日本、韩国、蒙古
-        // 第二圈（外围）：未开发，中-高风险 - 俄罗斯、中亚、南亚、中东
-        // 第三圈（极外围）：未开发，高风险 - 远方大陆
-        // 深渊：禁地，极高危险 - 欧洲方向
-        
-        // 其他区域
-        const otherData = {
-            // ===== 第一圈：周边友好区域（低-中风险）=====
-            'Mongolia': { name: '风暴高原', color: '#ba68c8', status: '已开发', danger: '低', race: '蓝龙裔', products: '雷电晶石、风暴羽毛', monsters: '无', flight: '✅ 可飞行', desc: '蓝龙裔的友好领地，与人类有贸易往来。' },
-            'North Korea': { name: '蓝龙半岛', color: '#ba68c8', status: '已开发', danger: '低', race: '蓝龙裔', products: '雷电晶石、龙鳞', monsters: '无', flight: '✅ 可飞行', desc: '蓝龙裔的半岛家园。' },
-            'South Korea': { name: '风暴海岸', color: '#ba68c8', status: '已开发', danger: '低', race: '蓝龙裔', products: '雷电晶石、魔法装备', monsters: '无', flight: '✅ 可飞行', desc: '风暴高原的延伸，贸易港口。' },
-            'Japan': { name: '火山群岛', color: '#ba68c8', status: '已开发', danger: '低', race: '红龙裔', products: '火晶石、龙血草', monsters: '无', flight: '✅ 可飞行', desc: '红龙裔的岛屿家园，活火山遍布。' },
-            'Philippines': { name: '金龙群岛', color: '#ba68c8', status: '已开发', danger: '低', race: '金龙裔', products: '金龙鳞、珍珠', monsters: '无', flight: '✅ 可飞行', desc: '金龙裔的群岛领地。' },
-            'Indonesia': { name: '银龙圣地', color: '#ba68c8', status: '圣地', danger: '低', race: '银龙裔', products: '银龙鳞、圣光水晶', monsters: '无', flight: '✅ 可飞行', desc: '银龙裔的圣地，传说银龙祭坛能接收神秘信号。' },
-            'Vietnam': { name: '精灵森林', color: '#81c784', status: '已开发', danger: '低', race: '精灵', products: '精灵草药、灵木', monsters: '无', flight: '✅ 可飞行', desc: '木精灵的南方森林领地。' },
-            'Thailand': { name: '精灵王国', color: '#81c784', status: '已开发', danger: '低', race: '精灵', products: '香料、精灵工艺品', monsters: '无', flight: '✅ 可飞行', desc: '精灵与人类和平共处的王国。' },
-            'Myanmar': { name: '精灵密林', color: '#81c784', status: '已开发', danger: '低', race: '精灵', products: '灵木、珍稀草药', monsters: '无', flight: '✅ 可飞行', desc: '原始森林，精灵的家园。' },
-            'Laos': { name: '精灵山谷', color: '#81c784', status: '已开发', danger: '低', race: '精灵', products: '灵木、精灵草药', monsters: '无', flight: '✅ 可飞行', desc: '内陆精灵王国。' },
-            'Cambodia': { name: '精灵遗迹', color: '#81c784', status: '已开发', danger: '低', race: '精灵', products: '古代遗物、灵木', monsters: '无', flight: '✅ 可飞行', desc: '古老遗迹与精灵文明的交汇。' },
-            'Malaysia': { name: '精灵海岸', color: '#81c784', status: '已开发', danger: '低', race: '精灵', products: '热带草药、香料', monsters: '无', flight: '✅ 可飞行', desc: '热带雨林与海洋交汇之地。' },
-            
-            // ===== 第二圈：外围未开发区（中风险）=====
-            'Kazakhstan': { name: '矮人草原', color: '#ffb74d', status: '部分开发', danger: '中', race: '矮人', products: '矮人兵器、山铜矿', monsters: '草原狼', flight: '✅ 可飞行', desc: '矮人的草原领地。' },
-            'Kyrgyzstan': { name: '矮人山地', color: '#ffb74d', status: '部分开发', danger: '中', race: '矮人', products: '矮人兵器、宝石', monsters: '山地狮', flight: '⚠️ 高海拔', desc: '矮人的高山要塞。' },
-            'Tajikistan': { name: '矮人高原', color: '#ffb74d', status: '部分开发', danger: '中', race: '矮人', products: '宝石、山铜矿', monsters: '雪人', flight: '⚠️ 高海拔', desc: '帕米尔高原的矮人领地。' },
-            'Uzbekistan': { name: '沙漠商路', color: '#d4a855', status: '部分开发', danger: '中', race: '哥布林', products: '丝绸、香料、沙漠水晶', monsters: '沙虫', flight: '✅ 可飞行', desc: '丝绸之路上的哥布林商路。' },
-            'Turkmenistan': { name: '沙漠矿坑', color: '#d4a855', status: '部分开发', danger: '中', race: '哥布林', products: '天然气、沙漠水晶', monsters: '沙漠蝎', flight: '✅ 可飞行', desc: '哥布林的沙漠矿区。' },
-            'Afghanistan': { name: '山地矿区', color: '#d4a855', status: '未开发', danger: '中高', race: '哥布林', products: '宝石、古代遗物', monsters: '沙虫、山地巨兽', flight: '⚠️ 需谨慎', desc: '战乱频发的山区。' },
-            'Iran': { name: '古老王国', color: '#d4a855', status: '部分开发', danger: '中', race: '哥布林', products: '石油、香料、地毯', monsters: '沙漠狼', flight: '✅ 可飞行', desc: '古老文明的沙漠王国。' },
-            'Pakistan': { name: '边境荒原', color: '#ff8a65', status: '未开发', danger: '中高', race: '野兽', products: '无', monsters: '边境巨兽、沙漠狼', flight: '⚠️ 需谨慎', desc: '深渊边境的外围荒原。' },
-            'Nepal': { name: '雪山哨站', color: '#ffb74d', status: '部分开发', danger: '中', race: '矮人', products: '高原草药、宝石', monsters: '雪人', flight: '⚠️ 高海拔', desc: '喜马拉雅山麓的哨站。' },
-            'Bhutan': { name: '雷龙王国', color: '#ba68c8', status: '已开发', danger: '低', race: '蓝龙裔', products: '雷龙鳞片', monsters: '无', flight: '❌ 禁飞（雷暴）', desc: '雷龙之国，与蓝龙裔有盟约。' },
-            'Bangladesh': { name: '河流三角洲', color: '#81c784', status: '已开发', danger: '低', race: '精灵', products: '河鲜、精灵草药', monsters: '无', flight: '✅ 可飞行', desc: '水精灵的家园。' },
-            'Sri Lanka': { name: '宝岛', color: '#81c784', status: '已开发', danger: '低', race: '精灵', products: '宝石、精灵工艺品', monsters: '无', flight: '✅ 可飞行', desc: '印度洋上的精灵岛屿。' },
-            
-            // ===== 第三圈：极外围高风险区（高风险）=====
-            'Russia': { name: '极北荒原', color: '#e57373', status: '未开发', danger: '高', race: '野兽', products: '远古晶石（稀有）', monsters: '远古巨兽、冰原狼', flight: '⚠️ 需谨慎', desc: '极北永久冻土，几乎无人居住。传说有远古龙族遗迹。' }
-        };
+        const raceVisible = {};
+        Object.keys(CONFIG.races).forEach(r => raceVisible[r] = true);
         
         async function loadGeoJSON(url) {
             try {
@@ -298,76 +320,50 @@
         }
         
         async function init() {
-            const regionCount = {};
-            
             try {
-                setStatus('加载世界地图...');
+                setStatus('加载地图数据...');
                 const world = await loadGeoJSON('https://cdn.jsdelivr.net/npm/echarts/map/json/world.json');
-                
-                setStatus('加载中部平原...');
                 const china = await loadGeoJSON('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json');
                 
-                setStatus('加载北境荒原...');
-                const russia = await loadGeoJSON('https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/russia.geojson');
+                if (!world || !china) {
+                    setStatus('✗ 加载失败');
+                    return;
+                }
                 
-                setStatus('合并地图数据...');
+                const asianCountries = [
+                    'Japan', 'South Korea', 'North Korea', 'Mongolia',
+                    'Vietnam', 'Laos', 'Cambodia', 'Thailand', 'Myanmar', 'Malaysia', 'Singapore', 'Indonesia', 'Brunei', 'Philippines', 'East Timor',
+                    'India', 'Pakistan', 'Bangladesh', 'Sri Lanka', 'Nepal', 'Bhutan', 'Maldives',
+                    'Kazakhstan', 'Uzbekistan', 'Turkmenistan', 'Kyrgyzstan', 'Tajikistan', 'Afghanistan',
+                    'Iran', 'Iraq', 'Syria', 'Jordan', 'Lebanon', 'Israel', 'Palestine', 'Turkey', 'Georgia', 'Armenia', 'Azerbaijan',
+                    'Saudi Arabia', 'Yemen', 'Oman', 'United Arab Emirates', 'Qatar', 'Bahrain', 'Kuwait', 'Cyprus',
+                    'Russia'
+                ];
                 
-                const removeCountries = ['China', 'Russia'];
-                let features = world.features.filter(f => !removeCountries.includes(f.properties.name));
+                let features = world.features.filter(f => asianCountries.includes(f.properties.name));
                 
-                // 中国
-                let count = 0;
                 if (china?.features) {
                     china.features.forEach(f => {
                         if (f.properties?.name) {
                             features.push({ type: 'Feature', properties: { name: f.properties.name }, geometry: f.geometry });
-                            count++;
                         }
                     });
                 }
-                regionCount['中部平原'] = count;
-                
-                // 俄罗斯
-                count = 0;
-                if (russia?.features) {
-                    console.log('俄罗斯features:', russia.features.length);
-                    russia.features.forEach(f => {
-                        const name = f.properties?.name_latin || f.properties?.name;
-                        if (name) {
-                            features.push({ type: 'Feature', properties: { name }, geometry: f.geometry });
-                            count++;
-                        }
-                    });
-                }
-                regionCount['北境荒原'] = count || 83;
-                regionCount['风暴高原'] = 1;
-                regionCount['火山群岛'] = 47;
-                regionCount['深渊边境'] = 36;
-                regionCount['南方森林'] = 7;
-                regionCount['主山脉'] = 3;
-                regionCount['沙漠区'] = 4;
-                
-                echarts.registerMap('combined', { type: 'FeatureCollection', features });
                 
                 setStatus('渲染地图...');
                 
                 const data = [];
-                const allInfo = {};
-                
-                Object.keys(chinaData).forEach(name => {
-                    data.push({ name, value: 1, itemStyle: { areaColor: chinaData[name].color } });
-                    allInfo[name] = chinaData[name].name;
+                features.forEach(f => {
+                    const name = f.properties.name;
+                    const info = CONFIG.regions[name];
+                    if (info) {
+                        data.push({ name, value: 1, itemStyle: { areaColor: CONFIG.races[info.race].color } });
+                    } else {
+                        data.push({ name, value: 0, itemStyle: { areaColor: '#3d5a4a' } });
+                    }
                 });
                 
-                Object.keys(russiaData).forEach(name => {
-                    data.push({ name, value: 1, itemStyle: { areaColor: russiaData[name].color } });
-                    allInfo[name] = russiaData[name].name;
-                });
-                
-                Object.keys(otherData).forEach(name => {
-                    data.push({ name, value: 1, itemStyle: { areaColor: otherData[name].color } });
-                    allInfo[name] = otherData[name].name;
-                });
+                echarts.registerMap('world', { type: 'FeatureCollection', features });
                 
                 chart.setOption({
                     backgroundColor: '#1a3a5c',
@@ -379,93 +375,81 @@
                         padding: [10, 15],
                         textStyle: { color: '#fff', fontSize: 12 },
                         formatter: function(params) {
-                            // 直接查找数据
-                            let info = chinaData[params.name] || otherData[params.name] || russiaData[params.name];
+                            const info = CONFIG.regions[params.name];
+                            if (!info) return '<b style="color:#ffd700">' + params.name + '</b>';
                             
-                            if (!info) return `<b style="color:#ffd700">${params.name}</b>`;
+                            const d = info.danger;
+                            const dangerColor = d.includes('极高') ? '#ef5350' : d.includes('高') ? '#e57373' : d.includes('中高') ? '#ff8a65' : d.includes('中') ? '#ffb74d' : '#81c784';
+                            const s = info.status;
+                            const statusIcon = s === '禁地' ? '⚠️ ' : s === '圣地' ? '✨ ' : s === '已开发' ? '🏘️ ' : s === '部分开发' ? '🔨 ' : '🌲 ';
                             
-                            // 状态颜色
-                            const statusColor = info.status === '已开发' ? '#81c784' : 
-                                               info.status === '未开发' ? '#ff8a65' : 
-                                               info.status === '圣地' ? '#ba68c8' :
-                                               info.status === '禁地' ? '#ef5350' : '#ffb74d';
-                            
-                            // 危险等级颜色
-                            const dangerColor = info.danger.includes('极高') ? '#ef5350' : 
-                                               info.danger.includes('高') ? '#e57373' : 
-                                               info.danger.includes('中高') ? '#ff8a65' : 
-                                               info.danger.includes('中') ? '#ffb74d' : '#81c784';
-                            
-                            // 种族颜色
-                            const raceColor = info.race.includes('人类') ? '#4fc3f7' :
-                                             info.race.includes('精灵') ? '#81c784' :
-                                             info.race.includes('矮人') ? '#ffb74d' :
-                                             info.race.includes('龙') ? '#ba68c8' :
-                                             info.race.includes('深渊') ? '#7e57c2' :
-                                             info.race.includes('远古') ? '#ef5350' :
-                                             info.race.includes('哥布林') ? '#a1887f' : '#90ee90';
-                            
-                            // 飞行状态颜色
-                            const flightColor = info.flight.includes('✅') ? '#81c784' : 
-                                               info.flight.includes('❌') ? '#ef5350' : '#ffb74d';
-                            
-                            // 禁地特殊标记
-                            const namePrefix = info.status === '禁地' ? '⚠️ ' : '';
-                            
-                            return `
-                                <div style="min-width:220px;max-width:300px;">
-                                    <div style="font-size:16px;font-weight:bold;color:#ffd700;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #4a4a6a;">
-                                        ${namePrefix}${info.name}
-                                    </div>
-                                    <div style="line-height:1.8;margin-bottom:8px;">
-                                        <div><span style="color:#87ceeb;">状态：</span><span style="color:${statusColor};font-weight:bold;">${info.status}</span></div>
-                                        <div><span style="color:#87ceeb;">危险：</span><span style="color:${dangerColor};font-weight:bold;">${info.danger}</span></div>
-                                        <div><span style="color:#87ceeb;">种族：</span><span style="color:${raceColor};font-weight:bold;">${info.race}</span></div>
-                                        <div><span style="color:#87ceeb;">飞行：</span><span style="color:${flightColor};font-weight:bold;">${info.flight}</span></div>
-                                    </div>
-                                    <div style="line-height:1.6;margin-bottom:8px;padding:6px;background:rgba(255,255,255,0.05);border-radius:4px;">
-                                        <div style="color:#d4a855;font-size:11px;">📦 产出：${info.products || '无'}</div>
-                                        <div style="color:#e57373;font-size:11px;">👾 魔兽：${info.monsters || '无'}</div>
-                                    </div>
-                                    <div style="color:#b0b0b0;font-size:11px;line-height:1.6;padding-top:6px;border-top:1px solid #4a4a6a;">
-                                        ${info.desc}
-                                    </div>
-                                </div>
-                            `;
+                            let html = '<div style="min-width:220px;max-width:300px;">' +
+                                '<div style="font-size:16px;font-weight:bold;color:#ffd700;margin-bottom:8px;">' + statusIcon + info.name + '</div>' +
+                                '<div style="line-height:1.8;margin-bottom:8px;">' +
+                                '<div><span style="color:#87ceeb;">类型：</span><span style="color:' + CONFIG.races[info.race].color + ';font-weight:bold;">' + CONFIG.races[info.race].name + '</span></div>' +
+                                '<div><span style="color:#87ceeb;">状态：</span>' + info.status + '</div>' +
+                                '<div><span style="color:#87ceeb;">危险：</span><span style="color:' + dangerColor + ';font-weight:bold;">' + info.danger + '</span></div>';
+                            if (info.blood) html += '<div><span style="color:#87ceeb;">血脉：</span>' + info.blood + '</div>';
+                            html += '</div><div style="color:#b0b0b0;font-size:11px;line-height:1.6;padding-top:6px;border-top:1px solid #4a4a6a;">' + info.desc + '</div></div>';
+                            return html;
                         }
                     },
                     series: [{
                         type: 'map',
-                        map: 'combined',
+                        map: 'world',
                         roam: true,
-                        zoom: 1.8,
-                        center: [90, 50],
-                        label: {
-                            show: true,
-                            color: '#fff',
-                            fontSize: 5,
-                            formatter: p => {
-                                const name = allInfo[p.name] || p.name;
-                                return name.length > 3 ? name.slice(0, 2) + '..' : name;
-                            }
-                        },
+                        zoom: 1.2,
+                        center: [80, 30],
+                        label: { show: true, color: '#fff', fontSize: 6, formatter: p => { const i = CONFIG.regions[p.name]; return i ? (i.name.length > 4 ? i.name.slice(0,3)+'..' : i.name) : ''; } },
                         itemStyle: { areaColor: '#3d5a4a', borderColor: '#7ab8a8', borderWidth: 1 },
-                        emphasis: { label: { color: '#ffd700', fontSize: 9 }, itemStyle: { borderColor: '#ffd700', borderWidth: 2 } },
+                        emphasis: { label: { color: '#ffd700', fontSize: 10 }, itemStyle: { borderColor: '#ffd700', borderWidth: 2 } },
                         data: data
                     }]
                 });
                 
                 setStatus('✓ 加载完成');
-                setStats(regionCount);
+                updateInfo();
                 
             } catch (e) {
-                console.error('加载失败:', e);
+                console.error(e);
                 setStatus('✗ 加载失败');
             }
         }
+        
+        function setStatus(t) { statusEl.textContent = t; }
+        
+        function updateInfo() {
+            const c = { '已开发': 0, '部分开发': 0, '未开发': 0, '圣地': 0, '禁地': 0, '无人区': 0 };
+            Object.values(CONFIG.regions).forEach(i => { if (c[i.status] !== undefined) c[i.status]++; });
+            const t = Object.values(c).reduce((a, b) => a + b, 0);
+            const d = c['已开发'] + c['圣地'], p = c['部分开发'], u = c['未开发'] + c['禁地'] + c['无人区'];
+            infoEl.innerHTML = '<b>统计(' + t + '):</b> 已开发 ' + d + '(' + Math.round(d/t*100) + '%) | 部分 ' + p + '(' + Math.round(p/t*100) + '%) | 未开发 ' + u + '(' + Math.round(u/t*100) + '%)';
+        }
+        
+        document.querySelectorAll('.controls input').forEach(cb => {
+            cb.addEventListener('change', function() {
+                raceVisible[this.dataset.race] = this.checked;
+                const nd = [];
+                chart.getOption().series[0].data.forEach(item => {
+                    const info = CONFIG.regions[item.name];
+                    if (info && raceVisible[info.race]) {
+                        nd.push({ name: item.name, value: 1, itemStyle: { areaColor: CONFIG.races[info.race].color } });
+                    } else if (info) {
+                        nd.push({ name: item.name, value: 0, itemStyle: { areaColor: '#2a2a3a' } });
+                    } else {
+                        nd.push(item);
+                    }
+                });
+                chart.setOption({ series: [{ data: nd }] });
+            });
+        });
         
         init();
         window.onresize = () => chart.resize();
     </script>
 </body>
 </html>
+
+
+
+

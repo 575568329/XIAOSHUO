@@ -1,4 +1,4 @@
-# 小说项目上下文
+﻿# 小说项目上下文
 
 > 本文档记录项目的核心设定、世界观和当前状态，供 AI 助手快速理解项目背景。
 
@@ -9,8 +9,9 @@
 - **项目名称**：龙虾系统（暂定）
 - **类型**：西幻 + 异世界穿越
 - **主角**：程序员穿越，获得"龙虾系统"
-- **项目路径**：`D:\cursorObject\小说`
-- **地图文件**：`D:\cursorObject\小说\map\index.html`
+- **项目路径**：`D:\Agent Object\XIAOSHUO`
+- **地图文件**：`D:\Agent Object\XIAOSHUO\map\index.html`
+- **配置文件**：`D:\Agent Object\XIAOSHUO\map\regions.json`
 
 ---
 
@@ -169,7 +170,7 @@
 ## 📂 项目结构
 
 ```
-D:\cursorObject\小说\
+D:\Agent Object\XIAOSHUO\
 ├── docs/                    # 文档
 │   ├── design.md           # 设计文档
 │   ├── race-system.md      # 种族系统
@@ -196,10 +197,15 @@ D:\cursorObject\小说\
 - [x] 俄罗斯 83 联邦主体设定
 - [x] 周边国家设定
 - [x] 危险等级分布
-- [x] 种族分布
+- [x] 种族分布（8大种族）
 - [x] 深渊位置设定
 - [x] 远古龙族传说
-
+- [x] 西方奇幻命名系统
+- [x] 完整区域信息（81个区域）
+- [x] 资源、魔兽、禁飞、地形、气候
+- [x] 主要城市和卫星城镇
+- [x] 映射维护系统
+- [x] 同步脚本（regions.json ↔ index.html）
 ### 🔄 进行中
 - [ ] 角色详细设定
 - [ ] 章节大纲
@@ -235,3 +241,5 @@ D:\cursorObject\小说\
 ---
 
 *本文档会随项目进展持续更新*
+
+
