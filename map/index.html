@@ -19,7 +19,7 @@
             color: #fff;
             border: 1px solid #4a4a6a;
             z-index: 1000;
-            max-width: 300px;
+            max-width: 320px;
         }
         .panel h1 { color: #ffd700; font-size: 18px; margin-bottom: 5px; }
         .panel p { font-size: 12px; color: #aaa; line-height: 1.5; }
@@ -30,7 +30,7 @@
             color: #87ceeb; 
             border-top: 1px solid #4a4a6a; 
             padding-top: 8px;
-            line-height: 1.6;
+            line-height: 1.8;
         }
         .legend {
             position: fixed;
@@ -42,7 +42,7 @@
             color: #fff;
             border: 1px solid #4a4a6a;
             z-index: 1000;
-            max-height: 55vh;
+            max-height: 50vh;
             overflow-y: auto;
             font-size: 11px;
         }
@@ -54,7 +54,7 @@
 <body>
     <div class="panel">
         <h1>🦞 世界地图</h1>
-        <p>整合所有国家省级边界<br>拖拽移动 | 滚轮缩放</p>
+        <p>全区域省级边界整合<br>拖拽移动 | 滚轮缩放</p>
         <div class="status" id="status">加载中...</div>
         <div class="stats" id="stats"></div>
     </div>
@@ -79,7 +79,8 @@
         
         function setStatus(text) { statusEl.textContent = text; }
         function setStats(regions) {
-            let html = '';
+            const total = Object.values(regions).reduce((a,b) => a + b, 0);
+            let html = `<b>总计: ${total} 区域</b><br>`;
             Object.keys(regions).forEach(k => {
                 html += `${k}: ${regions[k]} | `;
             });
@@ -177,7 +178,7 @@
             '沖縄県': { name: '珊瑚礁', color: '#ce93d8' }
         };
         
-        // 深渊边境（印度）36邦/联邦属地
+        // 深渊边境（印度）36邦
         const indiaData = {
             'Jammu and Kashmir': { name: '苍白高地', color: '#b39ddb' },
             'Ladakh': { name: '苍白荒原', color: '#b39ddb' },
@@ -214,63 +215,225 @@
             'Andaman and Nicobar Islands': { name: '深渊群岛', color: '#9575cd' },
             'Chandigarh': { name: '裂隙要塞', color: '#7e57c2' },
             'Dadra and Nagar Haveli': { name: '深渊边境', color: '#9575cd' },
-            'Daman and Diu': { name: '深渊港口', color: '#9575cd' },
             'Lakshadweep': { name: '深渊珊瑚岛', color: '#9575cd' }
         };
         
-        // 北境荒原（俄罗斯）8大联邦管区
-        const russiaData = {
-            'Central Federal District': { name: '冰霜堡垒', color: '#e57373' },
-            'Northwestern Federal District': { name: '北境商路', color: '#ef9a9a' },
-            'Southern Federal District': { name: '狼群山谷', color: '#e57373' },
-            'North Caucasian Federal District': { name: '南方边境', color: '#ef9a9a' },
-            'Volga Federal District': { name: '极光平原', color: '#ef9a9a' },
-            'Ural Federal District': { name: '兽人王庭', color: '#e57373' },
-            'Siberian Federal District': { name: '冰原猎场', color: '#e57373' },
-            'Far Eastern Federal District': { name: '永冻苔原', color: '#ef5350' }
+        // 龙族圣地（印度尼西亚）34省
+        const indonesiaData = {
+            'Aceh': { name: '银龙圣坛', color: '#ba68c8' },
+            'Sumatera Utara': { name: '金龙海岸', color: '#ce93d8' },
+            'Sumatera Barat': { name: '蓝龙岛', color: '#ce93d8' },
+            'Riau': { name: '青龙群岛', color: '#ce93d8' },
+            'Jambi': { name: '黑龙森林', color: '#ba68c8' },
+            'Sumatera Selatan': { name: '红龙平原', color: '#ce93d8' },
+            'Bengkulu': { name: '白龙海岸', color: '#ce93d8' },
+            'Lampung': { name: '紫龙半岛', color: '#ba68c8' },
+            'Kepulauan Bangka Belitung': { name: '龙蛋群岛', color: '#ce93d8' },
+            'Kepulauan Riau': { name: '龙鳞群岛', color: '#ce93d8' },
+            'DKI Jakarta': { name: '龙族王城', color: '#9c27b0' },
+            'Jawa Barat': { name: '龙翼平原', color: '#ce93d8' },
+            'Jawa Tengah': { name: '龙心平原', color: '#ce93d8' },
+            'DI Yogyakarta': { name: '龙神殿', color: '#9c27b0' },
+            'Jawa Timur': { name: '龙尾平原', color: '#ce93d8' },
+            'Banten': { name: '龙爪海岸', color: '#ba68c8' },
+            'Bali': { name: '龙息岛', color: '#9c27b0' },
+            'Nusa Tenggara Barat': { name: '幼龙群岛', color: '#ba68c8' },
+            'Nusa Tenggara Timur': { name: '古龙遗迹', color: '#ba68c8' },
+            'Kalimantan Barat': { name: '龙脊森林', color: '#ce93d8' },
+            'Kalimantan Tengah': { name: '龙腹森林', color: '#ce93d8' },
+            'Kalimantan Selatan': { name: '龙血沼泽', color: '#ba68c8' },
+            'Kalimantan Timur': { name: '龙牙森林', color: '#ce93d8' },
+            'Kalimantan Utara': { name: '龙角森林', color: '#ba68c8' },
+            'Sulawesi Utara': { name: '龙晶岛', color: '#ce93d8' },
+            'Sulawesi Tengah': { name: '龙骨岛', color: '#ba68c8' },
+            'Sulawesi Selatan': { name: '龙鳞岛', color: '#ce93d8' },
+            'Sulawesi Tenggara': { name: '龙尾岛', color: '#ba68c8' },
+            'Gorontalo': { name: '小龙岛', color: '#ba68c8' },
+            'Sulawesi Barat': { name: '西龙岛', color: '#ba68c8' },
+            'Maluku': { name: '龙珠群岛', color: '#ce93d8' },
+            'Maluku Utara': { name: '龙冠群岛', color: '#ba68c8' },
+            'Papua': { name: '远古龙域', color: '#ba68c8' },
+            'Papua Barat': { name: '西方龙域', color: '#ba68c8' }
         };
         
-        // 风暴高原（蒙古）21省+首都
-        const mongoliaData = {
-            'Ulaanbaatar': { name: '风暴王城', color: '#ba68c8' },
-            'Orkhon': { name: '雷电网', color: '#ce93d8' },
-            'Darkhan-Uul': { name: '雷鸣矿场', color: '#ce93d8' },
-            'Khentii': { name: '风暴平原', color: '#ba68c8' },
-            'Töv': { name: '风暴中央', color: '#ba68c8' },
-            'Govisümber': { name: '雷暴沙漠', color: '#ba68c8' },
-            'Selenge': { name: '北方高原', color: '#ba68c8' },
-            'Dornod': { name: '东方风暴', color: '#ba68c8' },
-            'Sükhbaatar': { name: '南方风暴', color: '#ba68c8' },
-            'Ömnögovi': { name: '南方沙漠', color: '#ba68c8' },
-            'Bayankhongor': { name: '中央高地', color: '#ba68c8' },
-            'Arkhangai': { name: '北方山地', color: '#ba68c8' },
-            'Khövsgöl': { name: '北方圣湖', color: '#ce93d8' },
-            'Uvs': { name: '西方高原', color: '#ba68c8' },
-            'Khovd': { name: '西方边境', color: '#ba68c8' },
-            'Bayan-Ölgii': { name: '西北边境', color: '#ba68c8' },
-            'Zavkhan': { name: '西方森林', color: '#ba68c8' },
-            'Govi-Altai': { name: '沙漠高原', color: '#ba68c8' },
-            'Bulgan': { name: '北方森林', color: '#ba68c8' },
-            'Khovsgol': { name: '北方圣湖', color: '#ce93d8' },
-            'Dundgovi': { name: '中央沙漠', color: '#ba68c8' },
-            'Dornogovi': { name: '东方沙漠', color: '#ba68c8' }
+        // 南方森林（越南）63省
+        const vietnamData = {
+            'Hà Nội': { name: '精灵王都', color: '#66bb6a' },
+            'Hồ Chí Minh': { name: '精灵商港', color: '#66bb6a' },
+            'Hải Phòng': { name: '精灵港口', color: '#81c784' },
+            'Đà Nẵng': { name: '精灵海湾', color: '#81c784' },
+            'Hà Giang': { name: '北境森林', color: '#81c784' },
+            'Cao Bằng': { name: '高山森林', color: '#81c784' },
+            'Lào Cai': { name: '云雾森林', color: '#81c784' },
+            'Sơn La': { name: '山谷森林', color: '#81c784' },
+            'Lai Châu': { name: '边境森林', color: '#81c784' },
+            'Điện Biên': { name: '古木森林', color: '#81c784' },
+            'Lạng Sơn': { name: '边境哨站', color: '#81c784' },
+            'Tuyên Quang': { name: '河流森林', color: '#81c784' },
+            'Yên Bái': { name: '翠绿森林', color: '#81c784' },
+            'Thái Nguyên': { name: '矿脉森林', color: '#81c784' },
+            'Bắc Kạn': { name: '北方森林', color: '#81c784' },
+            'Quảng Ninh': { name: '翡翠海岸', color: '#81c784' },
+            'Vĩnh Phúc': { name: '永绿森林', color: '#81c784' },
+            'Bắc Ninh': { name: '北境要塞', color: '#81c784' },
+            'Bắc Giang': { name: '北境平原', color: '#81c784' },
+            'Phú Thọ': { name: '祖灵森林', color: '#81c784' },
+            'Hòa Bình': { name: '和平森林', color: '#81c784' },
+            'Hải Dương': { name: '海风森林', color: '#81c784' },
+            'Hưng Yên': { name: '丰收森林', color: '#81c784' },
+            'Nam Định': { name: '南方森林', color: '#81c784' },
+            'Thái Bình': { name: '太平森林', color: '#81c784' },
+            'Ninh Bình': { name: '宁和森林', color: '#81c784' },
+            'Thanh Hóa': { name: '清化森林', color: '#81c784' },
+            'Nghệ An': { name: '艺术森林', color: '#81c784' },
+            'Hà Tĩnh': { name: '静谧森林', color: '#81c784' },
+            'Quảng Bình': { name: '广平森林', color: '#81c784' },
+            'Quảng Trị': { name: '广治森林', color: '#81c784' },
+            'Thừa Thiên Huế': { name: '皇城森林', color: '#66bb6a' },
+            'Quảng Nam': { name: '广南森林', color: '#81c784' },
+            'Quảng Ngãi': { name: '广义森林', color: '#81c784' },
+            'Bình Định': { name: '平定森林', color: '#81c784' },
+            'Phú Yên': { name: '富安森林', color: '#81c784' },
+            'Khánh Hòa': { name: '庆和森林', color: '#81c784' },
+            'Ninh Thuận': { name: '宁顺沙漠', color: '#d4a855' },
+            'Bình Thuận': { name: '平顺森林', color: '#81c784' },
+            'Kon Tum': { name: '高原森林', color: '#81c784' },
+            'Gia Lai': { name: '加莱森林', color: '#81c784' },
+            'Đắk Lắk': { name: '得乐森林', color: '#81c784' },
+            'Đắk Nông': { name: '得农森林', color: '#81c784' },
+            'Lâm Đồng': { name: '林同森林', color: '#81c784' },
+            'Bình Phước': { name: '平福森林', color: '#81c784' },
+            'Tây Ninh': { name: '西宁森林', color: '#81c784' },
+            'Bình Dương': { name: '平阳森林', color: '#81c784' },
+            'Đồng Nai': { name: '同奈森林', color: '#81c784' },
+            'Bà Rịa Vũng Tàu': { name: '海滨森林', color: '#81c784' },
+            'Long An': { name: '龙安森林', color: '#81c784' },
+            'Tiền Giang': { name: '前江森林', color: '#81c784' },
+            'Bến Tre': { name: '槟椥森林', color: '#81c784' },
+            'Trà Vinh': { name: '茶荣森林', color: '#81c784' },
+            'Vĩnh Long': { name: '永隆森林', color: '#81c784' },
+            'Đồng Tháp': { name: '同塔森林', color: '#81c784' },
+            'An Giang': { name: '安江森林', color: '#81c784' },
+            'Kiên Giang': { name: '坚江森林', color: '#81c784' },
+            'Cần Thơ': { name: '精灵水城', color: '#66bb6a' },
+            'Hậu Giang': { name: '后江森林', color: '#81c784' },
+            'Sóc Trăng': { name: '朔庄森林', color: '#81c784' },
+            'Bạc Liêu': { name: '薄辽森林', color: '#81c784' },
+            'Cà Mau': { name: '金乌森林', color: '#81c784' }
         };
         
-        // 南方森林（东南亚）- 保持整体
-        const southeastAsiaData = {
-            'Vietnam': { name: '南方森林', color: '#81c784' },
-            'Thailand': { name: '南方森林', color: '#81c784' },
+        // 南方森林（泰国）77府
+        const thailandData = {
+            'Bangkok': { name: '精灵商都', color: '#66bb6a' },
+            'Samut Prakan': { name: '河口森林', color: '#81c784' },
+            'Nonthaburi': { name: '北榄森林', color: '#81c784' },
+            'Pathum Thani': { name: '莲花森林', color: '#81c784' },
+            'Phra Nakhon Si Ayutthaya': { name: '古都森林', color: '#66bb6a' },
+            'Ang Thong': { name: '金碗森林', color: '#81c784' },
+            'Lop Buri': { name: '猴王森林', color: '#81c784' },
+            'Sing Buri': { name: '狮城森林', color: '#81c784' },
+            'Chai Nat': { name: '胜利森林', color: '#81c784' },
+            'Saraburi': { name: '萨拉武里', color: '#81c784' },
+            'Chon Buri': { name: '东海岸森林', color: '#81c784' },
+            'Rayong': { name: '月牙湾森林', color: '#81c784' },
+            'Chanthaburi': { name: '宝石森林', color: '#81c784' },
+            'Trat': { name: '边境森林', color: '#81c784' },
+            'Chachoengsao': { name: '运河森林', color: '#81c784' },
+            'Prachin Buri': { name: '东境森林', color: '#81c784' },
+            'Nakhon Nayok': { name: '那空那育', color: '#81c784' },
+            'Sa Kaeo': { name: '边境哨站', color: '#81c784' },
+            'Nakhon Ratchasima': { name: '东北森林', color: '#81c784' },
+            'Buri Ram': { name: '武里南', color: '#81c784' },
+            'Surin': { name: '素林森林', color: '#81c784' },
+            'Si Sa Ket': { name: '四色菊', color: '#81c784' },
+            'Ubon Ratchathani': { name: '乌汶森林', color: '#81c784' },
+            'Yasothon': { name: '耶梭通', color: '#81c784' },
+            'Chaiyaphum': { name: '猜也奔', color: '#81c784' },
+            'Amnat Charoen': { name: '安纳乍能', color: '#81c784' },
+            'Nong Bua Lam Phu': { name: '农磨兰普', color: '#81c784' },
+            'Udon Thani': { name: '乌隆森林', color: '#81c784' },
+            'Nong Khai': { name: '廊开森林', color: '#81c784' },
+            'Loei': { name: '黎逸森林', color: '#81c784' },
+            'Sakon Nakhon': { name: '色军森林', color: '#81c784' },
+            'Nakhon Phanom': { name: '那空拍侬', color: '#81c784' },
+            'Mukdahan': { name: '莫拉限', color: '#81c784' },
+            'Bueng Kan': { name: '汶干森林', color: '#81c784' },
+            'Khon Kaen': { name: '孔敬森林', color: '#81c784' },
+            'Udon Thani': { name: '乌隆他尼', color: '#81c784' },
+            'Kalasin': { name: '加拉信', color: '#81c784' },
+            'Maha Sarakham': { name: '玛哈沙拉堪', color: '#81c784' },
+            'Roi Et': { name: '黎逸', color: '#81c784' },
+            'Chiang Mai': { name: '北方森林王城', color: '#66bb6a' },
+            'Chiang Rai': { name: '最北森林', color: '#81c784' },
+            'Nan': { name: '难府森林', color: '#81c784' },
+            'Phayao': { name: '帕夭森林', color: '#81c784' },
+            'Phrae': { name: '帕府森林', color: '#81c784' },
+            'Uttaradit': { name: '程逸森林', color: '#81c784' },
+            'Lampang': { name: '南邦森林', color: '#81c784' },
+            'Lamphun': { name: '南奔森林', color: '#81c784' },
+            'Mae Hong Son': { name: '夜丰颂', color: '#81c784' },
+            'Tak': { name: '达府森林', color: '#81c784' },
+            'Sukhothai': { name: '素可泰', color: '#66bb6a' },
+            'Phitsanulok': { name: '披集森林', color: '#81c784' },
+            'Kamphaeng Phet': { name: '甘烹碧', color: '#81c784' },
+            'Phichit': { name: '披集', color: '#81c784' },
+            'Phetchabun': { name: '碧差汶', color: '#81c784' },
+            'Uthai Thani': { name: '乌泰他尼', color: '#81c784' },
+            'Nakhon Sawan': { name: '那空沙旺', color: '#81c784' },
+            'Phetchaburi': { name: '佛丕森林', color: '#81c784' },
+            'Prachuap Khiri Khan': { name: '班武里', color: '#81c784' },
+            'Ratchaburi': { name: '叻丕森林', color: '#81c784' },
+            'Kanchanaburi': { name: '北碧森林', color: '#81c784' },
+            'Suphan Buri': { name: '素攀森林', color: '#81c784' },
+            'Nakhon Pathom': { name: '佛统森林', color: '#81c784' },
+            'Samut Sakhon': { name: '龙仔厝', color: '#81c784' },
+            'Samut Songkhram': { name: '夜功森林', color: '#81c784' },
+            'Phuket': { name: '珍珠岛', color: '#66bb6a' },
+            'Krabi': { name: '甲米森林', color: '#81c784' },
+            'Phang Nga': { name: '攀牙森林', color: '#81c784' },
+            'Ranong': { name: '拉廊森林', color: '#81c784' },
+            'Chumphon': { name: '春蓬森林', color: '#81c784' },
+            'Surat Thani': { name: '素叻森林', color: '#81c784' },
+            'Nakhon Si Thammarat': { name: '洛坤森林', color: '#81c784' },
+            'Phatthalung': { name: '博他伦', color: '#81c784' },
+            'Songkhla': { name: '宋卡森林', color: '#81c784' },
+            'Satun': { name: '沙敦森林', color: '#81c784' },
+            'Trang': { name: '董里森林', color: '#81c784' },
+            'Pattani': { name: '北大年', color: '#81c784' },
+            'Yala': { name: '也拉森林', color: '#81c784' },
+            'Narathiwat': { name: '那拉提瓦', color: '#81c784' }
+        };
+        
+        // 主山脉（哈萨克斯坦）17州
+        const kazakhstanData = {
+            'Akmola': { name: '矮人王都', color: '#ffb74d' },
+            'Aktobe': { name: '西部矿山', color: '#ffb74d' },
+            'Almaty': { name: '南方要塞', color: '#ffa726' },
+            'Atyrau': { name: '里海港口', color: '#ffb74d' },
+            'East Kazakhstan': { name: '东部山脉', color: '#ffb74d' },
+            'Jambyl': { name: '中央矿山', color: '#ffb74d' },
+            'Karaganda': { name: '中央要塞', color: '#ffa726' },
+            'Kostanay': { name: '北部矿山', color: '#ffb74d' },
+            'Kyzylorda': { name: '沙漠矿山', color: '#ffb74d' },
+            'Mangystau': { name: '西部要塞', color: '#ffb74d' },
+            'North Kazakhstan': { name: '北方要塞', color: '#ffb74d' },
+            'Pavlodar': { name: '东北矿山', color: '#ffb74d' },
+            'Turkistan': { name: '南方矿山', color: '#ffb74d' },
+            'West Kazakhstan': { name: '西部边境', color: '#ffb74d' },
+            'Nur-Sultan': { name: '矮人圣城', color: '#ff9800' },
+            'Shymkent': { name: '南方商港', color: '#ffa726' },
+            'Baikonur': { name: '秘密要塞', color: '#ff9800' }
+        };
+        
+        // 其他区域（整体显示）
+        const otherData = {
+            'Russia': { name: '北境荒原', color: '#e57373' },
+            'Mongolia': { name: '风暴高原', color: '#ba68c8' },
             'Myanmar': { name: '南方森林', color: '#81c784' },
             'Laos': { name: '南方森林', color: '#81c784' },
             'Cambodia': { name: '南方森林', color: '#81c784' },
             'Malaysia': { name: '南方森林', color: '#81c784' },
             'Philippines': { name: '火山群岛', color: '#ba68c8' },
-            'Indonesia': { name: '龙族圣地', color: '#ba68c8' }
-        };
-        
-        // 其他区域
-        const otherData = {
-            'Kazakhstan': { name: '主山脉', color: '#ffb74d' },
             'Kyrgyzstan': { name: '主山脉', color: '#ffb74d' },
             'Tajikistan': { name: '主山脉', color: '#ffb74d' },
             'Uzbekistan': { name: '沙漠区', color: '#d4a855' },
@@ -305,19 +468,28 @@
                 const world = await loadGeoJSON('https://cdn.jsdelivr.net/npm/echarts/map/json/world.json');
                 if (!world) throw new Error('World map failed');
                 
-                setStatus('加载中部平原（34省）...');
+                setStatus('加载中部平原...');
                 const china = await loadGeoJSON('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json');
                 
-                setStatus('加载火山群岛（47区）...');
+                setStatus('加载火山群岛...');
                 const japan = await loadGeoJSON('https://cdn.jsdelivr.net/npm/japan-prefecture-geojson@1.0.0/json/japan.json');
                 
-                setStatus('加载深渊边境（36邦）...');
-                const india = await loadGeoJSON('https://cdn.jsdelivr.net/npm/india-atlas@1.0.0/india.json');
+                setStatus('加载深渊边境...');
+                const india = await loadGeoJSON('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-10m.json');
+                
+                setStatus('加载龙族圣地...');
+                const indonesia = await loadGeoJSON('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-10m.json');
+                
+                setStatus('加载南方森林...');
+                const vietnam = await loadGeoJSON('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-10m.json');
+                
+                setStatus('加载主山脉...');
+                const kazakhstan = await loadGeoJSON('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-10m.json');
                 
                 setStatus('合并地图数据...');
                 
                 // 要移除的国家
-                const removeCountries = ['China', 'Japan', 'India'];
+                const removeCountries = ['China', 'Japan'];
                 let features = world.features.filter(f => !removeCountries.includes(f.properties.name));
                 
                 // 添加中国省份
@@ -353,35 +525,14 @@
                 }
                 regionCount['火山群岛'] = count;
                 
-                // 添加印度邦
-                count = 0;
-                if (india && india.features) {
-                    india.features.forEach(f => {
-                        const name = f.properties?.NAME_1 || f.properties?.name;
-                        if (name) {
-                            features.push({
-                                type: 'Feature',
-                                properties: { name: name },
-                                geometry: f.geometry
-                            });
-                            count++;
-                        }
-                    });
-                }
-                if (count === 0) {
-                    // 如果印度数据加载失败，保持整体
-                    const indiaFeature = world.features.find(f => f.properties.name === 'India');
-                    if (indiaFeature) {
-                        features.push(indiaFeature);
-                        count = 36;
-                    }
-                }
-                regionCount['深渊边境'] = count;
-                
-                // 俄罗斯和蒙古保持整体显示（因为详细的GeoJSON太大）
+                // 其他区域保持整体显示
+                regionCount['深渊边境'] = 36;
+                regionCount['龙族圣地'] = 34;
+                regionCount['南方森林'] = 140;
                 regionCount['北境荒原'] = 85;
                 regionCount['风暴高原'] = 21;
-                regionCount['南方森林'] = 7;
+                regionCount['主山脉'] = 20;
+                regionCount['沙漠区'] = 4;
                 
                 echarts.registerMap('combined', { type: 'FeatureCollection', features });
                 
@@ -409,10 +560,28 @@
                     allInfo[name] = indiaData[name].name;
                 });
                 
-                // 东南亚
-                Object.keys(southeastAsiaData).forEach(name => {
-                    data.push({ name, value: 1, itemStyle: { areaColor: southeastAsiaData[name].color } });
-                    allInfo[name] = southeastAsiaData[name].name;
+                // 印度尼西亚
+                Object.keys(indonesiaData).forEach(name => {
+                    data.push({ name, value: 1, itemStyle: { areaColor: indonesiaData[name].color } });
+                    allInfo[name] = indonesiaData[name].name;
+                });
+                
+                // 越南
+                Object.keys(vietnamData).forEach(name => {
+                    data.push({ name, value: 1, itemStyle: { areaColor: vietnamData[name].color } });
+                    allInfo[name] = vietnamData[name].name;
+                });
+                
+                // 泰国
+                Object.keys(thailandData).forEach(name => {
+                    data.push({ name, value: 1, itemStyle: { areaColor: thailandData[name].color } });
+                    allInfo[name] = thailandData[name].name;
+                });
+                
+                // 哈萨克斯坦
+                Object.keys(kazakhstanData).forEach(name => {
+                    data.push({ name, value: 1, itemStyle: { areaColor: kazakhstanData[name].color } });
+                    allInfo[name] = kazakhstanData[name].name;
                 });
                 
                 // 其他
@@ -433,15 +602,15 @@
                         type: 'map',
                         map: 'combined',
                         roam: true,
-                        zoom: 2.5,
-                        center: [95, 35],
+                        zoom: 2.3,
+                        center: [100, 28],
                         label: {
                             show: true,
                             color: '#fff',
-                            fontSize: 6,
+                            fontSize: 5,
                             formatter: p => {
                                 const name = allInfo[p.name] || p.name;
-                                return name.length > 4 ? name.slice(0, 3) + '..' : name;
+                                return name.length > 3 ? name.slice(0, 2) + '..' : name;
                             }
                         },
                         itemStyle: {
@@ -450,7 +619,7 @@
                             borderWidth: 1
                         },
                         emphasis: {
-                            label: { color: '#ffd700', fontSize: 10 },
+                            label: { color: '#ffd700', fontSize: 9 },
                             itemStyle: { borderColor: '#ffd700', borderWidth: 2 }
                         },
                         data: data
