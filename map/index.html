@@ -89,40 +89,40 @@
         
         // 中部平原（中国）34省
         const chinaData = {
-            '北京市': { name: '龙虾城', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', desc: '人类王国的首都，龙虾系统的诞生地。繁华的商业中心和政治心脏。' },
-            '天津市': { name: '王家直辖地', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', desc: '王都门户，重要的港口城市和贸易枢纽。' },
-            '河北省': { name: '寒风原', color: '#ef5350', status: '未开发', danger: '高', race: '兽群', desc: '北方边境的荒凉平原，兽群出没，常有暴风雪。' },
-            '山西省': { name: '铁矿山区', color: '#ef5350', status: '未开发', danger: '高', race: '哥布林', desc: '蕴藏丰富铁矿的山区，被哥布林部落占据。' },
-            '内蒙古自治区': { name: '霜狼森林', color: '#ff8a65', status: '未开发', danger: '中高', race: '霜狼', desc: '北方广袤的森林，霜狼氏族的领地。' },
-            '辽宁省': { name: '黑石关', color: '#ffb74d', status: '已开发', danger: '中', race: '人类', desc: '北方要塞，防御北方威胁的第一道防线。' },
-            '吉林省': { name: '古木森林', color: '#ff8a65', status: '未开发', danger: '中高', race: '树人', desc: '古老的原始森林，据说有树人守护。' },
-            '黑龙江省': { name: '幽暗小径', color: '#ff8a65', status: '未开发', danger: '中', race: '强盗', desc: '极北之地，常年积雪，强盗横行。' },
-            '上海市': { name: '银龙河渡口', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', desc: '银龙河入海口的重要港口，商贸繁荣。' },
-            '江苏省': { name: '东部农场', color: '#81c784', status: '已开发', danger: '低', race: '人类', desc: '肥沃的平原，王国的粮仓。' },
-            '浙江省': { name: '金麦城', color: '#81c784', status: '已开发', danger: '低', race: '人类', desc: '富庶的农业区，盛产黄金麦。' },
-            '安徽省': { name: '药草谷', color: '#a1887f', status: '部分开发', danger: '低', race: '人类', desc: '盛产珍稀药草的山谷，炼金师的天堂。' },
-            '福建省': { name: '月影镇', color: '#81c784', status: '已开发', danger: '低', race: '人类/精灵', desc: '沿海神秘小镇，传说有精灵居住。' },
-            '江西省': { name: '古木森林', color: '#ff8a65', status: '未开发', danger: '中高', race: '树人', desc: '茂密的森林，迷路者常有去无回。' },
-            '山东省': { name: '东部农场', color: '#81c784', status: '已开发', danger: '低', race: '人类', desc: '东海岸的农业重镇。' },
-            '河南省': { name: '王家直辖地', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', desc: '中原腹地，直接受王都管辖。' },
-            '湖北省': { name: '迷雾沼泽', color: '#ff8a65', status: '未开发', danger: '中', race: '水怪', desc: '常年笼罩在迷雾中的沼泽，水怪出没。' },
-            '湖南省': { name: '南方湿地', color: '#ff8a65', status: '未开发', danger: '中', race: '水妖', desc: '潮湿的热带湿地，水妖的家园。' },
-            '广东省': { name: '河口城', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', desc: '南方最大的港口城市，连接海外贸易。' },
-            '广西壮族自治区': { name: '边境哨站', color: '#4db6ac', status: '已开发', danger: '中', race: '人类', desc: '西南边境的前哨站，防御南方威胁。' },
-            '海南省': { name: '失落矿坑', color: '#ef5350', status: '未开发', danger: '高', race: '地底生物', desc: '热带岛屿，地下有古老矿坑和未知生物。' },
-            '重庆市': { name: '赤岩镇', color: '#ffb74d', status: '已开发', danger: '低', race: '人类/矮人', desc: '山城要塞，人类与矮人混居之地。' },
-            '四川省': { name: '干燥荒原', color: '#ff8a65', status: '未开发', danger: '中', race: '沙蝎', desc: '盆地中的干旱荒原，沙蝎横行。' },
-            '贵州省': { name: '幽暗小径', color: '#ff8a65', status: '未开发', danger: '中', race: '强盗', desc: '山间小道，强盗藏身之所。' },
-            '云南省': { name: '古木森林', color: '#ff8a65', status: '未开发', danger: '中高', race: '树人', desc: '西南边陲的原始森林。' },
-            '西藏自治区': { name: '主山脉', color: '#ffb74d', status: '部分开发', danger: '中', race: '矮人', desc: '世界屋脊，矮人的主要领地。' },
-            '陕西省': { name: '铁矿山区', color: '#ef5350', status: '未开发', danger: '高', race: '哥布林', desc: '西北山区，哥布林的矿区。' },
-            '甘肃省': { name: '寒风原', color: '#ef5350', status: '未开发', danger: '高', race: '兽群', desc: '西北荒原，寒风凛冽。' },
-            '青海省': { name: '霜狼森林', color: '#ff8a65', status: '未开发', danger: '中高', race: '霜狼', desc: '高原森林，霜狼的狩猎场。' },
-            '宁夏回族自治区': { name: '黑石关', color: '#ffb74d', status: '已开发', danger: '中', race: '人类', desc: '西北要塞，防御西部威胁。' },
-            '新疆维吾尔自治区': { name: '主山脉', color: '#ffb74d', status: '部分开发', danger: '中', race: '矮人', desc: '西域广袤的山脉和沙漠，矮人的领地。' },
-            '台湾省': { name: '火山群岛', color: '#ba68c8', status: '未开发', danger: '高', race: '红龙裔', desc: '东海火山岛，红龙裔的领地。' },
-            '香港特别行政区': { name: '河口城', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', desc: '南方自由港，商业繁荣。' },
-            '澳门特别行政区': { name: '河口城', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', desc: '南方娱乐之都。' }
+            '北京市': { name: '龙虾城', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', products: '龙虾符文、魔法装备、王都特产', monsters: '无（城内安全）', flight: '✅ 可飞行', desc: '人类王国的首都，龙虾系统的诞生地。繁华的商业中心和政治心脏。' },
+            '天津市': { name: '王家直辖地', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', products: '海盐、鱼类、船只', monsters: '无', flight: '✅ 可飞行', desc: '王都门户，重要的港口城市和贸易枢纽。' },
+            '河北省': { name: '寒风原', color: '#ffb74d', status: '部分开发', danger: '中', race: '人类/兽群', products: '皮毛、抗寒草药', monsters: '风狼、雪兔', flight: '✅ 可飞行', desc: '北方边境平原，偶有兽群出没。人类哨站遍布。' },
+            '山西省': { name: '铁矿山区', color: '#ff8a65', status: '未开发', danger: '中高', race: '哥布林', products: '铁矿、煤炭', monsters: '哥布林、矿山蜘蛛', flight: '⚠️ 需谨慎', desc: '蕴藏丰富铁矿的山区，被哥布林部落占据。' },
+            '内蒙古自治区': { name: '霜狼森林', color: '#ff8a65', status: '未开发', danger: '中高', race: '霜狼', products: '霜狼皮、冰晶草', monsters: '霜狼、冰原熊', flight: '✅ 可飞行', desc: '北方广袤的森林，霜狼氏族的领地。' },
+            '辽宁省': { name: '黑石关', color: '#ffb74d', status: '已开发', danger: '低', race: '人类', products: '黑石（建筑石材）、兵器', monsters: '无', flight: '✅ 可飞行', desc: '北方要塞，防御北方威胁的第一道防线。' },
+            '吉林省': { name: '古木森林', color: '#ffb74d', status: '部分开发', danger: '中', race: '人类/树人', products: '古木、精灵草药', monsters: '树人（友善）、林鹿', flight: '⚠️ 树冠密集', desc: '古老的原始森林，与树人有贸易往来。' },
+            '黑龙江省': { name: '幽暗小径', color: '#ff8a65', status: '未开发', danger: '中', race: '强盗', products: '无', monsters: '强盗、暗影豹', flight: '✅ 可飞行', desc: '极北之地，强盗横行，但飞行可安全通过。' },
+            '上海市': { name: '银龙河渡口', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', products: '河鲜、丝绸、魔法道具', monsters: '无', flight: '✅ 可飞行', desc: '银龙河入海口的重要港口，商贸繁荣。' },
+            '江苏省': { name: '东部农场', color: '#81c784', status: '已开发', danger: '低', race: '人类', products: '小麦、稻米、蔬菜', monsters: '无', flight: '✅ 可飞行', desc: '肥沃的平原，王国的粮仓。' },
+            '浙江省': { name: '金麦城', color: '#81c784', status: '已开发', danger: '低', race: '人类', products: '黄金麦、茶叶、丝绸', monsters: '无', flight: '✅ 可飞行', desc: '富庶的农业区，盛产黄金麦。' },
+            '安徽省': { name: '药草谷', color: '#81c784', status: '已开发', danger: '低', race: '人类', products: '珍稀药草、炼金材料', monsters: '无', flight: '✅ 可飞行', desc: '盛产珍稀药草的山谷，炼金师的天堂。' },
+            '福建省': { name: '月影镇', color: '#81c784', status: '已开发', danger: '低', race: '人类/精灵', products: '月光茶、精灵工艺品', monsters: '无', flight: '✅ 可飞行', desc: '沿海神秘小镇，人类与精灵和平共处。' },
+            '江西省': { name: '古木森林', color: '#ffb74d', status: '部分开发', danger: '中', race: '树人', products: '古木、灵果', monsters: '树人、森林狼', flight: '⚠️ 树冠密集', desc: '茂密的森林，与树人有贸易往来。' },
+            '山东省': { name: '东部农场', color: '#81c784', status: '已开发', danger: '低', race: '人类', products: '小麦、海盐、鱼类', monsters: '无', flight: '✅ 可飞行', desc: '东海岸的农业重镇。' },
+            '河南省': { name: '王家直辖地', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', products: '粮食、布匹、兵器', monsters: '无', flight: '✅ 可飞行', desc: '中原腹地，直接受王都管辖。' },
+            '湖北省': { name: '迷雾沼泽', color: '#ff8a65', status: '未开发', danger: '中', race: '水怪', products: '沼泽草药、水晶石', monsters: '水怪、沼泽巨蟒', flight: '✅ 可飞行', desc: '迷雾笼罩的沼泽，飞行可安全通过。' },
+            '湖南省': { name: '南方湿地', color: '#ffb74d', status: '部分开发', danger: '低-中', race: '人类/水妖', products: '水稻、莲藕、水产品', monsters: '水妖（友善）', flight: '✅ 可飞行', desc: '热带湿地，人类与水妖共存的区域。' },
+            '广东省': { name: '河口城', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', products: '香料、宝石、海外奇珍', monsters: '无', flight: '✅ 可飞行', desc: '南方最大的港口城市，连接海外贸易。' },
+            '广西壮族自治区': { name: '边境哨站', color: '#81c784', status: '已开发', danger: '低', race: '人类', products: '热带水果、香料', monsters: '无', flight: '✅ 可飞行', desc: '西南边境的前哨站。' },
+            '海南省': { name: '失落矿坑', color: '#ff8a65', status: '未开发', danger: '中高', race: '地底生物', products: '稀有矿石、古代遗物', monsters: '地底蠕虫、矿坑蝙蝠', flight: '❌ 禁飞（洞穴）', desc: '热带岛屿，地下有古老矿坑和未知生物。' },
+            '重庆市': { name: '赤岩镇', color: '#ffb74d', status: '已开发', danger: '低', race: '人类/矮人', products: '赤岩矿、矮人兵器', monsters: '无', flight: '✅ 可飞行', desc: '山城要塞，人类与矮人混居之地。' },
+            '四川省': { name: '干燥荒原', color: '#ff8a65', status: '未开发', danger: '中', race: '沙蝎', products: '沙漠水晶、风干草药', monsters: '沙蝎、沙漠狼', flight: '✅ 可飞行', desc: '盆地中的干旱荒原，飞行可安全通过。' },
+            '贵州省': { name: '幽暗小径', color: '#ffb74d', status: '部分开发', danger: '中', race: '人类/强盗', products: '山货、矿石', monsters: '山贼、暗影猫', flight: '✅ 可飞行', desc: '山间小道，有强盗但王军定期清剿。' },
+            '云南省': { name: '古木森林', color: '#ffb74d', status: '部分开发', danger: '中', race: '人类/树人', products: '古木、珍稀草药', monsters: '树人、森林象', flight: '⚠️ 树冠密集', desc: '西南边陲的原始森林。' },
+            '西藏自治区': { name: '主山脉', color: '#ffb74d', status: '部分开发', danger: '中', race: '矮人', products: '矮人兵器、山铜矿', monsters: '山地狮、岩龙（友善）', flight: '⚠️ 高海拔', desc: '世界屋脊，矮人的主要领地。' },
+            '陕西省': { name: '铁矿山区', color: '#ff8a65', status: '未开发', danger: '中高', race: '哥布林', products: '铁矿、煤炭', monsters: '哥布林、矿山蜘蛛', flight: '⚠️ 需谨慎', desc: '西北山区，哥布林的矿区。' },
+            '甘肃省': { name: '寒风原', color: '#ffb74d', status: '部分开发', danger: '中', race: '人类/兽群', products: '皮毛、抗寒草药', monsters: '风狼、草原狼', flight: '✅ 可飞行', desc: '西北荒原，有人类哨站。' },
+            '青海省': { name: '霜狼森林', color: '#ff8a65', status: '未开发', danger: '中', race: '霜狼', products: '霜狼皮、高原草药', monsters: '霜狼、高原鹰', flight: '✅ 可飞行', desc: '高原森林，霜狼的狩猎场。' },
+            '宁夏回族自治区': { name: '黑石关', color: '#ffb74d', status: '已开发', danger: '低', race: '人类', products: '黑石、兵器', monsters: '无', flight: '✅ 可飞行', desc: '西北要塞，防御西部威胁。' },
+            '新疆维吾尔自治区': { name: '主山脉', color: '#ffb74d', status: '部分开发', danger: '中', race: '矮人', products: '矮人兵器、宝石', monsters: '山地狮、沙虫', flight: '✅ 可飞行', desc: '西域广袤的山脉和沙漠，矮人的领地。' },
+            '台湾省': { name: '火山群岛', color: '#ba68c8', status: '未开发', danger: '高', race: '红龙裔', products: '火晶石、龙血草', monsters: '红龙裔、火焰蜥蜴', flight: '⚠️ 火山灰', desc: '东海火山岛，红龙裔的领地。' },
+            '香港特别行政区': { name: '河口城', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', products: '香料、丝绸、海外奇珍', monsters: '无', flight: '✅ 可飞行', desc: '南方自由港，商业繁荣。' },
+            '澳门特别行政区': { name: '河口城', color: '#4fc3f7', status: '已开发', danger: '低', race: '人类', products: '赌场收入、娱乐服务', monsters: '无', flight: '✅ 可飞行', desc: '南方娱乐之都。' }
         };
         
         // 北境荒原（俄罗斯）83个联邦主体 - 使用name_latin完整英文名
@@ -231,31 +231,31 @@
         
         // 其他区域
         const otherData = {
-            'Mongolia': { name: '风暴高原', color: '#ba68c8', status: '未开发', danger: '中高', race: '蓝龙裔', desc: '风暴肆虐的高原，蓝龙裔的领地。雷电是这里的常客。' },
-            'Japan': { name: '火山群岛', color: '#ba68c8', status: '未开发', danger: '高', race: '红龙裔', desc: '东海火山群岛，红龙裔的家园。活火山遍布，岩浆流淌。' },
-            'India': { name: '深渊边境', color: '#9575cd', status: '未开发', danger: '中高', race: '深渊族', desc: '深渊族的神秘领地。外表如恶魔却不邪恶，拥有独特魔法。' },
-            'Indonesia': { name: '龙族圣地', color: '#ba68c8', status: '圣地', danger: '低', race: '银龙裔', desc: '银龙裔的圣地，传说银龙祭坛能接收神秘信号。' },
-            'Vietnam': { name: '南方森林', color: '#81c784', status: '未开发', danger: '低-中', race: '木精灵', desc: '茂密的热带雨林，木精灵的家园。' },
-            'Thailand': { name: '南方森林', color: '#81c784', status: '未开发', danger: '低-中', race: '木精灵', desc: '神秘的丛林王国，精灵与人类和平共处。' },
-            'Myanmar': { name: '南方森林', color: '#81c784', status: '未开发', danger: '低-中', race: '木精灵', desc: '原始森林覆盖的神秘之地。' },
-            'Laos': { name: '南方森林', color: '#81c784', status: '未开发', danger: '低-中', race: '木精灵', desc: '内陆森林王国。' },
-            'Cambodia': { name: '南方森林', color: '#81c784', status: '未开发', danger: '低-中', race: '木精灵', desc: '古老遗迹隐藏在丛林深处。' },
-            'Malaysia': { name: '南方森林', color: '#81c784', status: '未开发', danger: '低-中', race: '木精灵', desc: '热带雨林与海洋交汇之地。' },
-            'Philippines': { name: '火山群岛', color: '#ba68c8', status: '未开发', danger: '高', race: '红龙裔', desc: '千岛之国，火山龙裔的领地。' },
-            'Kazakhstan': { name: '主山脉', color: '#ffb74d', status: '部分开发', danger: '中', race: '矮人', desc: '广袤的草原和山脉，矮人的主要矿区。' },
-            'Kyrgyzstan': { name: '主山脉', color: '#ffb74d', status: '部分开发', danger: '中', race: '矮人', desc: '高山之国，矮人的要塞。' },
-            'Tajikistan': { name: '主山脉', color: '#ffb74d', status: '部分开发', danger: '中', race: '矮人', desc: '帕米尔高原的矮人领地。' },
-            'Uzbekistan': { name: '沙漠区', color: '#d4a855', status: '未开发', danger: '中', race: '沙漠人类', desc: '丝绸之路上的沙漠绿洲。' },
-            'Turkmenistan': { name: '沙漠区', color: '#d4a855', status: '未开发', danger: '中', race: '沙漠人类', desc: '卡拉库姆沙漠的荒凉之地。' },
-            'Afghanistan': { name: '沙漠区', color: '#d4a855', status: '未开发', danger: '高', race: '沙漠部落', desc: '战乱频发的沙漠山区。' },
-            'Iran': { name: '沙漠区', color: '#d4a855', status: '未开发', danger: '中', race: '沙漠人类', desc: '古老文明的沙漠王国。' },
-            'Pakistan': { name: '深渊边境', color: '#9575cd', status: '未开发', danger: '中高', race: '深渊族', desc: '深渊边境的延伸地带。' },
-            'Nepal': { name: '深渊边境', color: '#b39ddb', status: '未开发', danger: '中', race: '深渊族', desc: '喜马拉雅山麓的神秘之地。' },
-            'Bhutan': { name: '深渊边境', color: '#b39ddb', status: '未开发', danger: '中', race: '深渊族', desc: '雷龙之国，与深渊族有古老盟约。' },
-            'Bangladesh': { name: '深渊边境', color: '#9575cd', status: '未开发', danger: '中', race: '深渊族', desc: '恒河三角洲的水乡。' },
-            'Sri Lanka': { name: '深渊岛', color: '#9575cd', status: '未开发', danger: '中', race: '深渊族', desc: '印度洋上的明珠，深渊族的岛屿领地。' },
-            'North Korea': { name: '风暴高原', color: '#ba68c8', status: '未开发', danger: '高', race: '蓝龙裔', desc: '封闭的风暴之地。' },
-            'South Korea': { name: '风暴高原', color: '#ba68c8', status: '部分开发', danger: '中', race: '蓝龙裔', desc: '风暴高原的半岛延伸。' }
+            'Mongolia': { name: '风暴高原', color: '#ba68c8', status: '未开发', danger: '中高', race: '蓝龙裔', products: '雷电晶石、风暴羽毛', monsters: '蓝龙裔、雷鸟', flight: '❌ 禁飞（雷暴）', desc: '风暴肆虐的高原，蓝龙裔的领地。雷电是这里的常客。' },
+            'Japan': { name: '火山群岛', color: '#ba68c8', status: '未开发', danger: '高', race: '红龙裔', products: '火晶石、龙血草', monsters: '红龙裔、火焰蜥蜴', flight: '⚠️ 火山灰', desc: '东海火山群岛，红龙裔的家园。活火山遍布，岩浆流淌。' },
+            'India': { name: '深渊边境', color: '#9575cd', status: '未开发', danger: '中高', race: '深渊族', products: '深渊水晶、暗影草药', monsters: '深渊族、暗影兽', flight: '⚠️ 需向导', desc: '深渊族的神秘领地。外表如恶魔却不邪恶，拥有独特魔法。' },
+            'Indonesia': { name: '龙族圣地', color: '#ba68c8', status: '圣地', danger: '低', race: '银龙裔', products: '银龙鳞、圣光水晶', monsters: '银龙（友善）', flight: '✅ 可飞行', desc: '银龙裔的圣地，传说银龙祭坛能接收神秘信号。' },
+            'Vietnam': { name: '南方森林', color: '#81c784', status: '未开发', danger: '低-中', race: '木精灵', products: '精灵草药、灵木', monsters: '森林精灵、树人', flight: '⚠️ 树冠密集', desc: '茂密的热带雨林，木精灵的家园。' },
+            'Thailand': { name: '南方森林', color: '#81c784', status: '部分开发', danger: '低-中', race: '木精灵/人类', products: '香料、精灵工艺品', monsters: '森林精灵', flight: '⚠️ 树冠密集', desc: '神秘的丛林王国，精灵与人类和平共处。' },
+            'Myanmar': { name: '南方森林', color: '#81c784', status: '未开发', danger: '中', race: '木精灵', products: '灵木、珍稀草药', monsters: '树人、森林虎', flight: '⚠️ 树冠密集', desc: '原始森林覆盖的神秘之地。' },
+            'Laos': { name: '南方森林', color: '#81c784', status: '未开发', danger: '中', race: '木精灵', products: '灵木、精灵草药', monsters: '森林精灵', flight: '⚠️ 树冠密集', desc: '内陆森林王国。' },
+            'Cambodia': { name: '南方森林', color: '#81c784', status: '未开发', danger: '中', race: '木精灵', products: '古代遗物、灵木', monsters: '树人、遗迹守卫', flight: '⚠️ 树冠密集', desc: '古老遗迹隐藏在丛林深处。' },
+            'Malaysia': { name: '南方森林', color: '#81c784', status: '未开发', danger: '中', race: '木精灵', products: '热带草药、香料', monsters: '森林精灵、热带龙', flight: '⚠️ 树冠密集', desc: '热带雨林与海洋交汇之地。' },
+            'Philippines': { name: '火山群岛', color: '#ba68c8', status: '未开发', danger: '高', race: '红龙裔', products: '火晶石、火山硫磺', monsters: '红龙裔、火焰蜥蜴', flight: '⚠️ 火山灰', desc: '千岛之国，火山龙裔的领地。' },
+            'Kazakhstan': { name: '主山脉', color: '#ffb74d', status: '部分开发', danger: '中', race: '矮人', products: '矮人兵器、山铜矿、宝石', monsters: '山地狮、岩龙', flight: '⚠️ 高海拔', desc: '广袤的草原和山脉，矮人的主要矿区。' },
+            'Kyrgyzstan': { name: '主山脉', color: '#ffb74d', status: '部分开发', danger: '中', race: '矮人', products: '矮人兵器、宝石', monsters: '山地狮', flight: '⚠️ 高海拔', desc: '高山之国，矮人的要塞。' },
+            'Tajikistan': { name: '主山脉', color: '#ffb74d', status: '部分开发', danger: '中', race: '矮人', products: '宝石、山铜矿', monsters: '山地狮、雪人', flight: '⚠️ 高海拔', desc: '帕米尔高原的矮人领地。' },
+            'Uzbekistan': { name: '沙漠区', color: '#d4a855', status: '未开发', danger: '中', race: '沙漠人类', products: '丝绸、香料、沙漠水晶', monsters: '沙虫、沙漠狼', flight: '✅ 可飞行', desc: '丝绸之路上的沙漠绿洲。' },
+            'Turkmenistan': { name: '沙漠区', color: '#d4a855', status: '未开发', danger: '中', race: '沙漠人类', products: '天然气、沙漠水晶', monsters: '沙虫、沙漠蝎', flight: '✅ 可飞行', desc: '卡拉库姆沙漠的荒凉之地。' },
+            'Afghanistan': { name: '沙漠区', color: '#d4a855', status: '未开发', danger: '高', race: '沙漠部落', products: '宝石、古代遗物', monsters: '沙虫、沙漠强盗', flight: '⚠️ 需谨慎', desc: '战乱频发的沙漠山区。' },
+            'Iran': { name: '沙漠区', color: '#d4a855', status: '未开发', danger: '中', race: '沙漠人类', products: '石油、香料、地毯', monsters: '沙虫、沙漠狼', flight: '✅ 可飞行', desc: '古老文明的沙漠王国。' },
+            'Pakistan': { name: '深渊边境', color: '#9575cd', status: '未开发', danger: '中高', race: '深渊族', products: '深渊水晶', monsters: '深渊族、暗影兽', flight: '⚠️ 需向导', desc: '深渊边境的延伸地带。' },
+            'Nepal': { name: '深渊边境', color: '#b39ddb', status: '未开发', danger: '中', race: '深渊族', products: '高原草药、深渊水晶', monsters: '深渊族、雪人', flight: '⚠️ 高海拔', desc: '喜马拉雅山麓的神秘之地。' },
+            'Bhutan': { name: '深渊边境', color: '#b39ddb', status: '未开发', danger: '中', race: '深渊族', products: '雷龙鳞片、深渊水晶', monsters: '深渊族、雷龙', flight: '❌ 禁飞（雷暴）', desc: '雷龙之国，与深渊族有古老盟约。' },
+            'Bangladesh': { name: '深渊边境', color: '#9575cd', status: '未开发', danger: '中', race: '深渊族', products: '河鲜、深渊草药', monsters: '深渊族、水兽', flight: '✅ 可飞行', desc: '恒河三角洲的水乡。' },
+            'Sri Lanka': { name: '深渊岛', color: '#9575cd', status: '未开发', danger: '中', race: '深渊族', products: '宝石、深渊水晶', monsters: '深渊族、海兽', flight: '✅ 可飞行', desc: '印度洋上的明珠，深渊族的岛屿领地。' },
+            'North Korea': { name: '风暴高原', color: '#ba68c8', status: '未开发', danger: '高', race: '蓝龙裔', products: '雷电晶石', monsters: '蓝龙裔、雷鸟', flight: '❌ 禁飞（雷暴）', desc: '封闭的风暴之地。' },
+            'South Korea': { name: '风暴高原', color: '#ba68c8', status: '部分开发', danger: '中', race: '蓝龙裔/人类', products: '雷电晶石、魔法装备', monsters: '蓝龙裔', flight: '⚠️ 雷暴区', desc: '风暴高原的半岛延伸。' }
         };
         
         async function loadGeoJSON(url) {
@@ -356,35 +356,43 @@
                             if (russiaData[params.name]) {
                                 const rInfo = russiaData[params.name];
                                 const regionType = rInfo.name;
-                                let status = '未开发', danger = '中', race = '兽人', desc = '';
+                                let status = '未开发', danger = '中', race = '兽人', products = '', monsters = '', flight = '', desc = '';
                                 
                                 if (regionType === '冰霜堡垒') {
                                     status = '部分开发'; danger = '中'; race = '人类/兽人';
+                                    products = '皮毛、抗寒草药、冰晶'; monsters = '冰原狼、霜巨人'; flight = '✅ 可飞行';
                                     desc = '北境荒原的核心区域，寒冷而坚固。人类与兽人混居的边境要塞。';
                                 } else if (regionType === '北境商路') {
-                                    status = '部分开发'; danger = '中高'; race = '北境人类';
+                                    status = '部分开发'; danger = '中'; race = '北境人类';
+                                    products = '极光晶石、北极皮毛'; monsters = '极地熊、冰原狼'; flight = '✅ 可飞行';
                                     desc = '连接南北的贸易通道，极光常现的神秘之地。';
                                 } else if (regionType === '狼群山谷') {
                                     status = '未开发'; danger = '高'; race = '狼人/兽人';
+                                    products = '狼皮、狼牙'; monsters = '狼人、巨狼、山谷熊'; flight = '⚠️ 需谨慎';
                                     desc = '狼群出没的山谷，兽人的狩猎场。';
                                 } else if (regionType === '南方边境') {
                                     status = '未开发'; danger = '高'; race = '山地部落';
+                                    products = '山地矿石、草药'; monsters = '山地狮、部落战士'; flight = '⚠️ 需谨慎';
                                     desc = '北境荒原的南部边境，部落纷争不断。';
                                 } else if (regionType === '极光平原') {
                                     status = '未开发'; danger = '中'; race = '游牧民族';
+                                    products = '马匹、皮毛、极光晶石'; monsters = '草原狼、野牛群'; flight = '✅ 可飞行';
                                     desc = '极光照耀的广袤平原，游牧民族的家园。';
                                 } else if (regionType === '兽人王庭') {
                                     status = '未开发'; danger = '极高'; race = '兽人';
+                                    products = '兽人兵器、魔兽皮'; monsters = '兽人战士、战争巨兽'; flight = '❌ 禁飞（防空）';
                                     desc = '兽人的王庭所在地，强大的兽人部落联盟。主角将与兽人王在此相遇。';
                                 } else if (regionType === '冰原猎场') {
                                     status = '未开发'; danger = '高'; race = '冰原兽';
+                                    products = '冰原兽皮、冰晶'; monsters = '冰原巨兽、猛犸象、霜龙'; flight = '⚠️ 需谨慎';
                                     desc = '西伯利亚的冰原猎场，极寒之地的生存考验。';
                                 } else if (regionType === '永冻苔原') {
                                     status = '禁地'; danger = '极高'; race = '未知';
+                                    products = '远古晶石（稀有）'; monsters = '未知生物、远古巨兽'; flight = '❌ 禁飞（极寒）';
                                     desc = '永久冻土的极北之地，几乎没有生命能够存活。传说有远古龙族遗迹。';
                                 }
                                 
-                                info = { name: rInfo.name, color: rInfo.color, status, danger, race, desc };
+                                info = { name: rInfo.name, color: rInfo.color, status, danger, race, products, monsters, flight, desc };
                             }
                             
                             if (!info) return `<b style="color:#ffd700">${params.name}</b>`;
@@ -402,9 +410,11 @@
                                              info.race.includes('龙') ? '#ba68c8' :
                                              info.race.includes('深渊') ? '#9575cd' :
                                              info.race.includes('兽') ? '#e57373' : '#90ee90';
+                            const flightColor = info.flight.includes('✅') ? '#81c784' : 
+                                               info.flight.includes('❌') ? '#ff5252' : '#ffb74d';
                             
                             return `
-                                <div style="min-width:200px;max-width:280px;">
+                                <div style="min-width:220px;max-width:300px;">
                                     <div style="font-size:16px;font-weight:bold;color:#ffd700;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #4a4a6a;">
                                         ${info.name}
                                     </div>
@@ -412,6 +422,11 @@
                                         <div><span style="color:#87ceeb;">状态：</span><span style="color:${statusColor};font-weight:bold;">${info.status}</span></div>
                                         <div><span style="color:#87ceeb;">危险：</span><span style="color:${dangerColor};font-weight:bold;">${info.danger}</span></div>
                                         <div><span style="color:#87ceeb;">种族：</span><span style="color:${raceColor};font-weight:bold;">${info.race}</span></div>
+                                        <div><span style="color:#87ceeb;">飞行：</span><span style="color:${flightColor};font-weight:bold;">${info.flight}</span></div>
+                                    </div>
+                                    <div style="line-height:1.6;margin-bottom:8px;padding:6px;background:rgba(255,255,255,0.05);border-radius:4px;">
+                                        <div style="color:#d4a855;font-size:11px;">📦 产出：${info.products || '无'}</div>
+                                        <div style="color:#e57373;font-size:11px;">👾 魔兽：${info.monsters || '无'}</div>
                                     </div>
                                     <div style="color:#b0b0b0;font-size:11px;line-height:1.6;padding-top:6px;border-top:1px solid #4a4a6a;">
                                         ${info.desc}
