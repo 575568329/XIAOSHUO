@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>龙虾系统 - 世界地图</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v8.2.0/ol.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Microsoft YaHei', sans-serif; background: #1a1a2e; }
+        body { 
+            font-family: 'Microsoft YaHei', sans-serif; 
+            background: #1a1a2e;
+            overflow: hidden;
+        }
         
         #map {
             width: 100vw;
@@ -15,7 +19,7 @@
         }
         
         .info-panel {
-            position: absolute;
+            position: fixed;
             top: 10px;
             left: 10px;
             z-index: 1000;
@@ -30,7 +34,7 @@
         .info-panel p { font-size: 12px; color: #aaa; line-height: 1.6; }
         
         .legend {
-            position: absolute;
+            position: fixed;
             bottom: 30px;
             left: 10px;
             z-index: 1000;
@@ -39,71 +43,10 @@
             border-radius: 10px;
             color: #fff;
             border: 1px solid #4a4a6a;
-            max-height: 350px;
-            overflow-y: auto;
         }
         .legend h3 { font-size: 14px; margin-bottom: 10px; color: #ffd700; }
         .legend-item { display: flex; align-items: center; margin: 5px 0; font-size: 12px; }
         .legend-color { width: 18px; height: 18px; border-radius: 4px; margin-right: 8px; border: 1px solid #fff; }
-        
-        .ol-popup {
-            position: absolute;
-            background: rgba(26, 26, 46, 0.98);
-            padding: 15px;
-            border-radius: 10px;
-            color: #fff;
-            border: 1px solid #4a4a6a;
-            max-width: 320px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            bottom: 12px;
-            left: -160px;
-        }
-        .ol-popup:after, .ol-popup:before {
-            top: 100%;
-            border: solid transparent;
-            content: " ";
-            height: 0;
-            width: 0;
-            position: absolute;
-            pointer-events: none;
-        }
-        .ol-popup:after {
-            border-top-color: rgba(26, 26, 46, 0.98);
-            border-width: 10px;
-            left: 50%;
-            margin-left: -10px;
-        }
-        .popup-title { font-size: 16px; font-weight: bold; color: #ffd700; margin-bottom: 10px; }
-        .popup-info { font-size: 13px; line-height: 1.8; }
-        .popup-info p { margin: 4px 0; }
-        .popup-info strong { color: #87ceeb; }
-        .popup-info .race { color: #90ee90; }
-        .popup-info .danger-high { color: #ff6b6b; }
-        .popup-info .danger-medium { color: #ffb74d; }
-        .popup-info .danger-low { color: #81c784; }
-        .popup-info ul { margin: 5px 0 5px 20px; }
-        .popup-close {
-            position: absolute;
-            top: 8px;
-            right: 10px;
-            background: none;
-            border: none;
-            color: #aaa;
-            font-size: 18px;
-            cursor: pointer;
-        }
-        .popup-close:hover { color: #fff; }
-        
-        .ol-control button {
-            background: rgba(26, 26, 46, 0.95) !important;
-            color: #fff !important;
-            border: 1px solid #4a4a6a !important;
-        }
-        .ol-control button:hover {
-            background: #3a3a5a !important;
-        }
-        
-        .ol-attribution { display: none; }
     </style>
 </head>
 <body>
@@ -123,423 +66,337 @@
         <div class="legend-item"><div class="legend-color" style="background: #ff5252;"></div><span>裂缝危险区</span></div>
     </div>
     
-    <div id="popup" class="ol-popup">
-        <button class="popup-close" onclick="closePopup()">×</button>
-        <div class="popup-title" id="popup-title"></div>
-        <div class="popup-info" id="popup-info"></div>
-    </div>
-    
     <div id="map"></div>
     
-    <script src="https://cdn.jsdelivr.net/npm/ol@v8.2.0/dist/ol.js"></script>
     <script>
         // 区域数据
-        const locationData = {
-            iceDragon: {
-                name: "冰龙遗迹",
-                race: "龙裔（古代）",
-                danger: "极高",
-                description: "传说中龙族最后的北方据点，现在是废墟。位于极北冰原。",
-                features: ["古代龙族建筑", "封印的入口", "极寒环境"]
+        const regionData = {
+            '北境荒原': { 
+                race: '北境人类、战吼兽人', 
+                danger: '高',
+                description: '寒冷的北方荒原，北境人类和兽人部落在此生存。',
+                features: '严寒气候、兽人部落、佣兵聚集地',
+                value: 80
             },
-            north: {
-                name: "北境荒原",
-                race: "北境人类、战吼兽人",
-                danger: "高",
-                description: "寒冷的北方荒原（原西伯利亚），北境人类和兽人部落在此生存。",
-                features: ["严寒气候", "兽人部落", "佣兵聚集地", "广阔冻土"]
+            '风暴高原': { 
+                race: '蓝龙裔', 
+                danger: '中高',
+                description: '雷电交加的高原，蓝龙裔的领地。',
+                features: '雷电魔法、蓝龙裔部落、稀有矿石',
+                value: 70
             },
-            storm: {
-                name: "风暴高原",
-                race: "蓝龙裔",
-                danger: "中高",
-                description: "雷电交加的高原（原蒙古高原），蓝龙裔的领地。",
-                features: ["雷电魔法", "蓝龙裔部落", "稀有矿石", "草原游牧"]
+            '主山脉': { 
+                race: '矮人（山脉矮人、深渊矮人）', 
+                danger: '中',
+                description: '巨大的山脉系统，矮人的地下王国。',
+                features: '矮人锻造、地下城市、矿脉丰富',
+                value: 60
             },
-            mountain: {
-                name: "主山脉",
-                race: "矮人（山脉矮人、深渊矮人）",
-                danger: "中",
-                description: "巨大的山脉系统（原中亚山脉），矮人的地下王国。",
-                features: ["矮人锻造", "地下城市", "矿脉丰富", "帕米尔高原"]
+            '古老森林': { 
+                race: '精灵（高等精灵、木精灵）', 
+                danger: '低-中',
+                description: '神秘的古老森林，精灵族的家园。',
+                features: '精灵魔法、自然神殿、龙族遗迹',
+                value: 50
             },
-            forest: {
-                name: "古老森林",
-                race: "精灵（高等精灵、木精灵）",
-                danger: "低-中",
-                description: "神秘的古老森林（原西伯利亚东部），精灵族的家园。",
-                features: ["精灵魔法", "自然神殿", "龙族遗迹", "泰加林"]
+            '中部平原': { 
+                race: '人类（平原血脉）', 
+                danger: '低',
+                description: '肥沃的平原，人类王国的核心区域。主角可能在此开始冒险。',
+                features: '人类王都、贸易中心、佣兵公会',
+                value: 30
             },
-            plains: {
-                name: "中部平原",
-                race: "人类（平原血脉）",
-                danger: "低",
-                description: "肥沃的平原（原中国中原），人类王国的核心区域。主角可能在此开始冒险。",
-                features: ["人类王都", "贸易中心", "佣兵公会", "农业发达"]
+            '火山群岛': { 
+                race: '红龙裔', 
+                danger: '高',
+                description: '活跃的火山群岛，红龙裔的领地。',
+                features: '火焰魔法、火山活动、稀有材料',
+                value: 85
             },
-            volcano: {
-                name: "火山群岛",
-                race: "红龙裔",
-                danger: "高",
-                description: "活跃的火山群岛（原日本列岛），红龙裔的领地。",
-                features: ["火焰魔法", "火山活动", "稀有材料", "岛屿链"]
+            '沙漠区': { 
+                race: '人类（沙漠血脉）', 
+                danger: '中',
+                description: '炎热的沙漠，沙漠人类的家园和贸易城邦。',
+                features: '绿洲城市、商队路线、古老遗迹',
+                value: 55
             },
-            desert: {
-                name: "沙漠区",
-                race: "人类（沙漠血脉）",
-                danger: "中",
-                description: "炎热的沙漠（原中亚沙漠），沙漠人类的家园和贸易城邦。",
-                features: ["绿洲城市", "商队路线", "古老遗迹", "丝绸之路"]
+            '深渊边境': { 
+                race: '深渊族', 
+                danger: '中高',
+                description: '被放逐者的土地，深渊族居住的神秘区域。',
+                features: '深渊族部落、被误解的种族、隐藏的真相',
+                value: 75
             },
-            abyss: {
-                name: "深渊边境",
-                race: "深渊族",
-                danger: "中高",
-                description: "被放逐者的土地（原印度次大陆），深渊族居住的神秘区域。",
-                features: ["深渊族部落", "被误解的种族", "隐藏的真相", "古老文明"]
+            '裂缝荒原': { 
+                race: '无（危险区）', 
+                danger: '极高',
+                description: '裂缝集中区域，龙族曾在此与魔族战斗。',
+                features: '异界裂缝、魔族残留、龙族战场遗迹',
+                value: 100
             },
-            rift: {
-                name: "裂缝荒原",
-                race: "无（危险区）",
-                danger: "极高",
-                description: "裂缝集中区域（原南海），龙族曾在此与魔族战斗。现在依然危险。",
-                features: ["异界裂缝", "魔族残留", "龙族战场遗迹", "海底遗迹"]
+            '龙族圣地': { 
+                race: '龙裔（银龙裔）', 
+                danger: '低（圣地）',
+                description: '银龙裔守护的圣坛，偶尔会收到意义不明的信号。',
+                features: '银龙裔圣坛、神秘信号、龙族遗迹',
+                value: 20
             },
-            sanctuary: {
-                name: "龙族圣地",
-                race: "龙裔（银龙裔）",
-                danger: "低（圣地）",
-                description: "银龙裔守护的圣坛（原印度尼西亚），偶尔会收到意义不明的信号。",
-                features: ["银龙裔圣坛", "神秘信号", "龙族遗迹", "群岛圣地"]
+            '南方森林': { 
+                race: '精灵（木精灵）', 
+                danger: '低-中',
+                description: '南方的茂密森林，木精灵的狩猎场。',
+                features: '木精灵部落、狩猎场、草药丰富',
+                value: 45
             },
-            southForest: {
-                name: "南方森林",
-                race: "精灵（木精灵）",
-                danger: "低-中",
-                description: "南方的茂密森林（原东南亚），木精灵的狩猎场。",
-                features: ["木精灵部落", "狩猎场", "草药丰富", "热带雨林"]
-            },
-            capital: {
-                name: "人类王都 - 龙虾城",
-                race: "人类",
-                danger: "低",
-                description: "中部平原最大的人类城市（原洛阳/长安），贸易和政治中心。",
-                features: ["王宫", "佣兵公会", "地精商会", "龙虾系统总部"]
-            },
-            elfCity: {
-                name: "精灵主城 - 月光城",
-                race: "高等精灵",
-                danger: "低",
-                description: "高等精灵的华丽城市（原伊尔库茨克），魔法和知识的中心。",
-                features: ["魔法学院", "月光神殿", "古老图书馆", "贝加尔湖畔"]
-            },
-            dwarfFort: {
-                name: "矮人要塞 - 铁山堡",
-                race: "矮人",
-                danger: "低",
-                description: "矮人的地下要塞（原阿拉木图），锻造和采矿的中心。",
-                features: ["大锻造场", "矿道入口", "矮人酒馆", "天山山脉"]
-            },
-            altar: {
-                name: "银龙圣坛",
-                race: "银龙裔",
-                danger: "低",
-                description: "银龙裔守护的圣坛核心（原巴厘岛），接收神秘信号的地点。",
-                features: ["古老圣坛", "信号接收点", "龙族遗物", "火山神殿"]
+            '冰龙遗迹': { 
+                race: '龙裔（古代）', 
+                danger: '极高',
+                description: '传说中龙族最后的北方据点，现在是废墟。',
+                features: '古代龙族建筑、封印的入口、极寒环境',
+                value: 95
             }
         };
         
-        // 区域样式
-        const styles = {
-            human: new ol.style.Style({
-                fill: new ol.style.Fill({ color: 'rgba(79, 195, 247, 0.5)' }),
-                stroke: new ol.style.Stroke({ color: '#4fc3f7', width: 2 }),
-                text: new ol.style.Text({
-                    font: 'bold 14px Microsoft YaHei',
-                    fill: new ol.style.Fill({ color: '#fff' }),
-                    stroke: new ol.style.Stroke({ color: '#000', width: 3 })
-                })
-            }),
-            elf: new ol.style.Style({
-                fill: new ol.style.Fill({ color: 'rgba(129, 199, 132, 0.5)' }),
-                stroke: new ol.style.Stroke({ color: '#81c784', width: 2 }),
-                text: new ol.style.Text({
-                    font: 'bold 14px Microsoft YaHei',
-                    fill: new ol.style.Fill({ color: '#fff' }),
-                    stroke: new ol.style.Stroke({ color: '#000', width: 3 })
-                })
-            }),
-            dwarf: new ol.style.Style({
-                fill: new ol.style.Fill({ color: 'rgba(255, 183, 77, 0.5)' }),
-                stroke: new ol.style.Stroke({ color: '#ffb74d', width: 2 }),
-                text: new ol.style.Text({
-                    font: 'bold 14px Microsoft YaHei',
-                    fill: new ol.style.Fill({ color: '#fff' }),
-                    stroke: new ol.style.Stroke({ color: '#000', width: 3 })
-                })
-            }),
-            orc: new ol.style.Style({
-                fill: new ol.style.Fill({ color: 'rgba(229, 115, 115, 0.5)' }),
-                stroke: new ol.style.Stroke({ color: '#e57373', width: 2 }),
-                text: new ol.style.Text({
-                    font: 'bold 14px Microsoft YaHei',
-                    fill: new ol.style.Fill({ color: '#fff' }),
-                    stroke: new ol.style.Stroke({ color: '#000', width: 3 })
-                })
-            }),
-            dragon: new ol.style.Style({
-                fill: new ol.style.Fill({ color: 'rgba(186, 104, 200, 0.5)' }),
-                stroke: new ol.style.Stroke({ color: '#ba68c8', width: 2 }),
-                text: new ol.style.Text({
-                    font: 'bold 14px Microsoft YaHei',
-                    fill: new ol.style.Fill({ color: '#fff' }),
-                    stroke: new ol.style.Stroke({ color: '#000', width: 3 })
-                })
-            }),
-            abyss: new ol.style.Style({
-                fill: new ol.style.Fill({ color: 'rgba(149, 117, 205, 0.5)' }),
-                stroke: new ol.style.Stroke({ color: '#9575cd', width: 2 }),
-                text: new ol.style.Text({
-                    font: 'bold 14px Microsoft YaHei',
-                    fill: new ol.style.Fill({ color: '#fff' }),
-                    stroke: new ol.style.Stroke({ color: '#000', width: 3 })
-                })
-            }),
-            rift: new ol.style.Style({
-                fill: new ol.style.Fill({ color: 'rgba(255, 82, 82, 0.5)' }),
-                stroke: new ol.style.Stroke({ color: '#ff5252', width: 2 }),
-                text: new ol.style.Text({
-                    font: 'bold 14px Microsoft YaHei',
-                    fill: new ol.style.Fill({ color: '#ff5555' }),
-                    stroke: new ol.style.Stroke({ color: '#000', width: 3 })
-                })
-            }),
-            ice: new ol.style.Style({
-                fill: new ol.style.Fill({ color: 'rgba(216, 232, 240, 0.7)' }),
-                stroke: new ol.style.Stroke({ color: '#b8d4e3', width: 2 }),
-                text: new ol.style.Text({
-                    font: 'bold 14px Microsoft YaHei',
-                    fill: new ol.style.Fill({ color: '#333' }),
-                    stroke: new ol.style.Stroke({ color: '#fff', width: 3 })
-                })
-            }),
-            city: new ol.style.Style({
-                image: new ol.style.Circle({
-                    radius: 10,
-                    fill: new ol.style.Fill({ color: '#ffd700' }),
-                    stroke: new ol.style.Stroke({ color: '#fff', width: 3 })
-                }),
-                text: new ol.style.Text({
-                    font: 'bold 12px Microsoft YaHei',
-                    fill: new ol.style.Fill({ color: '#ffd700' }),
-                    stroke: new ol.style.Stroke({ color: '#000', width: 2 }),
-                    offsetY: -15
-                })
-            }),
-            river: new ol.style.Style({
-                stroke: new ol.style.Stroke({ color: '#4a90d9', width: 3, opacity: 0.7 })
-            })
+        // 地名映射（真实地名 -> 奇幻地名）
+        const nameMap = {
+            // 中国 -> 中部平原
+            'China': '中部平原',
+            // 俄罗斯 -> 北境荒原
+            'Russia': '北境荒原',
+            // 蒙古 -> 风暴高原
+            'Mongolia': '风暴高原',
+            // 哈萨克斯坦 -> 主山脉
+            'Kazakhstan': '主山脉',
+            // 日本 -> 火山群岛
+            'Japan': '火山群岛',
+            // 印度 -> 深渊边境
+            'India': '深渊边境',
+            // 印度尼西亚 -> 龙族圣地
+            'Indonesia': '龙族圣地',
+            // 越南 -> 南方森林
+            'Vietnam': '南方森林',
+            // 泰国 -> 南方森林
+            'Thailand': '南方森林',
+            // 缅甸 -> 南方森林
+            'Myanmar': '南方森林',
+            // 老挝 -> 南方森林
+            'Laos': '南方森林',
+            // 柬埔寨 -> 南方森林
+            'Cambodia': '南方森林',
+            // 马来西亚 -> 南方森林
+            'Malaysia': '南方森林',
+            // 菲律宾 -> 火山群岛
+            'Philippines': '火山群岛',
+            // 朝鲜 -> 风暴高原
+            'North Korea': '风暴高原',
+            // 韩国 -> 风暴高原
+            'South Korea': '风暴高原',
+            // 台湾 -> 中部平原
+            'Taiwan': '中部平原',
+            // 乌兹别克斯坦 -> 沙漠区
+            'Uzbekistan': '沙漠区',
+            // 土库曼斯坦 -> 沙漠区
+            'Turkmenistan': '沙漠区',
+            // 吉尔吉斯斯坦 -> 主山脉
+            'Kyrgyzstan': '主山脉',
+            // 塔吉克斯坦 -> 主山脉
+            'Tajikistan': '主山脉',
+            // 阿富汗 -> 沙漠区
+            'Afghanistan': '沙漠区',
+            // 巴基斯坦 -> 深渊边境
+            'Pakistan': '深渊边境',
+            // 尼泊尔 -> 深渊边境
+            'Nepal': '深渊边境',
+            // 不丹 -> 深渊边境
+            'Bhutan': '深渊边境',
+            // 孟加拉国 -> 深渊边境
+            'Bangladesh': '深渊边境',
+            // 斯里兰卡 -> 深渊边境
+            'Sri Lanka': '深渊边境',
+            // 伊朗 -> 沙漠区
+            'Iran': '沙漠区',
+            // 冰岛 -> 冰龙遗迹
+            'Iceland': '冰龙遗迹',
+            // 格陵兰 -> 冰龙遗迹
+            'Greenland': '冰龙遗迹',
+            // 阿拉斯加 -> 北境荒原
+            'Alaska': '北境荒原',
+            // 加拿大 -> 北境荒原
+            'Canada': '北境荒原'
         };
         
-        // 坐标转换
-        function toCoord(lon, lat) {
-            return ol.proj.fromLonLat([lon, lat]);
-        }
+        // 区域颜色
+        const regionColors = {
+            '北境荒原': '#e57373',
+            '风暴高原': '#ba68c8',
+            '主山脉': '#ffb74d',
+            '古老森林': '#81c784',
+            '中部平原': '#4fc3f7',
+            '火山群岛': '#ba68c8',
+            '沙漠区': '#4fc3f7',
+            '深渊边境': '#9575cd',
+            '裂缝荒原': '#ff5252',
+            '龙族圣地': '#ba68c8',
+            '南方森林': '#81c784',
+            '冰龙遗迹': '#b8d4e3'
+        };
         
-        // 创建区域多边形（带标签）
-        function createPolygon(coords, style, id, label) {
-            const geometry = new ol.geom.Polygon([coords.map(c => toCoord(c[0], c[1]))]);
-            const feature = new ol.Feature({
-                geometry: geometry,
-                id: id,
-                label: label
-            });
-            
-            // 复制样式并添加文本
-            const styleWithText = style.clone();
-            if (style.getText()) {
-                styleWithText.getText().setText(label);
-            }
-            feature.setStyle(styleWithText);
-            
-            return feature;
-        }
-        
-        // 创建城市点
-        function createPoint(lon, lat, id, label) {
-            const feature = new ol.Feature({
-                geometry: new ol.geom.Point(toCoord(lon, lat)),
-                id: id,
-                label: label
-            });
-            
-            const styleWithText = styles.city.clone();
-            styleWithText.getText().setText(label);
-            feature.setStyle(styleWithText);
-            
-            return feature;
-        }
-        
-        // 区域数据（基于亚洲地理）
-        const features = [];
-        
-        // 北极冰盖/冰龙遗迹
-        features.push(createPolygon([
-            [60, 70], [180, 72], [180, 82], [60, 82]
-        ], styles.ice, 'iceDragon', '❄️ 冰龙遗迹'));
-        
-        // 北境荒原（西伯利亚）
-        features.push(createPolygon([
-            [60, 50], [120, 55], [140, 60], [180, 65], [180, 70], [60, 70], [50, 60]
-        ], styles.orc, 'north', '北境荒原'));
-        
-        // 风暴高原（蒙古高原）
-        features.push(createPolygon([
-            [90, 40], [120, 45], [130, 50], [120, 55], [100, 50], [85, 45]
-        ], styles.dragon, 'storm', '风暴高原'));
-        
-        // 主山脉（中亚山脉）
-        features.push(createPolygon([
-            [60, 35], [80, 40], [90, 45], [85, 50], [70, 45], [55, 40]
-        ], styles.dwarf, 'mountain', '🏔️ 主山脉'));
-        
-        // 古老森林（东西伯利亚）
-        features.push(createPolygon([
-            [100, 55], [140, 55], [160, 60], [180, 60], [180, 65], [140, 60], [100, 58]
-        ], styles.elf, 'forest', '🌲 古老森林'));
-        
-        // 中部平原（中国中原）
-        features.push(createPolygon([
-            [100, 25], [120, 30], [125, 35], [120, 45], [100, 40], [95, 35], [100, 30]
-        ], styles.human, 'plains', '🏰 中部平原'));
-        
-        // 火山群岛（日本）
-        features.push(createPolygon([
-            [130, 30], [145, 35], [145, 45], [130, 42], [128, 35]
-        ], styles.dragon, 'volcano', '🌋 火山群岛'));
-        
-        // 沙漠区（中亚/新疆沙漠）
-        features.push(createPolygon([
-            [60, 30], [90, 35], [95, 40], [85, 45], [70, 40], [55, 35]
-        ], styles.human, 'desert', '🏜️ 沙漠区'));
-        
-        // 深渊边境（印度次大陆）
-        features.push(createPolygon([
-            [70, 5], [90, 15], [95, 25], [85, 30], [70, 25], [65, 15]
-        ], styles.abyss, 'abyss', '深渊边境'));
-        
-        // 裂缝荒原（南海）
-        features.push(createPolygon([
-            [105, 0], [120, 5], [125, 15], [120, 25], [110, 20], [105, 10]
-        ], styles.rift, 'rift', '⚡ 裂缝荒原'));
-        
-        // 龙族圣地（印度尼西亚）
-        features.push(createPolygon([
-            [95, -10], [120, -8], [140, -5], [140, 5], [120, 0], [100, -5]
-        ], styles.dragon, 'sanctuary', '⛩️ 龙族圣地'));
-        
-        // 南方森林（东南亚）
-        features.push(createPolygon([
-            [95, 5], [110, 10], [115, 20], [105, 25], [95, 20], [90, 12]
-        ], styles.elf, 'southForest', '🌳 南方森林'));
-        
-        // 城市标记
-        features.push(createPoint(110, 35, 'capital', '王都'));
-        features.push(createPoint(130, 52, 'elfCity', '精灵城'));
-        features.push(createPoint(75, 43, 'dwarfFort', '矮人堡'));
-        features.push(createPoint(115, -5, 'altar', '圣坛'));
-        
-        // 创建矢量图层
-        const vectorSource = new ol.source.Vector({
-            features: features
-        });
-        
-        const vectorLayer = new ol.layer.Vector({
-            source: vectorSource
-        });
-        
-        // 创建地图
-        const map = new ol.Map({
-            target: 'map',
-            layers: [
-                // OpenStreetMap底图
-                new ol.layer.Tile({
-                    source: new ol.source.XYZ({
-                        url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        attributions: []
-                    }),
-                    opacity: 0.4
-                }),
-                vectorLayer
-            ],
-            view: new ol.View({
-                center: ol.proj.fromLonLat([105, 35]),
-                zoom: 3,
-                minZoom: 2,
-                maxZoom: 8
+        // 加载世界地图
+        fetch('https://cdn.jsdelivr.net/npm/echarts/map/json/world.json')
+            .then(response => response.json())
+            .then(worldJson => {
+                // 注册地图
+                echarts.registerMap('world', worldJson);
+                
+                // 准备数据
+                const data = [];
+                Object.keys(regionData).forEach(name => {
+                    data.push({
+                        name: name,
+                        value: regionData[name].value,
+                        itemStyle: {
+                            areaColor: regionColors[name] || '#3d5a4a'
+                        }
+                    });
+                });
+                
+                // 初始化图表
+                const chart = echarts.init(document.getElementById('map'));
+                
+                const option = {
+                    backgroundColor: '#1a1a2e',
+                    
+                    tooltip: {
+                        trigger: 'item',
+                        backgroundColor: 'rgba(26, 26, 46, 0.95)',
+                        borderColor: '#4a4a6a',
+                        borderWidth: 1,
+                        textStyle: {
+                            color: '#fff'
+                        },
+                        formatter: function(params) {
+                            const info = regionData[params.name];
+                            if (!info) return params.name;
+                            
+                            const dangerColor = info.danger.includes('极高') ? '#ff6b6b' : 
+                                               info.danger.includes('高') ? '#ffb74d' : '#81c784';
+                            
+                            return `
+                                <div style="padding:5px;">
+                                    <div style="font-size:16px;font-weight:bold;color:#ffd700;margin-bottom:8px;">${params.name}</div>
+                                    <div style="font-size:13px;line-height:1.8;">
+                                        <div><span style="color:#87ceeb;">主要种族：</span><span style="color:#90ee90;">${info.race}</span></div>
+                                        <div><span style="color:#87ceeb;">危险等级：</span><span style="color:${dangerColor};">${info.danger}</span></div>
+                                        <div><span style="color:#87ceeb;">描述：</span>${info.description}</div>
+                                        <div><span style="color:#87ceeb;">特点：</span>${info.features}</div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    },
+                    
+                    visualMap: {
+                        show: false,
+                        min: 0,
+                        max: 100,
+                        inRange: {
+                            color: ['#3d5a4a', '#4a6a5a', '#5a7a6a']
+                        }
+                    },
+                    
+                    geo: {
+                        map: 'world',
+                        roam: true,
+                        zoom: 3,
+                        center: [105, 35],
+                        scaleLimit: {
+                            min: 2,
+                            max: 10
+                        },
+                        label: {
+                            show: true,
+                            color: '#fff',
+                            fontSize: 10,
+                            formatter: function(params) {
+                                // 使用映射后的名称
+                                return params.name;
+                            }
+                        },
+                        nameMap: nameMap,
+                        itemStyle: {
+                            areaColor: '#2a3a4a',
+                            borderColor: '#4a5a6a',
+                            borderWidth: 1
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                color: '#ffd700',
+                                fontSize: 14
+                            },
+                            itemStyle: {
+                                areaColor: '#4a6a7a'
+                            }
+                        },
+                        regions: Object.keys(regionData).map(name => ({
+                            name: name,
+                            itemStyle: {
+                                areaColor: regionColors[name],
+                                borderColor: '#fff',
+                                borderWidth: 1
+                            },
+                            emphasis: {
+                                itemStyle: {
+                                    areaColor: regionColors[name],
+                                    shadowBlur: 20,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }))
+                    },
+                    
+                    series: [{
+                        type: 'map',
+                        map: 'world',
+                        geoIndex: 0,
+                        data: data,
+                        nameMap: nameMap
+                    }, {
+                        // 城市标记
+                        type: 'scatter',
+                        coordinateSystem: 'geo',
+                        data: [
+                            { name: '王都', value: [110, 35, 100], symbol: 'pin', symbolSize: 40, itemStyle: { color: '#ffd700' } },
+                            { name: '精灵城', value: [130, 52, 80], symbol: 'pin', symbolSize: 35, itemStyle: { color: '#81c784' } },
+                            { name: '矮人堡', value: [75, 43, 80], symbol: 'pin', symbolSize: 35, itemStyle: { color: '#ffb74d' } },
+                            { name: '圣坛', value: [115, -5, 60], symbol: 'pin', symbolSize: 30, itemStyle: { color: '#ffd700' } }
+                        ],
+                        label: {
+                            show: true,
+                            formatter: '{b}',
+                            position: 'bottom',
+                            color: '#ffd700',
+                            fontSize: 12
+                        },
+                        tooltip: {
+                            formatter: function(params) {
+                                return `<div style="font-weight:bold;color:#ffd700;">${params.name}</div>`;
+                            }
+                        }
+                    }]
+                };
+                
+                chart.setOption(option);
+                
+                // 响应窗口大小变化
+                window.addEventListener('resize', function() {
+                    chart.resize();
+                });
             })
-        });
-        
-        // 弹窗覆盖层
-        const popup = new ol.Overlay({
-            element: document.getElementById('popup'),
-            autoPan: {
-                animation: { duration: 250 }
-            }
-        });
-        map.addOverlay(popup);
-        
-        // 关闭弹窗
-        function closePopup() {
-            popup.setPosition(undefined);
-        }
-        
-        // 显示弹窗
-        function showPopup(id, coordinate) {
-            const data = locationData[id];
-            if (!data) return;
-            
-            const title = document.getElementById('popup-title');
-            const info = document.getElementById('popup-info');
-            
-            const dangerClass = data.danger.includes("极高") ? "danger-high" : 
-                               data.danger.includes("高") || data.danger.includes("中高") ? "danger-medium" : "danger-low";
-            
-            title.textContent = data.name;
-            info.innerHTML = `
-                <p><strong>主要种族：</strong><span class="race">${data.race}</span></p>
-                <p><strong>危险等级：</strong><span class="${dangerClass}">${data.danger}</span></p>
-                <p><strong>描述：</strong>${data.description}</p>
-                <p><strong>特点：</strong></p>
-                <ul>${data.features.map(f => `<li>${f}</li>`).join('')}</ul>
-            `;
-            
-            popup.setPosition(coordinate);
-        }
-        
-        // 点击事件
-        map.on('click', function(evt) {
-            const feature = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
-                return feature;
+            .catch(error => {
+                console.error('加载地图失败:', error);
+                document.getElementById('map').innerHTML = '<div style="color:#fff;text-align:center;padding:50px;">地图加载失败，请刷新页面重试</div>';
             });
-            
-            if (feature) {
-                const id = feature.get('id');
-                if (id) {
-                    showPopup(id, evt.coordinate);
-                }
-            } else {
-                closePopup();
-            }
-        });
-        
-        // 鼠标样式
-        map.on('pointermove', function(e) {
-            const feature = map.forEachFeatureAtPixel(e.pixel, function(feature) {
-                return feature;
-            });
-            map.getTargetElement().style.cursor = feature ? 'pointer' : '';
-        });
     </script>
 </body>
 </html>
