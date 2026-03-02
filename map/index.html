@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>龙虾系统 - 世界地图</title>
+    <title>龙虾系统 - 中部平原详细地图</title>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -28,7 +28,7 @@
             border-radius: 10px;
             color: #fff;
             border: 1px solid #4a4a6a;
-            max-width: 280px;
+            max-width: 300px;
         }
         .info-panel h1 { font-size: 18px; margin-bottom: 5px; color: #ffd700; }
         .info-panel p { font-size: 12px; color: #aaa; line-height: 1.6; }
@@ -43,34 +43,279 @@
             border-radius: 10px;
             color: #fff;
             border: 1px solid #4a4a6a;
+            max-height: 450px;
+            overflow-y: auto;
         }
         .legend h3 { font-size: 14px; margin-bottom: 10px; color: #ffd700; }
         .legend-item { display: flex; align-items: center; margin: 5px 0; font-size: 12px; }
         .legend-color { width: 18px; height: 18px; border-radius: 4px; margin-right: 8px; border: 1px solid #fff; }
+        
+        .switch-btn {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: rgba(26, 26, 46, 0.95);
+            padding: 10px 15px;
+            border-radius: 10px;
+            color: #fff;
+            border: 1px solid #4a4a6a;
+            cursor: pointer;
+        }
+        .switch-btn:hover { background: #3a3a5a; }
     </style>
 </head>
 <body>
     <div class="info-panel">
-        <h1>🦞 龙虾系统 - 世界地图</h1>
-        <p>点击区域查看信息<br>拖拽移动，滚轮缩放</p>
+        <h1>🦞 中部平原详细地图</h1>
+        <p>点击区域查看信息<br>拖拽移动，滚轮缩放<br>包含省级区域和未开发地带</p>
     </div>
+    
+    <button class="switch-btn" onclick="switchMap()">切换到大世界地图</button>
     
     <div class="legend">
         <h3>🗺️ 图例</h3>
-        <div class="legend-item"><div class="legend-color" style="background: #4fc3f7;"></div><span>人类区域</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #81c784;"></div><span>精灵/森林</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #ffb74d;"></div><span>矮人/山脉</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #e57373;"></div><span>兽人/荒原</span></div>
+        <h4 style="color:#87ceeb;margin:10px 0 5px;">安全区域</h4>
+        <div class="legend-item"><div class="legend-color" style="background: #4fc3f7;"></div><span>中央王领</span></div>
+        <div class="legend-item"><div class="legend-color" style="background: #81c784;"></div><span>东部农业区</span></div>
+        
+        <h4 style="color:#ffb74d;margin:10px 0 5px;">部分开发</h4>
+        <div class="legend-item"><div class="legend-color" style="background: #ffb74d;"></div><span>北部边防区</span></div>
+        <div class="legend-item"><div class="legend-color" style="background: #a1887f;"></div><span>西部森林区</span></div>
+        <div class="legend-item"><div class="legend-color" style="background: #d4a855;"></div><span>西南盆地</span></div>
+        <div class="legend-item"><div class="legend-color" style="background: #4db6ac;"></div><span>南部边境</span></div>
+        
+        <h4 style="color:#ff5252;margin:10px 0 5px;">未开发区域</h4>
+        <div class="legend-item"><div class="legend-color" style="background: #ef5350;"></div><span>高危未开发</span></div>
+        <div class="legend-item"><div class="legend-color" style="background: #ff8a65;"></div><span>中危未开发</span></div>
+        
+        <h4 style="color:#ba68c8;margin:10px 0 5px;">其他势力</h4>
         <div class="legend-item"><div class="legend-color" style="background: #ba68c8;"></div><span>龙裔区域</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #9575cd;"></div><span>深渊族</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #ff5252;"></div><span>裂缝危险区</span></div>
+        <div class="legend-item"><div class="legend-color" style="background: #9575cd;"></div><span>深渊边境</span></div>
     </div>
     
     <div id="map"></div>
     
     <script>
-        // 区域数据
-        const regionData = {
+        let currentMap = 'central';
+        
+        // 中部平原区域数据
+        const centralPlainsData = {
+            // 中央王领
+            '龙虾城': { 
+                region: '中央王领', 
+                status: '已开发',
+                danger: '低',
+                population: '50万+',
+                race: '人类', 
+                description: '王国首都，政治贸易中心',
+                features: '王宫、佣兵公会、地精商会、法师塔',
+                value: 10
+            },
+            '王家直辖地': { 
+                region: '中央王领', 
+                status: '已开发',
+                danger: '低',
+                population: '10万+',
+                race: '人类', 
+                description: '王都周边，村庄密集',
+                features: '农田、村庄、治安良好',
+                value: 15
+            },
+            
+            // 北部边防区
+            '黑石关': { 
+                region: '北部边防区', 
+                status: '已开发',
+                danger: '中',
+                population: '5000守军',
+                race: '人类守军', 
+                description: '抵御北方兽人的关隘',
+                features: '要塞、驻军、边境防御',
+                value: 40
+            },
+            '寒风原': { 
+                region: '北部边防区', 
+                status: '未开发',
+                danger: '高',
+                population: '无',
+                race: '兽群', 
+                description: '兽群出没的寒冷草原',
+                features: '霜狼群、冬熊、佣兵任务区',
+                value: 80
+            },
+            '铁矿山区': { 
+                region: '北部边防区', 
+                status: '未开发',
+                danger: '高',
+                population: '哥布林部落',
+                race: '哥布林、矿兽', 
+                description: '魔化矿兽和哥布林部落盘踞，主角起始地',
+                features: '铁矿、哥布林王、裂缝魔气影响',
+                value: 90
+            },
+            '霜狼森林': { 
+                region: '北部边防区', 
+                status: '未开发',
+                danger: '中高',
+                population: '无',
+                race: '霜狼、冬熊', 
+                description: '北方寒冷森林',
+                features: '霜狼群、冬熊、稀有皮毛',
+                value: 70
+            },
+            
+            // 东部平原
+            '金麦城': { 
+                region: '东部平原', 
+                status: '已开发',
+                danger: '低',
+                population: '20万',
+                race: '人类', 
+                description: '粮仓城市，农业中心',
+                features: '粮仓、农产加工、酿酒',
+                value: 20
+            },
+            '东部农场': { 
+                region: '东部平原', 
+                status: '已开发',
+                danger: '低',
+                population: '30万+',
+                race: '人类', 
+                description: '大片农田，村庄密集',
+                features: '小麦、玉米、蔬菜',
+                value: 15
+            },
+            '银龙河渡口': { 
+                region: '东部平原', 
+                status: '已开发',
+                danger: '低',
+                population: '5万',
+                race: '人类', 
+                description: '河运贸易点',
+                features: '码头、商船、物流中心',
+                value: 25
+            },
+            '迷雾沼泽': { 
+                region: '东部平原', 
+                status: '未开发',
+                danger: '中',
+                population: '无',
+                race: '水怪', 
+                description: '神秘的沼泽地带',
+                features: '水怪、沼泽生物、稀有草药',
+                value: 60
+            },
+            
+            // 西部森林区
+            '月影镇': { 
+                region: '西部森林区', 
+                status: '已开发',
+                danger: '低',
+                population: '3万',
+                race: '人类、木精灵', 
+                description: '人类与木精灵贸易点',
+                features: '精灵商品、草药、木材',
+                value: 30
+            },
+            '古木森林': { 
+                region: '西部森林区', 
+                status: '未开发',
+                danger: '中高',
+                population: '树人部落',
+                race: '树人、守护者', 
+                description: '神秘的古老森林',
+                features: '树人、森林守护者、稀有草药',
+                value: 75
+            },
+            '幽暗小径': { 
+                region: '西部森林区', 
+                status: '未开发',
+                danger: '中',
+                population: '强盗团伙',
+                race: '强盗、野兽', 
+                description: '危险的森林小径',
+                features: '强盗、野兽、需要护送',
+                value: 55
+            },
+            '药草谷': { 
+                region: '西部森林区', 
+                status: '部分开发',
+                danger: '低',
+                population: '药师聚集',
+                race: '人类药师', 
+                description: '稀有草药产地',
+                features: '药师公会、草药园、炼金术',
+                value: 35
+            },
+            
+            // 西南盆地
+            '赤岩镇': { 
+                region: '西南盆地', 
+                status: '已开发',
+                danger: '低',
+                population: '3万',
+                race: '人类、矮人', 
+                description: '矿物加工中心',
+                features: '锻造、矮人贸易、矿石加工',
+                value: 30
+            },
+            '干燥荒原': { 
+                region: '西南盆地', 
+                status: '未开发',
+                danger: '中',
+                population: '无',
+                race: '沙蝎、荒原狼', 
+                description: '干旱的荒原地带',
+                features: '沙蝎、荒原狼、戈壁兽',
+                value: 65
+            },
+            '失落矿坑': { 
+                region: '西南盆地', 
+                status: '未开发',
+                danger: '高',
+                population: '无',
+                race: '地底生物', 
+                description: '古代矿坑遗迹',
+                features: '地底生物、宝藏、古代遗物',
+                value: 85
+            },
+            
+            // 南部边境
+            '河口城': { 
+                region: '南部边境', 
+                status: '已开发',
+                danger: '低',
+                population: '15万',
+                race: '人类', 
+                description: '银龙河入海口，贸易港',
+                features: '港口、海运商会、海鲜',
+                value: 25
+            },
+            '南方湿地': { 
+                region: '南部边境', 
+                status: '未开发',
+                danger: '中',
+                population: '无',
+                race: '水妖、鳄鱼', 
+                description: '南方的沼泽湿地',
+                features: '水妖、鳄鱼、稀有水生草药',
+                value: 60
+            },
+            '边境哨站': { 
+                region: '南部边境', 
+                status: '已开发',
+                danger: '中',
+                population: '2000守军',
+                race: '人类守军', 
+                description: '监视南方森林的哨站',
+                features: '要塞、边境守卫、预警系统',
+                value: 45
+            }
+        };
+        
+        // 大世界区域数据
+        const worldData = {
             '北境荒原': { 
                 race: '北境人类、战吼兽人', 
                 danger: '高',
@@ -102,7 +347,7 @@
             '中部平原': { 
                 race: '人类（平原血脉）', 
                 danger: '低',
-                description: '肥沃的平原，人类王国的核心区域。主角可能在此开始冒险。',
+                description: '肥沃的平原，人类王国的核心区域。',
                 features: '人类王都、贸易中心、佣兵公会',
                 value: 30
             },
@@ -157,76 +402,110 @@
             }
         };
         
-        // 地名映射（真实地名 -> 奇幻地名）
-        const nameMap = {
-            // 中国 -> 中部平原
-            'China': '中部平原',
-            // 俄罗斯 -> 北境荒原
-            'Russia': '北境荒原',
-            // 蒙古 -> 风暴高原
-            'Mongolia': '风暴高原',
-            // 哈萨克斯坦 -> 主山脉
-            'Kazakhstan': '主山脉',
-            // 日本 -> 火山群岛
-            'Japan': '火山群岛',
-            // 印度 -> 深渊边境
-            'India': '深渊边境',
-            // 印度尼西亚 -> 龙族圣地
-            'Indonesia': '龙族圣地',
-            // 越南 -> 南方森林
-            'Vietnam': '南方森林',
-            // 泰国 -> 南方森林
-            'Thailand': '南方森林',
-            // 缅甸 -> 南方森林
-            'Myanmar': '南方森林',
-            // 老挝 -> 南方森林
-            'Laos': '南方森林',
-            // 柬埔寨 -> 南方森林
-            'Cambodia': '南方森林',
-            // 马来西亚 -> 南方森林
-            'Malaysia': '南方森林',
-            // 菲律宾 -> 火山群岛
-            'Philippines': '火山群岛',
-            // 朝鲜 -> 风暴高原
-            'North Korea': '风暴高原',
-            // 韩国 -> 风暴高原
-            'South Korea': '风暴高原',
-            // 台湾 -> 中部平原
-            'Taiwan': '中部平原',
-            // 乌兹别克斯坦 -> 沙漠区
-            'Uzbekistan': '沙漠区',
-            // 土库曼斯坦 -> 沙漠区
-            'Turkmenistan': '沙漠区',
-            // 吉尔吉斯斯坦 -> 主山脉
-            'Kyrgyzstan': '主山脉',
-            // 塔吉克斯坦 -> 主山脉
-            'Tajikistan': '主山脉',
-            // 阿富汗 -> 沙漠区
-            'Afghanistan': '沙漠区',
-            // 巴基斯坦 -> 深渊边境
-            'Pakistan': '深渊边境',
-            // 尼泊尔 -> 深渊边境
-            'Nepal': '深渊边境',
-            // 不丹 -> 深渊边境
-            'Bhutan': '深渊边境',
-            // 孟加拉国 -> 深渊边境
-            'Bangladesh': '深渊边境',
-            // 斯里兰卡 -> 深渊边境
-            'Sri Lanka': '深渊边境',
-            // 伊朗 -> 沙漠区
-            'Iran': '沙漠区',
-            // 冰岛 -> 冰龙遗迹
-            'Iceland': '冰龙遗迹',
-            // 格陵兰 -> 冰龙遗迹
-            'Greenland': '冰龙遗迹',
-            // 阿拉斯加 -> 北境荒原
-            'Alaska': '北境荒原',
-            // 加拿大 -> 北境荒原
-            'Canada': '北境荒原'
+        // 中国省份 -> 奇幻区域映射（中部平原）
+        const centralNameMap = {
+            '北京': '龙虾城',
+            '天津': '王家直辖地',
+            '河北': '寒风原',
+            '山西': '铁矿山区',
+            '内蒙古': '霜狼森林',
+            '辽宁': '黑石关',
+            '吉林': '古木森林',
+            '黑龙江': '幽暗小径',
+            '上海': '银龙河渡口',
+            '江苏': '东部农场',
+            '浙江': '金麦城',
+            '安徽': '药草谷',
+            '福建': '月影镇',
+            '江西': '古木森林',
+            '山东': '东部农场',
+            '河南': '王家直辖地',
+            '湖北': '迷雾沼泽',
+            '湖南': '南方湿地',
+            '广东': '河口城',
+            '广西': '边境哨站',
+            '海南': '失落矿坑',
+            '重庆': '赤岩镇',
+            '四川': '干燥荒原',
+            '贵州': '幽暗小径',
+            '云南': '古木森林',
+            '西藏': '主山脉',
+            '陕西': '铁矿山区',
+            '甘肃': '寒风原',
+            '青海': '霜狼森林',
+            '宁夏': '黑石关',
+            '新疆': '主山脉',
+            '台湾': '火山群岛',
+            '香港': '河口城',
+            '澳门': '河口城'
         };
         
-        // 区域颜色
-        const regionColors = {
+        // 世界地图名称映射
+        const worldNameMap = {
+            'China': '中部平原',
+            'Russia': '北境荒原',
+            'Mongolia': '风暴高原',
+            'Kazakhstan': '主山脉',
+            'Japan': '火山群岛',
+            'India': '深渊边境',
+            'Indonesia': '龙族圣地',
+            'Vietnam': '南方森林',
+            'Thailand': '南方森林',
+            'Myanmar': '南方森林',
+            'Laos': '南方森林',
+            'Cambodia': '南方森林',
+            'Malaysia': '南方森林',
+            'Philippines': '火山群岛',
+            'North Korea': '风暴高原',
+            'South Korea': '风暴高原',
+            'Taiwan': '中部平原',
+            'Uzbekistan': '沙漠区',
+            'Turkmenistan': '沙漠区',
+            'Kyrgyzstan': '主山脉',
+            'Tajikistan': '主山脉',
+            'Afghanistan': '沙漠区',
+            'Pakistan': '深渊边境',
+            'Nepal': '深渊边境',
+            'Bhutan': '深渊边境',
+            'Bangladesh': '深渊边境',
+            'Sri Lanka': '深渊边境',
+            'Iran': '沙漠区',
+            'Iceland': '冰龙遗迹',
+            'Greenland': '冰龙遗迹'
+        };
+        
+        // 区域颜色（中部平原）
+        const centralColors = {
+            // 中央王领 - 蓝色系
+            '龙虾城': '#4fc3f7',
+            '王家直辖地': '#4fc3f7',
+            // 北部边防区 - 橙色系
+            '黑石关': '#ffb74d',
+            '寒风原': '#ef5350', // 未开发高危
+            '铁矿山区': '#ef5350', // 未开发高危
+            '霜狼森林': '#ff8a65', // 未开发中危
+            // 东部平原 - 绿色系
+            '金麦城': '#81c784',
+            '东部农场': '#81c784',
+            '银龙河渡口': '#81c784',
+            '迷雾沼泽': '#ff8a65', // 未开发
+            // 西部森林区 - 棕色系
+            '月影镇': '#a1887f',
+            '古木森林': '#ff8a65', // 未开发
+            '幽暗小径': '#ff8a65', // 未开发
+            '药草谷': '#a1887f',
+            // 西南盆地 - 黄色系
+            '赤岩镇': '#d4a855',
+            '干燥荒原': '#ff8a65', // 未开发
+            '失落矿坑': '#ef5350', // 未开发高危
+            // 南部边境 - 青色系
+            '河口城': '#4db6ac',
+            '南方湿地': '#ff8a65', // 未开发
+            '边境哨站': '#4db6ac'
+        };
+        
+        // 区域颜色（大世界）
+        const worldColors = {
             '北境荒原': '#e57373',
             '风暴高原': '#ba68c8',
             '主山脉': '#ffb74d',
@@ -241,162 +520,274 @@
             '冰龙遗迹': '#b8d4e3'
         };
         
-        // 加载世界地图
-        fetch('https://cdn.jsdelivr.net/npm/echarts/map/json/world.json')
-            .then(response => response.json())
-            .then(worldJson => {
-                // 注册地图
-                echarts.registerMap('world', worldJson);
-                
-                // 准备数据
-                const data = [];
-                Object.keys(regionData).forEach(name => {
-                    data.push({
+        const chart = echarts.init(document.getElementById('map'));
+        
+        // 加载中部平原地图（中国省级）
+        function loadCentralPlainsMap() {
+            currentMap = 'central';
+            document.querySelector('.switch-btn').textContent = '切换到大世界地图';
+            document.querySelector('.info-panel h1').textContent = '🦞 中部平原详细地图';
+            
+            fetch('https://cdn.jsdelivr.net/npm/echarts/map/json/china.json')
+                .then(response => response.json())
+                .then(chinaJson => {
+                    echarts.registerMap('china', chinaJson);
+                    
+                    const data = Object.keys(centralPlainsData).map(name => ({
                         name: name,
-                        value: regionData[name].value,
+                        value: centralPlainsData[name].value,
                         itemStyle: {
-                            areaColor: regionColors[name] || '#3d5a4a'
+                            areaColor: centralColors[name] || '#3d5a4a'
                         }
-                    });
-                });
-                
-                // 初始化图表
-                const chart = echarts.init(document.getElementById('map'));
-                
-                const option = {
-                    backgroundColor: '#1a1a2e',
+                    }));
                     
-                    tooltip: {
-                        trigger: 'item',
-                        backgroundColor: 'rgba(26, 26, 46, 0.95)',
-                        borderColor: '#4a4a6a',
-                        borderWidth: 1,
-                        textStyle: {
-                            color: '#fff'
-                        },
-                        formatter: function(params) {
-                            const info = regionData[params.name];
-                            if (!info) return params.name;
-                            
-                            const dangerColor = info.danger.includes('极高') ? '#ff6b6b' : 
-                                               info.danger.includes('高') ? '#ffb74d' : '#81c784';
-                            
-                            return `
-                                <div style="padding:5px;">
-                                    <div style="font-size:16px;font-weight:bold;color:#ffd700;margin-bottom:8px;">${params.name}</div>
-                                    <div style="font-size:13px;line-height:1.8;">
-                                        <div><span style="color:#87ceeb;">主要种族：</span><span style="color:#90ee90;">${info.race}</span></div>
-                                        <div><span style="color:#87ceeb;">危险等级：</span><span style="color:${dangerColor};">${info.danger}</span></div>
-                                        <div><span style="color:#87ceeb;">描述：</span>${info.description}</div>
-                                        <div><span style="color:#87ceeb;">特点：</span>${info.features}</div>
-                                    </div>
-                                </div>
-                            `;
-                        }
-                    },
-                    
-                    visualMap: {
-                        show: false,
-                        min: 0,
-                        max: 100,
-                        inRange: {
-                            color: ['#3d5a4a', '#4a6a5a', '#5a7a6a']
-                        }
-                    },
-                    
-                    geo: {
-                        map: 'world',
-                        roam: true,
-                        zoom: 3,
-                        center: [105, 35],
-                        scaleLimit: {
-                            min: 2,
-                            max: 10
-                        },
-                        label: {
-                            show: true,
-                            color: '#fff',
-                            fontSize: 10,
+                    const option = {
+                        backgroundColor: '#1a1a2e',
+                        
+                        tooltip: {
+                            trigger: 'item',
+                            backgroundColor: 'rgba(26, 26, 46, 0.95)',
+                            borderColor: '#4a4a6a',
+                            borderWidth: 1,
+                            textStyle: { color: '#fff' },
                             formatter: function(params) {
-                                // 使用映射后的名称
-                                return params.name;
+                                const info = centralPlainsData[params.name];
+                                if (!info) return params.name;
+                                
+                                const statusColor = info.status === '未开发' ? '#ff5252' : 
+                                                   info.status === '部分开发' ? '#ffb74d' : '#81c784';
+                                const dangerColor = info.danger.includes('高') ? '#ff6b6b' : 
+                                                   info.danger.includes('中') ? '#ffb74d' : '#81c784';
+                                
+                                return `
+                                    <div style="padding:5px;max-width:280px;">
+                                        <div style="font-size:16px;font-weight:bold;color:#ffd700;margin-bottom:8px;">${params.name}</div>
+                                        <div style="font-size:12px;line-height:1.8;">
+                                            <div><span style="color:#87ceeb;">所属区域：</span>${info.region}</div>
+                                            <div><span style="color:#87ceeb;">开发状态：</span><span style="color:${statusColor};">${info.status}</span></div>
+                                            <div><span style="color:#87ceeb;">危险等级：</span><span style="color:${dangerColor};">${info.danger}</span></div>
+                                            <div><span style="color:#87ceeb;">人口：</span>${info.population}</div>
+                                            <div><span style="color:#87ceeb;">主要种族：</span><span style="color:#90ee90;">${info.race}</span></div>
+                                            <div><span style="color:#87ceeb;">描述：</span>${info.description}</div>
+                                            <div><span style="color:#87ceeb;">特点：</span>${info.features}</div>
+                                        </div>
+                                    </div>
+                                `;
                             }
                         },
-                        nameMap: nameMap,
-                        itemStyle: {
-                            areaColor: '#2a3a4a',
-                            borderColor: '#4a5a6a',
-                            borderWidth: 1
-                        },
-                        emphasis: {
+                        
+                        geo: {
+                            map: 'china',
+                            roam: true,
+                            zoom: 1.2,
+                            center: [105, 35],
+                            scaleLimit: { min: 1, max: 5 },
                             label: {
                                 show: true,
-                                color: '#ffd700',
-                                fontSize: 14
+                                color: '#fff',
+                                fontSize: 10,
+                                formatter: function(params) {
+                                    return centralNameMap[params.name] || params.name;
+                                }
                             },
+                            nameMap: centralNameMap,
                             itemStyle: {
-                                areaColor: '#4a6a7a'
-                            }
-                        },
-                        regions: Object.keys(regionData).map(name => ({
-                            name: name,
-                            itemStyle: {
-                                areaColor: regionColors[name],
-                                borderColor: '#fff',
+                                areaColor: '#2a3a4a',
+                                borderColor: '#4a5a6a',
                                 borderWidth: 1
                             },
                             emphasis: {
+                                label: {
+                                    show: true,
+                                    color: '#ffd700',
+                                    fontSize: 14
+                                },
                                 itemStyle: {
-                                    areaColor: regionColors[name],
-                                    shadowBlur: 20,
-                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    areaColor: '#4a6a7a'
                                 }
-                            }
-                        }))
-                    },
-                    
-                    series: [{
-                        type: 'map',
-                        map: 'world',
-                        geoIndex: 0,
-                        data: data,
-                        nameMap: nameMap
-                    }, {
-                        // 城市标记
-                        type: 'scatter',
-                        coordinateSystem: 'geo',
-                        data: [
-                            { name: '王都', value: [110, 35, 100], symbol: 'pin', symbolSize: 40, itemStyle: { color: '#ffd700' } },
-                            { name: '精灵城', value: [130, 52, 80], symbol: 'pin', symbolSize: 35, itemStyle: { color: '#81c784' } },
-                            { name: '矮人堡', value: [75, 43, 80], symbol: 'pin', symbolSize: 35, itemStyle: { color: '#ffb74d' } },
-                            { name: '圣坛', value: [115, -5, 60], symbol: 'pin', symbolSize: 30, itemStyle: { color: '#ffd700' } }
-                        ],
-                        label: {
-                            show: true,
-                            formatter: '{b}',
-                            position: 'bottom',
-                            color: '#ffd700',
-                            fontSize: 12
+                            },
+                            regions: Object.keys(centralPlainsData).map(name => ({
+                                name: name,
+                                itemStyle: {
+                                    areaColor: centralColors[name],
+                                    borderColor: '#fff',
+                                    borderWidth: 1
+                                },
+                                emphasis: {
+                                    itemStyle: {
+                                        areaColor: centralColors[name],
+                                        shadowBlur: 20,
+                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
+                                }
+                            }))
                         },
-                        tooltip: {
-                            formatter: function(params) {
-                                return `<div style="font-weight:bold;color:#ffd700;">${params.name}</div>`;
+                        
+                        series: [{
+                            type: 'map',
+                            map: 'china',
+                            geoIndex: 0,
+                            data: data,
+                            nameMap: centralNameMap
+                        }, {
+                            type: 'scatter',
+                            coordinateSystem: 'geo',
+                            data: [
+                                { name: '王都', value: [116, 40, 100], symbol: 'pin', symbolSize: 50, itemStyle: { color: '#ffd700' } }
+                            ],
+                            label: {
+                                show: true,
+                                formatter: '{b}',
+                                position: 'bottom',
+                                color: '#ffd700',
+                                fontSize: 14,
+                                fontWeight: 'bold'
                             }
-                        }
-                    }]
-                };
-                
-                chart.setOption(option);
-                
-                // 响应窗口大小变化
-                window.addEventListener('resize', function() {
-                    chart.resize();
+                        }]
+                    };
+                    
+                    chart.setOption(option, true);
                 });
-            })
-            .catch(error => {
-                console.error('加载地图失败:', error);
-                document.getElementById('map').innerHTML = '<div style="color:#fff;text-align:center;padding:50px;">地图加载失败，请刷新页面重试</div>';
-            });
+        }
+        
+        // 加载大世界地图
+        function loadWorldMap() {
+            currentMap = 'world';
+            document.querySelector('.switch-btn').textContent = '切换到中部平原';
+            document.querySelector('.info-panel h1').textContent = '🦞 世界地图';
+            
+            fetch('https://cdn.jsdelivr.net/npm/echarts/map/json/world.json')
+                .then(response => response.json())
+                .then(worldJson => {
+                    echarts.registerMap('world', worldJson);
+                    
+                    const data = Object.keys(worldData).map(name => ({
+                        name: name,
+                        value: worldData[name].value,
+                        itemStyle: {
+                            areaColor: worldColors[name] || '#3d5a4a'
+                        }
+                    }));
+                    
+                    const option = {
+                        backgroundColor: '#1a1a2e',
+                        
+                        tooltip: {
+                            trigger: 'item',
+                            backgroundColor: 'rgba(26, 26, 46, 0.95)',
+                            borderColor: '#4a4a6a',
+                            borderWidth: 1,
+                            textStyle: { color: '#fff' },
+                            formatter: function(params) {
+                                const info = worldData[params.name];
+                                if (!info) return params.name;
+                                
+                                const dangerColor = info.danger.includes('极高') ? '#ff6b6b' : 
+                                                   info.danger.includes('高') ? '#ffb74d' : '#81c784';
+                                
+                                return `
+                                    <div style="padding:5px;">
+                                        <div style="font-size:16px;font-weight:bold;color:#ffd700;margin-bottom:8px;">${params.name}</div>
+                                        <div style="font-size:13px;line-height:1.8;">
+                                            <div><span style="color:#87ceeb;">主要种族：</span><span style="color:#90ee90;">${info.race}</span></div>
+                                            <div><span style="color:#87ceeb;">危险等级：</span><span style="color:${dangerColor};">${info.danger}</span></div>
+                                            <div><span style="color:#87ceeb;">描述：</span>${info.description}</div>
+                                            <div><span style="color:#87ceeb;">特点：</span>${info.features}</div>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        },
+                        
+                        geo: {
+                            map: 'world',
+                            roam: true,
+                            zoom: 3,
+                            center: [105, 35],
+                            scaleLimit: { min: 2, max: 10 },
+                            label: {
+                                show: true,
+                                color: '#fff',
+                                fontSize: 10
+                            },
+                            nameMap: worldNameMap,
+                            itemStyle: {
+                                areaColor: '#2a3a4a',
+                                borderColor: '#4a5a6a',
+                                borderWidth: 1
+                            },
+                            emphasis: {
+                                label: {
+                                    show: true,
+                                    color: '#ffd700',
+                                    fontSize: 14
+                                },
+                                itemStyle: {
+                                    areaColor: '#4a6a7a'
+                                }
+                            },
+                            regions: Object.keys(worldData).map(name => ({
+                                name: name,
+                                itemStyle: {
+                                    areaColor: worldColors[name],
+                                    borderColor: '#fff',
+                                    borderWidth: 1
+                                },
+                                emphasis: {
+                                    itemStyle: {
+                                        areaColor: worldColors[name],
+                                        shadowBlur: 20,
+                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
+                                }
+                            }))
+                        },
+                        
+                        series: [{
+                            type: 'map',
+                            map: 'world',
+                            geoIndex: 0,
+                            data: data,
+                            nameMap: worldNameMap
+                        }, {
+                            type: 'scatter',
+                            coordinateSystem: 'geo',
+                            data: [
+                                { name: '王都', value: [116, 40, 100], symbol: 'pin', symbolSize: 40, itemStyle: { color: '#ffd700' } },
+                                { name: '精灵城', value: [130, 52, 80], symbol: 'pin', symbolSize: 35, itemStyle: { color: '#81c784' } },
+                                { name: '矮人堡', value: [75, 43, 80], symbol: 'pin', symbolSize: 35, itemStyle: { color: '#ffb74d' } },
+                                { name: '圣坛', value: [115, -5, 60], symbol: 'pin', symbolSize: 30, itemStyle: { color: '#ffd700' } }
+                            ],
+                            label: {
+                                show: true,
+                                formatter: '{b}',
+                                position: 'bottom',
+                                color: '#ffd700',
+                                fontSize: 12
+                            }
+                        }]
+                    };
+                    
+                    chart.setOption(option, true);
+                });
+        }
+        
+        // 切换地图
+        function switchMap() {
+            if (currentMap === 'central') {
+                loadWorldMap();
+            } else {
+                loadCentralPlainsMap();
+            }
+        }
+        
+        // 初始化加载中部平原地图
+        loadCentralPlainsMap();
+        
+        // 响应窗口大小变化
+        window.addEventListener('resize', function() {
+            chart.resize();
+        });
     </script>
 </body>
 </html>
