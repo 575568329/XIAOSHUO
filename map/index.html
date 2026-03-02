@@ -81,13 +81,11 @@
         function setStats(regions) {
             const total = Object.values(regions).reduce((a,b) => a + b, 0);
             let html = `<b>总计: ${total} 区域</b><br>`;
-            Object.keys(regions).forEach(k => {
-                html += `${k}: ${regions[k]} | `;
-            });
+            Object.keys(regions).forEach(k => html += `${k}: ${regions[k]} | `);
             statsEl.innerHTML = html.slice(0, -3);
         }
         
-        // ========== 所有区域数据 ==========
+        // ========== 区域数据 ==========
         
         // 中部平原（中国）34省
         const chinaData = {
@@ -127,123 +125,113 @@
             '澳门特别行政区': { name: '河口城', color: '#4fc3f7' }
         };
         
-        // 北境荒原（俄罗斯）联邦主体 - 使用GeoJSON中的实际名称
+        // 北境荒原（俄罗斯）83个联邦主体 - 使用name_latin完整英文名
         const russiaData = {
-            // 莫斯科 - 冰霜堡垒
+            // 冰霜堡垒（中央联邦管区）
             'Moscow': { name: '冰霜堡垒', color: '#e57373' },
-            'Москва': { name: '冰霜堡垒', color: '#e57373' },
-            // 圣彼得堡 - 北境商路
+            'Moscow Oblast': { name: '冰霜堡垒', color: '#e57373' },
+            'Belgorod Oblast': { name: '冰霜堡垒', color: '#e57373' },
+            'Bryansk Oblast': { name: '冰霜堡垒', color: '#e57373' },
+            'Ivanovo Oblast': { name: '冰霜堡垒', color: '#e57373' },
+            'Kaluga Oblast': { name: '冰霜堡垒', color: '#e57373' },
+            'Kostroma Oblast': { name: '冰霜堡垒', color: '#e57373' },
+            'Kursk Oblast': { name: '冰霜堡垒', color: '#e57373' },
+            'Lipetsk Oblast': { name: '冰霜堡垒', color: '#e57373' },
+            'Oryol Oblast': { name: '冰霜堡垒', color: '#e57373' },
+            'Ryazan Oblast': { name: '冰霜堡垒', color: '#e57373' },
+            'Smolensk Oblast': { name: '冰霜堡垒', color: '#e57373' },
+            'Tambov Oblast': { name: '冰霜堡垒', color: '#e57373' },
+            'Tula Oblast': { name: '冰霜堡垒', color: '#e57373' },
+            'Tver Oblast': { name: '冰霜堡垒', color: '#e57373' },
+            'Vladimir Oblast': { name: '冰霜堡垒', color: '#e57373' },
+            'Voronezh Oblast': { name: '冰霜堡垒', color: '#e57373' },
+            'Yaroslavl Oblast': { name: '冰霜堡垒', color: '#e57373' },
+            
+            // 北境商路（西北联邦管区）
             'Saint Petersburg': { name: '北境商路', color: '#ef9a9a' },
-            'Санкт-Петербург': { name: '北境商路', color: '#ef9a9a' },
-            // 其他联邦主体 - 统一使用兽人区域颜色
-            'Adygey': { name: '狼群山谷', color: '#e57373' },
-            'Bashkortostan': { name: '兽人王庭', color: '#e57373' },
-            'Buryatia': { name: '永冻苔原', color: '#ef5350' },
-            'Chechnya': { name: '南方边境', color: '#ef9a9a' },
-            'Chuvashia': { name: '极光平原', color: '#ef9a9a' },
-            'Dagestan': { name: '南方边境', color: '#ef9a9a' },
-            'Ingushetia': { name: '南方边境', color: '#ef9a9a' },
-            'Kabardin-Balkar': { name: '南方边境', color: '#ef9a9a' },
-            'Kalmykia': { name: '极光平原', color: '#ef9a9a' },
-            'Karachay-Cherkess': { name: '南方边境', color: '#ef9a9a' },
-            'Karelia': { name: '北境商路', color: '#ef9a9a' },
-            'Komi': { name: '北境商路', color: '#ef9a9a' },
-            'Mari El': { name: '极光平原', color: '#ef9a9a' },
-            'Mordovia': { name: '极光平原', color: '#ef9a9a' },
-            'North Ossetia': { name: '南方边境', color: '#ef9a9a' },
-            'Tatarstan': { name: '兽人王庭', color: '#e57373' },
-            'Tyva': { name: '永冻苔原', color: '#ef5350' },
-            'Udmurtia': { name: '兽人王庭', color: '#e57373' },
-            'Khakassia': { name: '永冻苔原', color: '#ef5350' },
-            'Yakutia': { name: '永冻苔原', color: '#ef5350' },
+            'Leningrad Oblast': { name: '北境商路', color: '#ef9a9a' },
+            'Arkhangelsk Oblast': { name: '北境商路', color: '#ef9a9a' },
+            'Kaliningrad Oblast': { name: '北境商路', color: '#ef9a9a' },
+            'Republic of Karelia': { name: '北境商路', color: '#ef9a9a' },
+            'Komi Republic': { name: '北境商路', color: '#ef9a9a' },
+            'Murmansk Oblast': { name: '北境商路', color: '#ef9a9a' },
+            'Novgorod Oblast': { name: '北境商路', color: '#ef9a9a' },
+            'Pskov Oblast': { name: '北境商路', color: '#ef9a9a' },
+            'Vologda Oblast': { name: '北境商路', color: '#ef9a9a' },
+            'Nenets Autonomous Okrug': { name: '北境商路', color: '#ef9a9a' },
+            
+            // 狼群山谷（南部联邦管区）
+            'Krasnodar Krai': { name: '狼群山谷', color: '#e57373' },
+            'Astrakhan Oblast': { name: '狼群山谷', color: '#e57373' },
+            'Volgograd Oblast': { name: '狼群山谷', color: '#e57373' },
+            'Rostov Oblast': { name: '狼群山谷', color: '#e57373' },
+            'Republic of Adygea': { name: '狼群山谷', color: '#e57373' },
+            'Republic of Kalmykia': { name: '狼群山谷', color: '#e57373' },
+            'Republic of Crimea': { name: '狼群山谷', color: '#e57373' },
+            'Sevastopol': { name: '狼群山谷', color: '#e57373' },
+            
+            // 南方边境（北高加索联邦管区）
+            'Republic of Dagestan': { name: '南方边境', color: '#ef9a9a' },
+            'Republic of Ingushetia': { name: '南方边境', color: '#ef9a9a' },
+            'Kabardino-Balkar Republic': { name: '南方边境', color: '#ef9a9a' },
+            'Karachay-Cherkess Republic': { name: '南方边境', color: '#ef9a9a' },
+            'Republic of North Ossetia-Alania': { name: '南方边境', color: '#ef9a9a' },
+            'Chechen Republic': { name: '南方边境', color: '#ef9a9a' },
+            'Stavropol Krai': { name: '南方边境', color: '#ef9a9a' },
+            
+            // 极光平原 + 兽人王庭（伏尔加联邦管区）
+            'Republic of Bashkortostan': { name: '兽人王庭', color: '#e57373' },
+            'Republic of Mari El': { name: '极光平原', color: '#ef9a9a' },
+            'Republic of Mordovia': { name: '极光平原', color: '#ef9a9a' },
+            'Republic of Tatarstan': { name: '兽人王庭', color: '#e57373' },
+            'Udmurt Republic': { name: '兽人王庭', color: '#e57373' },
+            'Chuvash Republic': { name: '极光平原', color: '#ef9a9a' },
+            'Perm Krai': { name: '兽人王庭', color: '#e57373' },
+            'Kirov Oblast': { name: '极光平原', color: '#ef9a9a' },
+            'Nizhny Novgorod Oblast': { name: '极光平原', color: '#ef9a9a' },
+            'Orenburg Oblast': { name: '兽人王庭', color: '#e57373' },
+            'Penza Oblast': { name: '极光平原', color: '#ef9a9a' },
+            'Samara Oblast': { name: '兽人王庭', color: '#e57373' },
+            'Saratov Oblast': { name: '极光平原', color: '#ef9a9a' },
+            'Ulyanovsk Oblast': { name: '极光平原', color: '#ef9a9a' },
+            
+            // 兽人王庭（乌拉尔联邦管区）
+            'Sverdlovsk Oblast': { name: '兽人王庭', color: '#e57373' },
+            'Chelyabinsk Oblast': { name: '兽人王庭', color: '#e57373' },
+            'Tyumen Oblast': { name: '兽人王庭', color: '#e57373' },
+            'Khanty-Mansi Autonomous Okrug': { name: '兽人王庭', color: '#e57373' },
+            'Yamalo-Nenets Autonomous Okrug': { name: '永冻苔原', color: '#ef5350' },
+            'Kurgan Oblast': { name: '兽人王庭', color: '#e57373' },
+            
+            // 冰原猎场（西伯利亚联邦管区）
+            'Altai Republic': { name: '冰原猎场', color: '#e57373' },
             'Altai Krai': { name: '冰原猎场', color: '#e57373' },
-            'Kamchatka': { name: '永冻苔原', color: '#ef5350' },
-            'Krasnodar': { name: '狼群山谷', color: '#e57373' },
-            'Krasnoyarsk': { name: '冰原猎场', color: '#e57373' },
-            'Primorsky': { name: '永冻苔原', color: '#ef5350' },
-            'Stavropol': { name: '狼群山谷', color: '#e57373' },
-            'Khabarovsk': { name: '永冻苔原', color: '#ef5350' },
-            'Amur': { name: '永冻苔原', color: '#ef5350' },
-            'Arkhangelsk': { name: '北境商路', color: '#ef9a9a' },
-            'Astrakhan': { name: '极光平原', color: '#ef9a9a' },
-            'Belgorod': { name: '冰霜堡垒', color: '#e57373' },
-            'Bryansk': { name: '冰霜堡垒', color: '#e57373' },
-            'Chelyabinsk': { name: '兽人王庭', color: '#e57373' },
-            'Irkutsk': { name: '冰原猎场', color: '#e57373' },
-            'Ivanovo': { name: '冰霜堡垒', color: '#e57373' },
-            'Kaliningrad': { name: '北境商路', color: '#ef9a9a' },
-            'Kaluga': { name: '冰霜堡垒', color: '#e57373' },
-            'Kemerovo': { name: '兽人王庭', color: '#e57373' },
-            'Kirov': { name: '极光平原', color: '#ef9a9a' },
-            'Kostroma': { name: '冰霜堡垒', color: '#e57373' },
-            'Kurgan': { name: '兽人王庭', color: '#e57373' },
-            'Kursk': { name: '冰霜堡垒', color: '#e57373' },
-            'Leningrad': { name: '北境商路', color: '#ef9a9a' },
-            'Lipetsk': { name: '冰霜堡垒', color: '#e57373' },
-            'Magadan': { name: '永冻苔原', color: '#ef5350' },
-            'Murmansk': { name: '北境商路', color: '#ef9a9a' },
-            'Nizhny Novgorod': { name: '极光平原', color: '#ef9a9a' },
-            'Novgorod': { name: '北境商路', color: '#ef9a9a' },
-            'Novosibirsk': { name: '冰原猎场', color: '#e57373' },
-            'Omsk': { name: '兽人王庭', color: '#e57373' },
-            'Orenburg': { name: '兽人王庭', color: '#e57373' },
-            'Oryol': { name: '冰霜堡垒', color: '#e57373' },
-            'Penza': { name: '极光平原', color: '#ef9a9a' },
-            'Pskov': { name: '北境商路', color: '#ef9a9a' },
-            'Rostov': { name: '狼群山谷', color: '#e57373' },
-            'Ryazan': { name: '冰霜堡垒', color: '#e57373' },
-            'Samara': { name: '兽人王庭', color: '#e57373' },
-            'Saratov': { name: '极光平原', color: '#ef9a9a' },
-            'Sakhalin': { name: '永冻苔原', color: '#ef5350' },
-            'Sverdlovsk': { name: '兽人王庭', color: '#e57373' },
-            'Smolensk': { name: '冰霜堡垒', color: '#e57373' },
-            'Tambov': { name: '冰霜堡垒', color: '#e57373' },
-            'Tomsk': { name: '冰原猎场', color: '#e57373' },
-            'Tula': { name: '冰霜堡垒', color: '#e57373' },
-            'Tver': { name: '冰霜堡垒', color: '#e57373' },
-            'Tyumen': { name: '兽人王庭', color: '#e57373' },
-            'Ulyanovsk': { name: '极光平原', color: '#ef9a9a' },
-            'Vladimir': { name: '冰霜堡垒', color: '#e57373' },
-            'Volgograd': { name: '极光平原', color: '#ef9a9a' },
-            'Vologda': { name: '北境商路', color: '#ef9a9a' },
-            'Voronezh': { name: '冰霜堡垒', color: '#e57373' },
-            'Yaroslavl': { name: '冰霜堡垒', color: '#e57373' },
-            'Chukotka': { name: '永冻苔原', color: '#ef5350' },
-            'Khanty-Mansi': { name: '兽人王庭', color: '#e57373' },
-            'Nenets': { name: '北境商路', color: '#ef9a9a' },
-            'Yamalo-Nenets': { name: '永冻苔原', color: '#ef5350' },
-            'Jewish': { name: '永冻苔原', color: '#ef5350' },
-            'Crimea': { name: '狼群山谷', color: '#e57373' },
-            'Sevastopol': { name: '狼群山谷', color: '#e57373' }
+            'Irkutsk Oblast': { name: '冰原猎场', color: '#e57373' },
+            'Kemerovo Oblast': { name: '兽人王庭', color: '#e57373' },
+            'Krasnoyarsk Krai': { name: '冰原猎场', color: '#e57373' },
+            'Novosibirsk Oblast': { name: '冰原猎场', color: '#e57373' },
+            'Omsk Oblast': { name: '兽人王庭', color: '#e57373' },
+            'Tomsk Oblast': { name: '冰原猎场', color: '#e57373' },
+            'Tuva Republic': { name: '永冻苔原', color: '#ef5350' },
+            'Republic of Khakassia': { name: '永冻苔原', color: '#ef5350' },
+            
+            // 永冻苔原（远东联邦管区）
+            'Republic of Buryatia': { name: '永冻苔原', color: '#ef5350' },
+            'Republic of Sakha (Yakutia)': { name: '永冻苔原', color: '#ef5350' },
+            'Zabaykalsky Krai': { name: '永冻苔原', color: '#ef5350' },
+            'Kamchatka Krai': { name: '永冻苔原', color: '#ef5350' },
+            'Primorsky Krai': { name: '永冻苔原', color: '#ef5350' },
+            'Khabarovsk Krai': { name: '永冻苔原', color: '#ef5350' },
+            'Amur Oblast': { name: '永冻苔原', color: '#ef5350' },
+            'Magadan Oblast': { name: '永冻苔原', color: '#ef5350' },
+            'Sakhalin Oblast': { name: '永冻苔原', color: '#ef5350' },
+            'Jewish Autonomous Oblast': { name: '永冻苔原', color: '#ef5350' },
+            'Chukotka Autonomous Okrug': { name: '永冻苔原', color: '#ef5350' }
         };
         
-        // 风暴高原（蒙古）21省+首都
-        const mongoliaData = {
-            'Ulaanbaatar': { name: '风暴王城', color: '#ba68c8' },
-            'Orkhon': { name: '雷电网', color: '#ce93d8' },
-            'Darkhan-Uul': { name: '雷鸣矿场', color: '#ce93d8' },
-            'Khentii': { name: '风暴平原', color: '#ba68c8' },
-            'Töv': { name: '风暴中央', color: '#ba68c8' },
-            'Govisümber': { name: '雷暴沙漠', color: '#ba68c8' },
-            'Selenge': { name: '北方高原', color: '#ba68c8' },
-            'Dornod': { name: '东方风暴', color: '#ba68c8' },
-            'Sükhbaatar': { name: '南方风暴', color: '#ba68c8' },
-            'Ömnögovi': { name: '南方沙漠', color: '#ba68c8' },
-            'Bayankhongor': { name: '中央高地', color: '#ba68c8' },
-            'Arkhangai': { name: '北方山地', color: '#ba68c8' },
-            'Khövsgöl': { name: '北方圣湖', color: '#ce93d8' },
-            'Uvs': { name: '西方高原', color: '#ba68c8' },
-            'Khovd': { name: '西方边境', color: '#ba68c8' },
-            'Bayan-Ölgii': { name: '西北边境', color: '#ba68c8' },
-            'Zavkhan': { name: '西方森林', color: '#ba68c8' },
-            'Govi-Altai': { name: '沙漠高原', color: '#ba68c8' },
-            'Bulgan': { name: '北方森林', color: '#ba68c8' },
-            'Dundgovi': { name: '中央沙漠', color: '#ba68c8' },
-            'Dornogovi': { name: '东方沙漠', color: '#ba68c8' }
-        };
-        
-        // 其他区域（整体显示）
+        // 其他区域
         const otherData = {
+            'Mongolia': { name: '风暴高原', color: '#ba68c8' },
             'Japan': { name: '火山群岛', color: '#ba68c8' },
             'India': { name: '深渊边境', color: '#9575cd' },
             'Indonesia': { name: '龙族圣地', color: '#ba68c8' },
@@ -267,20 +255,15 @@
             'Bangladesh': { name: '深渊边境', color: '#9575cd' },
             'Sri Lanka': { name: '深渊岛', color: '#9575cd' },
             'North Korea': { name: '风暴高原', color: '#ba68c8' },
-            'South Korea': { name: '风暴高原', color: '#ba68c8' },
-            'Mongolia': { name: '风暴高原', color: '#ba68c8' }  // 保留整体显示作为备用
+            'South Korea': { name: '风暴高原', color: '#ba68c8' }
         };
         
         async function loadGeoJSON(url) {
             try {
                 const res = await fetch(url);
-                if (!res.ok) {
-                    console.log(`HTTP ${res.status}: ${url}`);
-                    return null;
-                }
+                if (!res.ok) return null;
                 return await res.json();
             } catch (e) {
-                console.log(`Failed: ${url}`, e.message);
                 return null;
             }
         }
@@ -291,92 +274,67 @@
             try {
                 setStatus('加载世界地图...');
                 const world = await loadGeoJSON('https://cdn.jsdelivr.net/npm/echarts/map/json/world.json');
-                if (!world) throw new Error('World map failed');
                 
-                setStatus('加载中部平原（34省）...');
+                setStatus('加载中部平原...');
                 const china = await loadGeoJSON('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json');
                 
-                setStatus('加载俄罗斯联邦主体...');
+                setStatus('加载北境荒原...');
                 const russia = await loadGeoJSON('https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/russia.geojson');
                 
                 setStatus('合并地图数据...');
                 
-                // 要移除的国家（只移除有详细数据的）
                 const removeCountries = ['China', 'Russia'];
                 let features = world.features.filter(f => !removeCountries.includes(f.properties.name));
                 
-                // 添加中国省份
+                // 中国
                 let count = 0;
-                if (china && china.features) {
+                if (china?.features) {
                     china.features.forEach(f => {
-                        if (f.properties && f.properties.name) {
-                            features.push({
-                                type: 'Feature',
-                                properties: { name: f.properties.name },
-                                geometry: f.geometry
-                            });
+                        if (f.properties?.name) {
+                            features.push({ type: 'Feature', properties: { name: f.properties.name }, geometry: f.geometry });
                             count++;
                         }
                     });
                 }
                 regionCount['中部平原'] = count;
                 
-                // 添加俄罗斯联邦主体
+                // 俄罗斯
                 count = 0;
-                if (russia && russia.features) {
-                    console.log('俄罗斯GeoJSON加载成功，features数量:', russia.features.length);
-                    console.log('第一个feature的properties:', russia.features[0]?.properties);
-                    
+                if (russia?.features) {
+                    console.log('俄罗斯features:', russia.features.length);
                     russia.features.forEach(f => {
-                        // 尝试多种属性名
-                        const name = f.properties?.name || f.properties?.NAME || f.properties?.name_en || 
-                                    f.properties?.title || f.properties?.cartodb_id;
+                        const name = f.properties?.name_latin || f.properties?.name;
                         if (name) {
-                            features.push({
-                                type: 'Feature',
-                                properties: { name: name },
-                                geometry: f.geometry
-                            });
+                            features.push({ type: 'Feature', properties: { name }, geometry: f.geometry });
                             count++;
                         }
                     });
                 }
-                regionCount['北境荒原'] = count || 85;
-                
-                // 蒙古保持整体显示（GeoJSON不可用）
+                regionCount['北境荒原'] = count || 83;
                 regionCount['风暴高原'] = 1;
                 regionCount['火山群岛'] = 47;
                 regionCount['深渊边境'] = 36;
-                regionCount['龙族圣地'] = 34;
-                regionCount['南方森林'] = 140;
-                regionCount['主山脉'] = 20;
+                regionCount['南方森林'] = 7;
+                regionCount['主山脉'] = 3;
                 regionCount['沙漠区'] = 4;
                 
                 echarts.registerMap('combined', { type: 'FeatureCollection', features });
                 
                 setStatus('渲染地图...');
                 
-                // 准备数据
                 const data = [];
                 const allInfo = {};
                 
-                // 中国
                 Object.keys(chinaData).forEach(name => {
                     data.push({ name, value: 1, itemStyle: { areaColor: chinaData[name].color } });
                     allInfo[name] = chinaData[name].name;
                 });
                 
-                // 俄罗斯
                 Object.keys(russiaData).forEach(name => {
                     data.push({ name, value: 1, itemStyle: { areaColor: russiaData[name].color } });
                     allInfo[name] = russiaData[name].name;
                 });
                 
-                // 蒙古（整体）
-                data.push({ name: 'Mongolia', value: 1, itemStyle: { areaColor: '#ba68c8' } });
-                allInfo['Mongolia'] = '风暴高原';
-                
-                // 其他
                 Object.keys(otherData).forEach(name => {
                     data.push({ name, value: 1, itemStyle: { areaColor: otherData[name].color } });
                     allInfo[name] = otherData[name].name;
@@ -384,12 +342,7 @@
                 
                 chart.setOption({
                     backgroundColor: '#1a3a5c',
-                    tooltip: {
-                        formatter: p => {
-                            const name = allInfo[p.name] || p.name;
-                            return `<b style="color:#ffd700">${name}</b>`;
-                        }
-                    },
+                    tooltip: { formatter: p => `<b style="color:#ffd700">${allInfo[p.name] || p.name}</b>` },
                     series: [{
                         type: 'map',
                         map: 'combined',
@@ -405,15 +358,8 @@
                                 return name.length > 3 ? name.slice(0, 2) + '..' : name;
                             }
                         },
-                        itemStyle: {
-                            areaColor: '#3d5a4a',
-                            borderColor: '#7ab8a8',
-                            borderWidth: 1
-                        },
-                        emphasis: {
-                            label: { color: '#ffd700', fontSize: 9 },
-                            itemStyle: { borderColor: '#ffd700', borderWidth: 2 }
-                        },
+                        itemStyle: { areaColor: '#3d5a4a', borderColor: '#7ab8a8', borderWidth: 1 },
+                        emphasis: { label: { color: '#ffd700', fontSize: 9 }, itemStyle: { borderColor: '#ffd700', borderWidth: 2 } },
                         data: data
                     }]
                 });
@@ -423,7 +369,7 @@
                 
             } catch (e) {
                 console.error('加载失败:', e);
-                setStatus('✗ 加载失败，请刷新');
+                setStatus('✗ 加载失败');
             }
         }
         
