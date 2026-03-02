@@ -19,9 +19,11 @@
             color: #fff;
             border: 1px solid #4a4a6a;
             z-index: 1000;
+            max-width: 280px;
         }
         .panel h1 { color: #ffd700; font-size: 18px; margin-bottom: 5px; }
-        .panel p { font-size: 12px; color: #aaa; }
+        .panel p { font-size: 12px; color: #aaa; line-height: 1.5; }
+        .panel .status { margin-top: 10px; font-size: 11px; color: #81c784; }
         .legend {
             position: fixed;
             bottom: 10px;
@@ -32,36 +34,60 @@
             color: #fff;
             border: 1px solid #4a4a6a;
             z-index: 1000;
+            max-height: 60vh;
+            overflow-y: auto;
         }
-        .legend h3 { color: #ffd700; margin-bottom: 10px; }
-        .legend-item { display: flex; align-items: center; margin: 4px 0; font-size: 11px; }
-        .legend-color { width: 16px; height: 16px; border-radius: 3px; margin-right: 6px; }
+        .legend h3 { color: #ffd700; margin-bottom: 10px; font-size: 14px; }
+        .legend h4 { color: #87ceeb; margin: 8px 0 5px; font-size: 12px; }
+        .legend-item { display: flex; align-items: center; margin: 3px 0; font-size: 11px; }
+        .legend-color { width: 14px; height: 14px; border-radius: 3px; margin-right: 6px; }
     </style>
 </head>
 <body>
     <div class="panel">
         <h1>🦞 世界地图</h1>
         <p>拖拽移动 | 滚轮缩放</p>
+        <div class="status" id="status">加载中...</div>
     </div>
     <div class="legend">
-        <h3>图例</h3>
-        <div class="legend-item"><div class="legend-color" style="background:#4fc3f7"></div>人类/已开发</div>
-        <div class="legend-item"><div class="legend-color" style="background:#81c784"></div>精灵/农业</div>
-        <div class="legend-item"><div class="legend-color" style="background:#ffb74d"></div>矮人/要塞</div>
-        <div class="legend-item"><div class="legend-color" style="background:#e57373"></div>兽人区域</div>
-        <div class="legend-item"><div class="legend-color" style="background:#ba68c8"></div>龙裔区域</div>
-        <div class="legend-item"><div class="legend-color" style="background:#9575cd"></div>深渊族</div>
+        <h3>🗺️ 图例</h3>
+        <h4>中部平原</h4>
+        <div class="legend-item"><div class="legend-color" style="background:#4fc3f7"></div>已开发-人类</div>
+        <div class="legend-item"><div class="legend-color" style="background:#81c784"></div>已开发-农业/精灵</div>
+        <div class="legend-item"><div class="legend-color" style="background:#ffb74d"></div>已开发-矮人/要塞</div>
+        <div class="legend-item"><div class="legend-color" style="background:#a1887f"></div>部分开发</div>
         <div class="legend-item"><div class="legend-color" style="background:#ff8a65"></div>未开发-中危</div>
         <div class="legend-item"><div class="legend-color" style="background:#ef5350"></div>未开发-高危</div>
+        <h4>北境荒原</h4>
+        <div class="legend-item"><div class="legend-color" style="background:#ef9a9a"></div>兽人部落</div>
+        <div class="legend-item"><div class="legend-color" style="background:#e57373"></div>冰原猎场</div>
+        <h4>深渊边境</h4>
+        <div class="legend-item"><div class="legend-color" style="background:#b39ddb"></div>深渊族领地</div>
+        <div class="legend-item"><div class="legend-color" style="background:#9575cd"></div>深渊王城</div>
+        <h4>火山群岛</h4>
+        <div class="legend-item"><div class="legend-color" style="background:#ce93d8"></div>红龙裔领地</div>
+        <div class="legend-item"><div class="legend-color" style="background:#ba68c8"></div>火焰圣地</div>
+        <h4>其他区域</h4>
+        <div class="legend-item"><div class="legend-color" style="background:#81c784"></div>精灵森林</div>
+        <div class="legend-item"><div class="legend-color" style="background:#ffb74d"></div>矮人山脉</div>
+        <div class="legend-item"><div class="legend-color" style="background:#d4a855"></div>沙漠区</div>
+        <div class="legend-item"><div class="legend-color" style="background:#4db6ac"></div>边境哨站</div>
     </div>
     <div id="map"></div>
     
     <script>
         const chart = echarts.init(document.getElementById('map'));
+        const statusEl = document.getElementById('status');
         
-        // 省份颜色映射
-        const provinceStyle = {
-            '北京': '#4fc3f7', '天津市': '#4fc3f7', '河北省': '#ef5350', '山西省': '#ef5350',
+        function setStatus(text) {
+            statusEl.textContent = text;
+        }
+        
+        // ========== 数据定义 ==========
+        
+        // 中部平原省份
+        const chinaStyle = {
+            '北京市': '#4fc3f7', '天津市': '#4fc3f7', '河北省': '#ef5350', '山西省': '#ef5350',
             '内蒙古自治区': '#ff8a65', '辽宁省': '#ffb74d', '吉林省': '#ff8a65', '黑龙江省': '#ff8a65',
             '上海市': '#4fc3f7', '江苏省': '#81c784', '浙江省': '#81c784', '安徽省': '#a1887f',
             '福建省': '#81c784', '江西省': '#ff8a65', '山东省': '#81c784', '河南省': '#4fc3f7',
@@ -72,9 +98,8 @@
             '台湾省': '#ba68c8', '香港特别行政区': '#4fc3f7', '澳门特别行政区': '#4fc3f7'
         };
         
-        // 省份信息
-        const provinceInfo = {
-            '北京': '龙虾城', '天津市': '王家直辖地', '河北省': '寒风原', '山西省': '铁矿山区',
+        const chinaInfo = {
+            '北京市': '龙虾城', '天津市': '王家直辖地', '河北省': '寒风原', '山西省': '铁矿山区',
             '内蒙古自治区': '霜狼森林', '辽宁省': '黑石关', '吉林省': '古木森林', '黑龙江省': '幽暗小径',
             '上海市': '银龙河渡口', '江苏省': '东部农场', '浙江省': '金麦城', '安徽省': '药草谷',
             '福建省': '月影镇', '江西省': '古木森林', '山东省': '东部农场', '河南省': '王家直辖地',
@@ -82,92 +107,122 @@
             '海南省': '失落矿坑', '重庆市': '赤岩镇', '四川省': '干燥荒原', '贵州省': '幽暗小径',
             '云南省': '古木森林', '西藏自治区': '主山脉', '陕西省': '铁矿山区', '甘肃省': '寒风原',
             '青海省': '霜狼森林', '宁夏回族自治区': '黑石关', '新疆维吾尔自治区': '主山脉',
-            '台湾省': '火山群岛', '香港特别行政区': '河口城', '澳门特别行政区': '河口城'
+            '台湾省': '火山群岛'
         };
         
-        // 世界国家颜色
+        // 日本都道府县
+        const japanStyle = {
+            '北海道': '#ce93d8', '青森县': '#ce93d8', '岩手县': '#ba68c8', '宫城县': '#ba68c8',
+            '秋田县': '#ba68c8', '山形县': '#ba68c8', '福岛县': '#ba68c8',
+            '茨城县': '#ba68c8', '栃木县': '#ba68c8', '群马县': '#ba68c8', '埼玉县': '#ce93d8',
+            '千叶县': '#ce93d8', '东京都': '#ba68c8', '神奈川县': '#ce93d8',
+            '新潟县': '#ba68c8', '富山县': '#ba68c8', '石川县': '#ba68c8', '福井县': '#ba68c8',
+            '山梨县': '#ba68c8', '长野县': '#ba68c8', '岐阜县': '#ba68c8', '静冈县': '#ce93d8',
+            '爱知县': '#ce93d8', '三重县': '#ba68c8', '滋贺县': '#ba68c8', '京都府': '#ce93d8',
+            '大阪府': '#ce93d8', '兵库县': '#ba68c8', '奈良县': '#ba68c8', '和歌山县': '#ba68c8',
+            '鸟取县': '#ba68c8', '岛根县': '#ba68c8', '冈山县': '#ba68c8', '广岛县': '#ce93d8',
+            '山口县': '#ba68c8', '德岛县': '#ba68c8', '香川县': '#ba68c8', '爱媛县': '#ba68c8',
+            '高知县': '#ba68c8', '福冈县': '#ce93d8', '佐贺县': '#ba68c8', '长崎县': '#ce93d8',
+            '熊本县': '#ba68c8', '大分县': '#ba68c8', '宫崎县': '#ba68c8', '鹿儿岛县': '#ba68c8',
+            '冲绳县': '#ce93d8'
+        };
+        
+        const japanInfo = {
+            '北海道': '冰焰岛', '东京都': '赤焰城', '大阪府': '熔岩港', '京都府': '火山神殿',
+            '福冈县': '黑沙滩', '冲绳县': '珊瑚礁'
+        };
+        
+        // 世界国家
         const worldStyle = {
             'Russia': '#e57373', 'Mongolia': '#ba68c8', 'Kazakhstan': '#ffb74d',
-            'Japan': '#ba68c8', 'India': '#9575cd', 'Indonesia': '#ba68c8',
+            'India': '#9575cd', 'Indonesia': '#ba68c8',
             'Vietnam': '#81c784', 'Thailand': '#81c784', 'Myanmar': '#81c784',
             'Laos': '#81c784', 'Cambodia': '#81c784', 'Malaysia': '#81c784',
             'Philippines': '#ba68c8', 'North Korea': '#ba68c8', 'South Korea': '#ba68c8',
             'Uzbekistan': '#d4a855', 'Turkmenistan': '#d4a855', 'Kyrgyzstan': '#ffb74d',
             'Tajikistan': '#ffb74d', 'Afghanistan': '#d4a855', 'Pakistan': '#9575cd',
-            'Nepal': '#9575cd', 'Bhutan': '#9575cd', 'Bangladesh': '#9575cd',
+            'Nepal': '#b39ddb', 'Bhutan': '#b39ddb', 'Bangladesh': '#9575cd',
             'Sri Lanka': '#9575cd', 'Iran': '#d4a855'
         };
         
-        // 国家信息
         const worldInfo = {
             'Russia': '北境荒原', 'Mongolia': '风暴高原', 'Kazakhstan': '主山脉',
-            'Japan': '火山群岛', 'India': '深渊边境', 'Indonesia': '龙族圣地',
+            'India': '深渊边境', 'Indonesia': '龙族圣地',
             'Vietnam': '南方森林', 'Thailand': '南方森林', 'Myanmar': '南方森林',
             'North Korea': '风暴高原', 'South Korea': '风暴高原'
         };
         
         async function init() {
             try {
-                // 加载地图
-                const [world, china] = await Promise.all([
-                    fetch('https://cdn.jsdelivr.net/npm/echarts/map/json/world.json').then(r => r.json()),
-                    fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json').then(r => r.json())
-                ]);
+                setStatus('加载世界地图...');
+                const world = await fetch('https://cdn.jsdelivr.net/npm/echarts/map/json/world.json').then(r => r.json());
                 
-                // 移除China，添加省份
-                const features = world.features.filter(f => f.properties.name !== 'China');
+                setStatus('加载中部平原...');
+                const china = await fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json').then(r => r.json());
                 
-                // 处理中国省份 - 使用阿里云的GeoJSON格式
+                setStatus('加载火山群岛...');
+                // 日本 - 使用简化的方式
+                let japanFeatures = [];
+                try {
+                    const japan = await fetch('https://cdn.jsdelivr.net/npm/japan-prefecture-geojson@1.0.0/json/japan.json').then(r => r.json());
+                    if (japan && japan.features) {
+                        japanFeatures = japan.features.map(f => ({
+                            type: 'Feature',
+                            properties: { name: f.properties.name_ja || f.properties.name },
+                            geometry: f.geometry
+                        }));
+                    }
+                } catch (e) {
+                    console.log('日本地图加载失败，将使用简化版');
+                }
+                
+                setStatus('合并地图数据...');
+                
+                // 要替换的国家
+                const removeCountries = ['China', 'Japan'];
+                let features = world.features.filter(f => !removeCountries.includes(f.properties.name));
+                
+                // 添加中国省份
                 if (china.features) {
                     china.features.forEach(f => {
-                        // 阿里云GeoJSON的name是完整的省份名
-                        const name = f.properties.name;
-                        if (name) {
-                            features.push({
-                                type: 'Feature',
-                                properties: { name: name },
-                                geometry: f.geometry
-                            });
-                        }
+                        features.push({
+                            type: 'Feature',
+                            properties: { name: f.properties.name },
+                            geometry: f.geometry
+                        });
                     });
                 }
                 
+                // 添加日本都道府县
+                features = features.concat(japanFeatures);
+                
                 echarts.registerMap('combined', { type: 'FeatureCollection', features });
+                
+                setStatus('渲染地图...');
                 
                 // 准备数据
                 const data = [];
                 
-                // 中国省份
-                Object.keys(provinceStyle).forEach(name => {
-                    data.push({
-                        name: name,
-                        value: 1,
-                        itemStyle: {
-                            areaColor: provinceStyle[name],
-                            borderColor: '#fff',
-                            borderWidth: 1
-                        }
-                    });
+                // 中国
+                Object.keys(chinaStyle).forEach(name => {
+                    data.push({ name, value: 1, itemStyle: { areaColor: chinaStyle[name] } });
                 });
                 
-                // 世界国家
+                // 日本
+                Object.keys(japanStyle).forEach(name => {
+                    data.push({ name, value: 1, itemStyle: { areaColor: japanStyle[name] } });
+                });
+                
+                // 世界
                 Object.keys(worldStyle).forEach(name => {
-                    data.push({
-                        name: name,
-                        value: 1,
-                        itemStyle: {
-                            areaColor: worldStyle[name],
-                            borderColor: '#fff',
-                            borderWidth: 1
-                        }
-                    });
+                    data.push({ name, value: 1, itemStyle: { areaColor: worldStyle[name] } });
                 });
                 
                 chart.setOption({
                     backgroundColor: '#1a3a5c',
                     tooltip: {
                         formatter: p => {
-                            const name = provinceInfo[p.name] || worldInfo[p.name] || p.name;
+                            const name = chinaInfo[p.name] || japanInfo[p.name] || worldInfo[p.name] || p.name;
                             return `<b style="color:#ffd700">${name}</b>`;
                         }
                     },
@@ -176,13 +231,13 @@
                         map: 'combined',
                         roam: true,
                         zoom: 2.5,
-                        center: [100, 40],
+                        center: [110, 35],
                         label: {
                             show: true,
                             color: '#fff',
                             fontSize: 6,
                             formatter: p => {
-                                const name = provinceInfo[p.name] || worldInfo[p.name] || p.name;
+                                const name = chinaInfo[p.name] || japanInfo[p.name] || worldInfo[p.name] || p.name;
                                 return name.length > 4 ? name.slice(0, 3) + '..' : name;
                             }
                         },
@@ -198,9 +253,12 @@
                         data: data
                     }]
                 });
+                
+                setStatus('✓ 加载完成');
+                
             } catch (e) {
                 console.error('加载失败:', e);
-                document.body.innerHTML = '<div style="color:#fff;text-align:center;padding:100px;">地图加载失败，请刷新重试</div>';
+                setStatus('加载失败');
             }
         }
         
