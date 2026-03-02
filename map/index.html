@@ -7,109 +7,86 @@
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Microsoft YaHei', sans-serif; 
-            background: #1a1a2e;
-            overflow: hidden;
-        }
-        
+        body { background: #1a1a2e; font-family: 'Microsoft YaHei', sans-serif; }
         #map { width: 100vw; height: 100vh; }
-        
-        .info-panel {
+        .panel {
             position: fixed;
             top: 10px;
             left: 10px;
-            z-index: 1000;
-            background: rgba(26, 26, 46, 0.95);
-            padding: 15px 20px;
-            border-radius: 10px;
-            color: #fff;
-            border: 1px solid #4a4a6a;
-            max-width: 320px;
-        }
-        .info-panel h1 { font-size: 18px; margin-bottom: 5px; color: #ffd700; }
-        .info-panel p { font-size: 12px; color: #aaa; line-height: 1.6; }
-        
-        .legend {
-            position: fixed;
-            bottom: 30px;
-            left: 10px;
-            z-index: 1000;
             background: rgba(26, 26, 46, 0.95);
             padding: 15px;
             border-radius: 10px;
             color: #fff;
             border: 1px solid #4a4a6a;
+            z-index: 1000;
         }
-        .legend h3 { font-size: 14px; margin-bottom: 10px; color: #ffd700; }
-        .legend-item { display: flex; align-items: center; margin: 5px 0; font-size: 12px; }
-        .legend-color { width: 18px; height: 18px; border-radius: 4px; margin-right: 8px; border: 1px solid #fff; }
-        
-        #loading {
+        .panel h1 { color: #ffd700; font-size: 18px; margin-bottom: 5px; }
+        .panel p { font-size: 12px; color: #aaa; }
+        .legend {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            bottom: 10px;
+            left: 10px;
+            background: rgba(26, 26, 46, 0.95);
+            padding: 15px;
+            border-radius: 10px;
             color: #fff;
-            font-size: 18px;
-            z-index: 2000;
+            border: 1px solid #4a4a6a;
+            z-index: 1000;
         }
+        .legend h3 { color: #ffd700; margin-bottom: 10px; }
+        .legend-item { display: flex; align-items: center; margin: 4px 0; font-size: 11px; }
+        .legend-color { width: 16px; height: 16px; border-radius: 3px; margin-right: 6px; }
     </style>
 </head>
 <body>
-    <div class="info-panel">
+    <div class="panel">
         <h1>🦞 世界地图</h1>
-        <p>整合省级边界的世界地图<br>拖拽移动，滚轮缩放</p>
+        <p>拖拽移动 | 滚轮缩放</p>
     </div>
-    
     <div class="legend">
-        <h3>🗺️ 图例</h3>
-        <div class="legend-item"><div class="legend-color" style="background: #4fc3f7;"></div><span>人类/已开发</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #81c784;"></div><span>精灵/农业</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #ffb74d;"></div><span>矮人/要塞</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #e57373;"></div><span>兽人区域</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #ba68c8;"></div><span>龙裔区域</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #9575cd;"></div><span>深渊族</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #ff8a65;"></div><span>未开发中危</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #ef5350;"></div><span>未开发高危</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #ff5252;"></div><span>裂缝/禁地</span></div>
+        <h3>图例</h3>
+        <div class="legend-item"><div class="legend-color" style="background:#4fc3f7"></div>人类/已开发</div>
+        <div class="legend-item"><div class="legend-color" style="background:#81c784"></div>精灵/农业</div>
+        <div class="legend-item"><div class="legend-color" style="background:#ffb74d"></div>矮人/要塞</div>
+        <div class="legend-item"><div class="legend-color" style="background:#e57373"></div>兽人区域</div>
+        <div class="legend-item"><div class="legend-color" style="background:#ba68c8"></div>龙裔区域</div>
+        <div class="legend-item"><div class="legend-color" style="background:#9575cd"></div>深渊族</div>
+        <div class="legend-item"><div class="legend-color" style="background:#ff8a65"></div>未开发-中危</div>
+        <div class="legend-item"><div class="legend-color" style="background:#ef5350"></div>未开发-高危</div>
     </div>
-    
-    <div id="loading">🦞 加载地图中...</div>
     <div id="map"></div>
     
     <script>
-        // 数据定义
-        const provinceColors = {
-            '北京': '#4fc3f7', '天津': '#4fc3f7', '河北': '#ef5350', '山西': '#ef5350',
-            '内蒙古': '#ff8a65', '辽宁': '#ffb74d', '吉林': '#ff8a65', '黑龙江': '#ff8a65',
-            '上海': '#4fc3f7', '江苏': '#81c784', '浙江': '#81c784', '安徽': '#a1887f',
-            '福建': '#81c784', '江西': '#ff8a65', '山东': '#81c784', '河南': '#4fc3f7',
-            '湖北': '#ff8a65', '湖南': '#ff8a65', '广东': '#4fc3f7', '广西': '#4db6ac',
-            '海南': '#ef5350', '重庆': '#ffb74d', '四川': '#ff8a65', '贵州': '#ff8a65',
-            '云南': '#ff8a65', '西藏': '#ffb74d', '陕西': '#ef5350', '甘肃': '#ef5350',
-            '青海': '#ff8a65', '宁夏': '#ffb74d', '新疆': '#ffb74d', '台湾': '#ba68c8',
-            '香港': '#4fc3f7', '澳门': '#4fc3f7'
+        const chart = echarts.init(document.getElementById('map'));
+        
+        // 省份颜色映射
+        const provinceStyle = {
+            '北京': '#4fc3f7', '天津市': '#4fc3f7', '河北省': '#ef5350', '山西省': '#ef5350',
+            '内蒙古自治区': '#ff8a65', '辽宁省': '#ffb74d', '吉林省': '#ff8a65', '黑龙江省': '#ff8a65',
+            '上海市': '#4fc3f7', '江苏省': '#81c784', '浙江省': '#81c784', '安徽省': '#a1887f',
+            '福建省': '#81c784', '江西省': '#ff8a65', '山东省': '#81c784', '河南省': '#4fc3f7',
+            '湖北省': '#ff8a65', '湖南省': '#ff8a65', '广东省': '#4fc3f7', '广西壮族自治区': '#4db6ac',
+            '海南省': '#ef5350', '重庆市': '#ffb74d', '四川省': '#ff8a65', '贵州省': '#ff8a65',
+            '云南省': '#ff8a65', '西藏自治区': '#ffb74d', '陕西省': '#ef5350', '甘肃省': '#ef5350',
+            '青海省': '#ff8a65', '宁夏回族自治区': '#ffb74d', '新疆维吾尔自治区': '#ffb74d',
+            '台湾省': '#ba68c8', '香港特别行政区': '#4fc3f7', '澳门特别行政区': '#4fc3f7'
         };
         
+        // 省份信息
         const provinceInfo = {
-            '北京': { name: '龙虾城', region: '中央王领', status: '已开发', danger: '低', race: '人类' },
-            '天津': { name: '王家直辖地', region: '中央王领', status: '已开发', danger: '低', race: '人类' },
-            '河北': { name: '寒风原', region: '北部边防区', status: '未开发', danger: '高', race: '兽群' },
-            '山西': { name: '铁矿山区', region: '北部边防区', status: '未开发', danger: '高', race: '哥布林' },
-            '内蒙古': { name: '霜狼森林', region: '北部边防区', status: '未开发', danger: '中高', race: '霜狼' },
-            '辽宁': { name: '黑石关', region: '北部边防区', status: '已开发', danger: '中', race: '人类' },
-            '江苏': { name: '东部农场', region: '东部平原', status: '已开发', danger: '低', race: '人类' },
-            '浙江': { name: '金麦城', region: '东部平原', status: '已开发', danger: '低', race: '人类' },
-            '上海': { name: '银龙河渡口', region: '东部平原', status: '已开发', danger: '低', race: '人类' },
-            '广东': { name: '河口城', region: '南部边境', status: '已开发', danger: '低', race: '人类' },
-            '重庆': { name: '赤岩镇', region: '西南盆地', status: '已开发', danger: '低', race: '人类/矮人' },
-            '西藏': { name: '主山脉', region: '外部', status: '部分开发', danger: '中', race: '矮人' },
-            '新疆': { name: '主山脉', region: '外部', status: '部分开发', danger: '中', race: '矮人' },
-            '台湾': { name: '火山群岛', region: '外部', status: '未开发', danger: '高', race: '红龙裔' }
+            '北京': '龙虾城', '天津市': '王家直辖地', '河北省': '寒风原', '山西省': '铁矿山区',
+            '内蒙古自治区': '霜狼森林', '辽宁省': '黑石关', '吉林省': '古木森林', '黑龙江省': '幽暗小径',
+            '上海市': '银龙河渡口', '江苏省': '东部农场', '浙江省': '金麦城', '安徽省': '药草谷',
+            '福建省': '月影镇', '江西省': '古木森林', '山东省': '东部农场', '河南省': '王家直辖地',
+            '湖北省': '迷雾沼泽', '湖南省': '南方湿地', '广东省': '河口城', '广西壮族自治区': '边境哨站',
+            '海南省': '失落矿坑', '重庆市': '赤岩镇', '四川省': '干燥荒原', '贵州省': '幽暗小径',
+            '云南省': '古木森林', '西藏自治区': '主山脉', '陕西省': '铁矿山区', '甘肃省': '寒风原',
+            '青海省': '霜狼森林', '宁夏回族自治区': '黑石关', '新疆维吾尔自治区': '主山脉',
+            '台湾省': '火山群岛', '香港特别行政区': '河口城', '澳门特别行政区': '河口城'
         };
         
-        const worldColors = {
+        // 世界国家颜色
+        const worldStyle = {
             'Russia': '#e57373', 'Mongolia': '#ba68c8', 'Kazakhstan': '#ffb74d',
             'Japan': '#ba68c8', 'India': '#9575cd', 'Indonesia': '#ba68c8',
             'Vietnam': '#81c784', 'Thailand': '#81c784', 'Myanmar': '#81c784',
@@ -118,112 +95,117 @@
             'Uzbekistan': '#d4a855', 'Turkmenistan': '#d4a855', 'Kyrgyzstan': '#ffb74d',
             'Tajikistan': '#ffb74d', 'Afghanistan': '#d4a855', 'Pakistan': '#9575cd',
             'Nepal': '#9575cd', 'Bhutan': '#9575cd', 'Bangladesh': '#9575cd',
-            'Sri Lanka': '#9575cd', 'Iran': '#d4a855', 'Iceland': '#b8d4e3', 'Greenland': '#b8d4e3'
+            'Sri Lanka': '#9575cd', 'Iran': '#d4a855'
         };
         
+        // 国家信息
         const worldInfo = {
-            'Russia': { name: '北境荒原', status: '未开发', danger: '高', race: '北境人类、兽人' },
-            'Mongolia': { name: '风暴高原', status: '未开发', danger: '中高', race: '蓝龙裔' },
-            'Kazakhstan': { name: '主山脉', status: '部分开发', danger: '中', race: '矮人' },
-            'Japan': { name: '火山群岛', status: '未开发', danger: '高', race: '红龙裔' },
-            'India': { name: '深渊边境', status: '未开发', danger: '中高', race: '深渊族' },
-            'Indonesia': { name: '龙族圣地', status: '圣地', danger: '低', race: '银龙裔' },
-            'Vietnam': { name: '南方森林', status: '未开发', danger: '低-中', race: '木精灵' },
-            'Thailand': { name: '南方森林', status: '未开发', danger: '低-中', race: '木精灵' },
-            'Myanmar': { name: '南方森林', status: '未开发', danger: '低-中', race: '木精灵' },
-            'Iceland': { name: '冰龙遗迹', status: '遗迹', danger: '极高', race: '古代龙裔' }
+            'Russia': '北境荒原', 'Mongolia': '风暴高原', 'Kazakhstan': '主山脉',
+            'Japan': '火山群岛', 'India': '深渊边境', 'Indonesia': '龙族圣地',
+            'Vietnam': '南方森林', 'Thailand': '南方森林', 'Myanmar': '南方森林',
+            'North Korea': '风暴高原', 'South Korea': '风暴高原'
         };
         
-        const chart = echarts.init(document.getElementById('map'));
-        
-        // 加载地图
         async function init() {
             try {
-                // 加载两个地图JSON
-                const [worldRes, chinaRes] = await Promise.all([
-                    fetch('https://cdn.jsdelivr.net/npm/echarts/map/json/world.json'),
-                    fetch('https://cdn.jsdelivr.net/npm/echarts/map/json/china.json')
+                // 加载地图
+                const [world, china] = await Promise.all([
+                    fetch('https://cdn.jsdelivr.net/npm/echarts/map/json/world.json').then(r => r.json()),
+                    fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json').then(r => r.json())
                 ]);
                 
-                const worldJson = await worldRes.json();
-                const chinaJson = await chinaRes.json();
-                
                 // 移除China，添加省份
-                const features = worldJson.features.filter(f => f.properties.name !== 'China');
-                features.push(...chinaJson.features);
+                const features = world.features.filter(f => f.properties.name !== 'China');
                 
-                // 注册合并地图
-                echarts.registerMap('world', { type: 'FeatureCollection', features });
+                // 处理中国省份 - 使用阿里云的GeoJSON格式
+                if (china.features) {
+                    china.features.forEach(f => {
+                        // 阿里云GeoJSON的name是完整的省份名
+                        const name = f.properties.name;
+                        if (name) {
+                            features.push({
+                                type: 'Feature',
+                                properties: { name: name },
+                                geometry: f.geometry
+                            });
+                        }
+                    });
+                }
+                
+                echarts.registerMap('combined', { type: 'FeatureCollection', features });
                 
                 // 准备数据
                 const data = [];
                 
                 // 中国省份
-                Object.keys(provinceColors).forEach(name => {
-                    data.push({ name, value: 1, itemStyle: { areaColor: provinceColors[name] } });
+                Object.keys(provinceStyle).forEach(name => {
+                    data.push({
+                        name: name,
+                        value: 1,
+                        itemStyle: {
+                            areaColor: provinceStyle[name],
+                            borderColor: '#fff',
+                            borderWidth: 1
+                        }
+                    });
                 });
                 
                 // 世界国家
-                Object.keys(worldColors).forEach(name => {
-                    data.push({ name, value: 1, itemStyle: { areaColor: worldColors[name] } });
+                Object.keys(worldStyle).forEach(name => {
+                    data.push({
+                        name: name,
+                        value: 1,
+                        itemStyle: {
+                            areaColor: worldStyle[name],
+                            borderColor: '#fff',
+                            borderWidth: 1
+                        }
+                    });
                 });
                 
-                // 配置
-                const option = {
+                chart.setOption({
                     backgroundColor: '#1a3a5c',
                     tooltip: {
-                        trigger: 'item',
-                        formatter: function(p) {
-                            let info = provinceInfo[p.name] || worldInfo[p.name];
-                            if (!info) return p.name;
-                            return `<b style="color:#ffd700">${info.name}</b><br>
-                                    状态: ${info.status}<br>
-                                    危险: ${info.danger}<br>
-                                    种族: ${info.race}`;
+                        formatter: p => {
+                            const name = provinceInfo[p.name] || worldInfo[p.name] || p.name;
+                            return `<b style="color:#ffd700">${name}</b>`;
                         }
                     },
                     series: [{
                         type: 'map',
-                        map: 'world',
+                        map: 'combined',
                         roam: true,
                         zoom: 2.5,
                         center: [100, 40],
                         label: {
                             show: true,
                             color: '#fff',
-                            fontSize: 7,
-                            formatter: function(p) {
-                                const info = provinceInfo[p.name] || worldInfo[p.name];
-                                if (info) {
-                                    return info.name.length > 4 ? info.name.slice(0,3) + '..' : info.name;
-                                }
-                                return p.name.length > 4 ? p.name.slice(0,3) + '..' : p.name;
+                            fontSize: 6,
+                            formatter: p => {
+                                const name = provinceInfo[p.name] || worldInfo[p.name] || p.name;
+                                return name.length > 4 ? name.slice(0, 3) + '..' : name;
                             }
                         },
                         itemStyle: {
                             areaColor: '#3d5a4a',
-                            borderColor: '#8ab8a8',
+                            borderColor: '#7ab8a8',
                             borderWidth: 1
                         },
                         emphasis: {
-                            label: { color: '#ffd700', fontSize: 11, fontWeight: 'bold' },
-                            itemStyle: { areaColor: '#5a8a7a', borderColor: '#ffd700', borderWidth: 2 }
+                            label: { color: '#ffd700', fontSize: 10 },
+                            itemStyle: { borderColor: '#ffd700', borderWidth: 2 }
                         },
                         data: data
                     }]
-                };
-                
-                chart.setOption(option);
-                document.getElementById('loading').style.display = 'none';
-                
+                });
             } catch (e) {
-                document.getElementById('loading').textContent = '加载失败，请刷新重试';
-                console.error(e);
+                console.error('加载失败:', e);
+                document.body.innerHTML = '<div style="color:#fff;text-align:center;padding:100px;">地图加载失败，请刷新重试</div>';
             }
         }
         
         init();
-        window.addEventListener('resize', () => chart.resize());
+        window.onresize = () => chart.resize();
     </script>
 </body>
 </html>
