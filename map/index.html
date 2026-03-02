@@ -488,9 +488,15 @@
                 
                 setStatus('合并地图数据...');
                 
-                // 要移除的国家
+                // 要移除的国家（替换为详细省份的）
                 const removeCountries = ['China', 'Japan'];
                 let features = world.features.filter(f => !removeCountries.includes(f.properties.name));
+                
+                // 确保俄罗斯和蒙古保留并正确命名
+                const russiaFeature = world.features.find(f => f.properties.name === 'Russia');
+                const mongoliaFeature = world.features.find(f => f.properties.name === 'Mongolia');
+                if (russiaFeature) features.push(russiaFeature);
+                if (mongoliaFeature) features.push(mongoliaFeature);
                 
                 // 添加中国省份
                 let count = 0;
