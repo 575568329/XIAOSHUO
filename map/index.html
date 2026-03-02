@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>龙虾系统 - 世界地图</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: #1a1a2e;
+        }
+        #map {
+            height: 100vh;
+            width: 100%;
+            background: #0f0f1a;
+        }
+        .info-panel {
+            position: absolute;
+            top: 10px;
+            left: 50px;
+            z-index: 1000;
+            background: rgba(26, 26, 46, 0.95);
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: #fff;
+            border: 1px solid #4a4a6a;
+            max-width: 300px;
+        }
+        .info-panel h1 {
+            font-size: 18px;
+            margin-bottom: 5px;
+            color: #ffd700;
+        }
+        .info-panel p {
+            font-size: 12px;
+            color: #aaa;
+        }
+        .legend {
+            position: absolute;
+            bottom: 30px;
+            left: 10px;
+            z-index: 1000;
+            background: rgba(26, 26, 46, 0.95);
+            padding: 15px;
+            border-radius: 10px;
+            color: #fff;
+            border: 1px solid #4a4a6a;
+        }
+        .legend h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #ffd700;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            font-size: 12px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+        .leaflet-popup-content-wrapper {
+            background: rgba(26, 26, 46, 0.95);
+            color: #fff;
+            border: 1px solid #4a4a6a;
+            border-radius: 10px;
+        }
+        .leaflet-popup-tip {
+            background: rgba(26, 26, 46, 0.95);
+        }
+        .popup-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 8px;
+        }
+        .popup-info {
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .popup-info strong {
+            color: #87ceeb;
+        }
+        .popup-info .race {
+            color: #90ee90;
+        }
+        .popup-info .danger {
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <div class="info-panel">
+        <h1>🦞 龙虾系统 - 世界地图</h1>
+        <p>点击标记查看区域信息<br>拖拽移动，滚轮缩放</p>
+    </div>
+    
+    <div class="legend">
+        <h3>🗺️ 图例</h3>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #4fc3f7;"></div>
+            <span>人类区域</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #81c784;"></div>
+            <span>精灵/森林</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ffb74d;"></div>
+            <span>矮人/山脉</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #e57373;"></div>
+            <span>兽人/荒原</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ba68c8;"></div>
+            <span>龙裔区域</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #9575cd;"></div>
+            <span>深渊族/边境</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #4db6ac;"></div>
+            <span>地精/贸易</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ff5252;"></div>
+            <span>裂缝/危险区</span>
+        </div>
+    </div>
+    
+    <div id="map"></div>
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // 初始化地图
+        const map = L.map('map', {
+            crs: L.CRS.Simple,
+            minZoom: 1,
+            maxZoom: 4,
+            zoomControl: true
+        });
+        
+        // 设置地图边界和视图
+        const bounds = [[0, 0], [1000, 1400]];
+        map.fitBounds(bounds);
+        
+        // 创建SVG地图图层
+        const svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svgElement.setAttribute('width', '1400');
+        svgElement.setAttribute('height', '1000');
+        svgElement.setAttribute('viewBox', '0 0 1400 1000');
+        
+        // 地图SVG内容
+        svgElement.innerHTML = `
+            <!-- 背景 -->
+            <rect width="1400" height="1000" fill="#1a3a5c"/>
+            
+            <!-- 海洋 -->
+            <ellipse cx="700" cy="500" rx="650" ry="450" fill="#0d2137" stroke="#2a4a6a" stroke-width="3"/>
+            
+            <!-- 大陆主体 -->
+            <path d="M200,150 
+                     Q350,100 500,120 
+                     L700,100 
+                     Q900,90 1050,150 
+                     Q1150,200 1200,300
+                     L1220,450
+                     Q1200,550 1150,650
+                     L1100,750
+                     Q1000,850 850,880
+                     L650,900
+                     Q500,880 350,800
+                     L200,650
+                     Q150,500 180,350
+                     Z" 
+                  fill="#3d5a4a" stroke="#5a7a6a" stroke-width="2"/>
+            
+            <!-- 北极冰盖 -->
+            <ellipse cx="700" cy="50" rx="300" ry="60" fill="#e8f4f8" opacity="0.8"/>
+            
+            <!-- 冰龙遗迹 -->
+            <circle cx="700" cy="50" r="30" fill="#b8d4e3" stroke="#fff" stroke-width="2"/>
+            
+            <!-- 北境地区 -->
+            <path d="M300,150 Q500,130 700,140 Q900,130 1000,180 L950,280 Q800,250 600,260 L400,250 Z" 
+                  fill="#7a9aaa" stroke="#9abaca" stroke-width="1"/>
+            
+            <!-- 风暴高原 -->
+            <path d="M1000,180 Q1100,200 1150,280 L1100,350 Q1050,300 980,280 Z" 
+                  fill="#6a8a9a" stroke="#8aaaaa" stroke-width="1"/>
+            
+            <!-- 主山脉 -->
+            <path d="M250,280 Q350,250 450,290 L500,350 Q400,380 300,350 Z" 
+                  fill="#8a7a6a" stroke="#aa9a8a" stroke-width="1"/>
+            <path d="M450,290 Q550,260 650,300 L680,380 Q580,400 500,350 Z" 
+                  fill="#9a8a7a" stroke="#baaa9a" stroke-width="1"/>
+            
+            <!-- 森林区 -->
+            <path d="M680,280 Q800,250 950,280 L980,400 Q850,430 700,400 Z" 
+                  fill="#4a7a4a" stroke="#6a9a6a" stroke-width="1"/>
+            
+            <!-- 中部平原 -->
+            <path d="M300,350 Q450,330 600,380 L650,500 Q500,550 350,500 L300,420 Z" 
+                  fill="#8aaa6a" stroke="#aaca8a" stroke-width="1"/>
+            
+            <!-- 火山群岛 -->
+            <ellipse cx="1150" cy="400" rx="80" ry="60" fill="#aa5a3a" stroke="#ca7a5a" stroke-width="1"/>
+            <circle cx="1130" cy="390" r="15" fill="#ff5a2a"/>
+            <circle cx="1160" cy="410" r="10" fill="#ff7a4a"/>
+            
+            <!-- 沙漠区 -->
+            <path d="M300,500 Q450,480 600,520 L650,650 Q500,700 350,650 Z" 
+                  fill="#d4a855" stroke="#e4c875" stroke-width="1"/>
+            
+            <!-- 深渊边境 -->
+            <path d="M1000,450 Q1100,500 1150,600 L1080,700 Q1000,650 950,550 Z" 
+                  fill="#5a4a6a" stroke="#7a6a8a" stroke-width="1"/>
+            
+            <!-- 裂缝荒原 -->
+            <path d="M400,650 Q550,630 700,680 L750,780 Q600,820 450,780 Z" 
+                  fill="#4a3a3a" stroke="#6a5a5a" stroke-width="1"/>
+            <!-- 裂缝标记 -->
+            <path d="M500,700 L520,720 M530,690 L550,730 M560,710 L580,750" 
+                  stroke="#ff3333" stroke-width="3" opacity="0.8"/>
+            <path d="M600,720 L620,760 M640,700 L660,740" 
+                  stroke="#ff3333" stroke-width="3" opacity="0.8"/>
+            
+            <!-- 龙族圣地 -->
+            <path d="M750,780 Q850,750 950,800 L1000,880 Q900,920 800,880 Z" 
+                  fill="#c0c0c0" stroke="#e0e0e0" stroke-width="1"/>
+            <circle cx="870" cy="830" r="25" fill="#ffd700" stroke="#fff" stroke-width="2"/>
+            
+            <!-- 南方森林 -->
+            <path d="M550,800 Q650,780 750,820 L780,900 Q650,930 550,880 Z" 
+                  fill="#3a6a3a" stroke="#5a8a5a" stroke-width="1"/>
+            
+            <!-- 南极冰盖 -->
+            <ellipse cx="700" cy="950" rx="350" ry="50" fill="#d8e8f0" opacity="0.8"/>
+            
+            <!-- 河流 -->
+            <!-- 银龙河 -->
+            <path d="M450,320 Q500,400 550,480 Q600,500 700,520 Q800,540 900,560" 
+                  stroke="#4a90d9" stroke-width="6" fill="none" opacity="0.7"/>
+            
+            <!-- 深渊河 -->
+            <path d="M480,350 Q500,450 520,550 Q540,650 560,750" 
+                  stroke="#4a90d9" stroke-width="5" fill="none" opacity="0.7"/>
+            
+            <!-- 北境河 -->
+            <path d="M1050,200 Q1000,150 950,120" 
+                  stroke="#4a90d9" stroke-width="4" fill="none" opacity="0.7"/>
+            
+            <!-- 裂隙河 -->
+            <path d="M850,800 Q900,820 950,850 Q1000,870 1050,880" 
+                  stroke="#4a90d9" stroke-width="4" fill="none" opacity="0.7"/>
+            
+            <!-- 城市标记 -->
+            <!-- 人类王都 -->
+            <circle cx="450" cy="420" r="12" fill="#ffd700" stroke="#fff" stroke-width="2"/>
+            
+            <!-- 精灵主城 -->
+            <circle cx="820" cy="340" r="10" fill="#81c784" stroke="#fff" stroke-width="2"/>
+            
+            <!-- 矮人要塞 -->
+            <circle cx="380" cy="310" r="10" fill="#ffb74d" stroke="#fff" stroke-width="2"/>
+            
+            <!-- 龙族圣坛 -->
+            <circle cx="870" cy="830" r="8" fill="#ffd700" stroke="#fff" stroke-width="2"/>
+        `;
+        
+        // 添加SVG图层
+        const svgLayer = L.svgOverlay(svgElement, bounds).addTo(map);
+        
+        // 区域数据
+        const locations = [
+            {
+                name: "冰龙遗迹",
+                coords: [50, 700],
+                race: "龙裔（古代）",
+                description: "传说中龙族最后的北方据点，现在是废墟。",
+                danger: "极高",
+                features: ["古代龙族建筑", "封印的入口", "极寒环境"]
+            },
+            {
+                name: "北境荒原",
+                coords: [200, 650],
+                race: "北境人类、战吼兽人",
+                description: "寒冷的北方荒原，北境人类和兽人部落在此生存。",
+                danger: "高",
+                features: ["严寒气候", "兽人部落", "佣兵聚集地"]
+            },
+            {
+                name: "风暴高原",
+                coords: [250, 1070],
+                race: "蓝龙裔",
+                description: "雷电交加的高原，蓝龙裔的领地。",
+                danger: "中高",
+                features: ["雷电魔法", "蓝龙裔部落", "稀有矿石"]
+            },
+            {
+                name: "主山脉",
+                coords: [320, 400],
+                race: "矮人（山脉矮人、深渊矮人）",
+                description: "巨大的山脉系统，矮人的地下王国。",
+                danger: "中",
+                features: ["矮人锻造", "地下城市", "矿脉丰富"]
+            },
+            {
+                name: "古老森林",
+                coords: [340, 830],
+                race: "精灵（高等精灵、木精灵）",
+                description: "神秘的古老森林，精灵族的家园。",
+                danger: "低-中",
+                features: ["精灵魔法", "自然神殿", "龙族遗迹"]
+            },
+            {
+                name: "中部平原",
+                coords: [430, 450],
+                race: "人类（平原血脉）",
+                description: "肥沃的平原，人类王国的核心区域。主角可能在此开始冒险。",
+                danger: "低",
+                features: ["人类王都", "贸易中心", "佣兵公会"]
+            },
+            {
+                name: "火山群岛",
+                coords: [400, 1150],
+                race: "红龙裔",
+                description: "活跃的火山群岛，红龙裔的领地。",
+                danger: "高",
+                features: ["火焰魔法", "火山活动", "稀有材料"]
+            },
+            {
+                name: "沙漠区",
+                coords: [580, 480],
+                race: "人类（沙漠血脉）",
+                description: "炎热的沙漠，沙漠人类的家园和贸易城邦。",
+                danger: "中",
+                features: ["绿洲城市", "商队路线", "古老遗迹"]
+            },
+            {
+                name: "深渊边境",
+                coords: [550, 1050],
+                race: "深渊族",
+                description: "被放逐者的土地，深渊族居住的神秘区域。",
+                danger: "中高",
+                features: ["深渊族部落", "被误解的种族", "隐藏的真相"]
+            },
+            {
+                name: "裂缝荒原",
+                coords: [720, 600],
+                race: "无（危险区）",
+                description: "裂缝集中区域，龙族曾在此与魔族战斗。现在依然危险。",
+                danger: "极高",
+                features: ["异界裂缝", "魔族残留", "龙族战场遗迹"]
+            },
+            {
+                name: "龙族圣地",
+                coords: [830, 870],
+                race: "龙裔（银龙裔）",
+                description: "银龙裔守护的圣坛，偶尔会收到意义不明的信号。",
+                danger: "低（圣地）",
+                features: ["银龙裔圣坛", "神秘信号", "龙族遗迹"]
+            },
+            {
+                name: "南方森林",
+                coords: [850, 650],
+                race: "精灵（木精灵）",
+                description: "南方的茂密森林，木精灵的狩猎场。",
+                danger: "低-中",
+                features: ["木精灵部落", "狩猎场", "草药丰富"]
+            },
+            {
+                name: "人类王都",
+                coords: [420, 450],
+                race: "人类",
+                description: "中部平原最大的人类城市，贸易和政治中心。",
+                danger: "低",
+                features: ["王宫", "佣兵公会", "地精商会"]
+            },
+            {
+                name: "精灵主城",
+                coords: [340, 820],
+                race: "精灵（高等精灵）",
+                description: "高等精灵的华丽城市，魔法和知识的中心。",
+                danger: "低",
+                features: ["魔法学院", "月光神殿", "古老图书馆"]
+            },
+            {
+                name: "矮人要塞",
+                coords: [310, 380],
+                race: "矮人",
+                description: "矮人的地下要塞，锻造和采矿的中心。",
+                danger: "低",
+                features: ["大锻造场", "矿道入口", "矮人酒馆"]
+            }
+        ];
+        
+        // 自定义图标
+        function createIcon(color) {
+            return L.divIcon({
+                className: 'custom-marker',
+                html: `<div style="
+                    width: 24px;
+                    height: 24px;
+                    background: ${color};
+                    border: 3px solid white;
+                    border-radius: 50%;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+                "></div>`,
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+            });
+        }
+        
+        // 颜色映射
+        const colorMap = {
+            "人类": "#4fc3f7",
+            "精灵": "#81c784",
+            "矮人": "#ffb74d",
+            "兽人": "#e57373",
+            "龙裔": "#ba68c8",
+            "深渊族": "#9575cd",
+            "地精": "#4db6ac",
+            "无": "#ff5252"
+        };
+        
+        // 获取主要种族颜色
+        function getMainColor(race) {
+            for (let key of Object.keys(colorMap)) {
+                if (race.includes(key)) return colorMap[key];
+            }
+            return "#ffffff";
+        }
+        
+        // 添加标记
+        locations.forEach(loc => {
+            const color = getMainColor(loc.race);
+            const marker = L.marker([loc.coords[0] * 1, loc.coords[1]], {
+                icon: createIcon(color)
+            }).addTo(map);
+            
+            const dangerColor = loc.danger.includes("极高") ? "#ff5252" : 
+                               loc.danger.includes("高") ? "#ffb74d" : "#81c784";
+            
+            marker.bindPopup(`
+                <div class="popup-title">${loc.name}</div>
+                <div class="popup-info">
+                    <p><strong>主要种族：</strong><span class="race">${loc.race}</span></p>
+                    <p><strong>危险等级：</strong><span class="danger" style="color:${dangerColor}">${loc.danger}</span></p>
+                    <p><strong>描述：</strong>${loc.description}</p>
+                    <p><strong>特点：</strong></p>
+                    <ul style="margin-left:15px;">
+                        ${loc.features.map(f => `<li>${f}</li>`).join('')}
+                    </ul>
+                </div>
+            `);
+        });
+        
+        // 添加比例尺
+        L.control.scale({ imperial: false }).addTo(map);
+    </script>
+</body>
+</html>
