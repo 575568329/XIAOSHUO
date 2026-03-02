@@ -103,7 +103,6 @@
             background: #3a3a5a !important;
         }
         
-        /* 隐藏底图版权 */
         .ol-attribution { display: none; }
     </style>
 </head>
@@ -122,7 +121,6 @@
         <div class="legend-item"><div class="legend-color" style="background: #ba68c8;"></div><span>龙裔区域</span></div>
         <div class="legend-item"><div class="legend-color" style="background: #9575cd;"></div><span>深渊族</span></div>
         <div class="legend-item"><div class="legend-color" style="background: #ff5252;"></div><span>裂缝危险区</span></div>
-        <div class="legend-item"><div class="legend-color" style="background: #4a90d9;"></div><span>河流</span></div>
     </div>
     
     <div id="popup" class="ol-popup">
@@ -141,273 +139,315 @@
                 name: "冰龙遗迹",
                 race: "龙裔（古代）",
                 danger: "极高",
-                description: "传说中龙族最后的北方据点，现在是废墟。",
+                description: "传说中龙族最后的北方据点，现在是废墟。位于极北冰原。",
                 features: ["古代龙族建筑", "封印的入口", "极寒环境"]
             },
             north: {
                 name: "北境荒原",
                 race: "北境人类、战吼兽人",
                 danger: "高",
-                description: "寒冷的北方荒原，北境人类和兽人部落在此生存。",
-                features: ["严寒气候", "兽人部落", "佣兵聚集地"]
+                description: "寒冷的北方荒原（原西伯利亚），北境人类和兽人部落在此生存。",
+                features: ["严寒气候", "兽人部落", "佣兵聚集地", "广阔冻土"]
             },
             storm: {
                 name: "风暴高原",
                 race: "蓝龙裔",
                 danger: "中高",
-                description: "雷电交加的高原，蓝龙裔的领地。",
-                features: ["雷电魔法", "蓝龙裔部落", "稀有矿石"]
+                description: "雷电交加的高原（原蒙古高原），蓝龙裔的领地。",
+                features: ["雷电魔法", "蓝龙裔部落", "稀有矿石", "草原游牧"]
             },
             mountain: {
                 name: "主山脉",
                 race: "矮人（山脉矮人、深渊矮人）",
                 danger: "中",
-                description: "巨大的山脉系统，矮人的地下王国。",
-                features: ["矮人锻造", "地下城市", "矿脉丰富"]
+                description: "巨大的山脉系统（原中亚山脉），矮人的地下王国。",
+                features: ["矮人锻造", "地下城市", "矿脉丰富", "帕米尔高原"]
             },
             forest: {
                 name: "古老森林",
                 race: "精灵（高等精灵、木精灵）",
                 danger: "低-中",
-                description: "神秘的古老森林，精灵族的家园。",
-                features: ["精灵魔法", "自然神殿", "龙族遗迹"]
+                description: "神秘的古老森林（原西伯利亚东部），精灵族的家园。",
+                features: ["精灵魔法", "自然神殿", "龙族遗迹", "泰加林"]
             },
             plains: {
                 name: "中部平原",
                 race: "人类（平原血脉）",
                 danger: "低",
-                description: "肥沃的平原，人类王国的核心区域。主角可能在此开始冒险。",
-                features: ["人类王都", "贸易中心", "佣兵公会"]
+                description: "肥沃的平原（原中国中原），人类王国的核心区域。主角可能在此开始冒险。",
+                features: ["人类王都", "贸易中心", "佣兵公会", "农业发达"]
             },
             volcano: {
                 name: "火山群岛",
                 race: "红龙裔",
                 danger: "高",
-                description: "活跃的火山群岛，红龙裔的领地。",
-                features: ["火焰魔法", "火山活动", "稀有材料"]
+                description: "活跃的火山群岛（原日本列岛），红龙裔的领地。",
+                features: ["火焰魔法", "火山活动", "稀有材料", "岛屿链"]
             },
             desert: {
                 name: "沙漠区",
                 race: "人类（沙漠血脉）",
                 danger: "中",
-                description: "炎热的沙漠，沙漠人类的家园和贸易城邦。",
-                features: ["绿洲城市", "商队路线", "古老遗迹"]
+                description: "炎热的沙漠（原中亚沙漠），沙漠人类的家园和贸易城邦。",
+                features: ["绿洲城市", "商队路线", "古老遗迹", "丝绸之路"]
             },
             abyss: {
                 name: "深渊边境",
                 race: "深渊族",
                 danger: "中高",
-                description: "被放逐者的土地，深渊族居住的神秘区域。",
-                features: ["深渊族部落", "被误解的种族", "隐藏的真相"]
+                description: "被放逐者的土地（原印度次大陆），深渊族居住的神秘区域。",
+                features: ["深渊族部落", "被误解的种族", "隐藏的真相", "古老文明"]
             },
             rift: {
                 name: "裂缝荒原",
                 race: "无（危险区）",
                 danger: "极高",
-                description: "裂缝集中区域，龙族曾在此与魔族战斗。现在依然危险。",
-                features: ["异界裂缝", "魔族残留", "龙族战场遗迹"]
+                description: "裂缝集中区域（原南海），龙族曾在此与魔族战斗。现在依然危险。",
+                features: ["异界裂缝", "魔族残留", "龙族战场遗迹", "海底遗迹"]
             },
             sanctuary: {
                 name: "龙族圣地",
                 race: "龙裔（银龙裔）",
                 danger: "低（圣地）",
-                description: "银龙裔守护的圣坛，偶尔会收到意义不明的信号。",
-                features: ["银龙裔圣坛", "神秘信号", "龙族遗迹"]
+                description: "银龙裔守护的圣坛（原印度尼西亚），偶尔会收到意义不明的信号。",
+                features: ["银龙裔圣坛", "神秘信号", "龙族遗迹", "群岛圣地"]
             },
             southForest: {
                 name: "南方森林",
                 race: "精灵（木精灵）",
                 danger: "低-中",
-                description: "南方的茂密森林，木精灵的狩猎场。",
-                features: ["木精灵部落", "狩猎场", "草药丰富"]
+                description: "南方的茂密森林（原东南亚），木精灵的狩猎场。",
+                features: ["木精灵部落", "狩猎场", "草药丰富", "热带雨林"]
             },
             capital: {
-                name: "人类王都",
+                name: "人类王都 - 龙虾城",
                 race: "人类",
                 danger: "低",
-                description: "中部平原最大的人类城市，贸易和政治中心。",
-                features: ["王宫", "佣兵公会", "地精商会"]
+                description: "中部平原最大的人类城市（原洛阳/长安），贸易和政治中心。",
+                features: ["王宫", "佣兵公会", "地精商会", "龙虾系统总部"]
             },
             elfCity: {
-                name: "精灵主城",
+                name: "精灵主城 - 月光城",
                 race: "高等精灵",
                 danger: "低",
-                description: "高等精灵的华丽城市，魔法和知识的中心。",
-                features: ["魔法学院", "月光神殿", "古老图书馆"]
+                description: "高等精灵的华丽城市（原伊尔库茨克），魔法和知识的中心。",
+                features: ["魔法学院", "月光神殿", "古老图书馆", "贝加尔湖畔"]
             },
             dwarfFort: {
-                name: "矮人要塞",
+                name: "矮人要塞 - 铁山堡",
                 race: "矮人",
                 danger: "低",
-                description: "矮人的地下要塞，锻造和采矿的中心。",
-                features: ["大锻造场", "矿道入口", "矮人酒馆"]
+                description: "矮人的地下要塞（原阿拉木图），锻造和采矿的中心。",
+                features: ["大锻造场", "矿道入口", "矮人酒馆", "天山山脉"]
             },
             altar: {
                 name: "银龙圣坛",
                 race: "银龙裔",
                 danger: "低",
-                description: "银龙裔守护的圣坛核心，接收神秘信号的地点。",
-                features: ["古老圣坛", "信号接收点", "龙族遗物"]
+                description: "银龙裔守护的圣坛核心（原巴厘岛），接收神秘信号的地点。",
+                features: ["古老圣坛", "信号接收点", "龙族遗物", "火山神殿"]
             }
         };
         
         // 区域样式
         const styles = {
             human: new ol.style.Style({
-                fill: new ol.style.Fill({ color: 'rgba(79, 195, 247, 0.6)' }),
-                stroke: new ol.style.Stroke({ color: '#4fc3f7', width: 2 })
+                fill: new ol.style.Fill({ color: 'rgba(79, 195, 247, 0.5)' }),
+                stroke: new ol.style.Stroke({ color: '#4fc3f7', width: 2 }),
+                text: new ol.style.Text({
+                    font: 'bold 14px Microsoft YaHei',
+                    fill: new ol.style.Fill({ color: '#fff' }),
+                    stroke: new ol.style.Stroke({ color: '#000', width: 3 })
+                })
             }),
             elf: new ol.style.Style({
-                fill: new ol.style.Fill({ color: 'rgba(129, 199, 132, 0.6)' }),
-                stroke: new ol.style.Stroke({ color: '#81c784', width: 2 })
+                fill: new ol.style.Fill({ color: 'rgba(129, 199, 132, 0.5)' }),
+                stroke: new ol.style.Stroke({ color: '#81c784', width: 2 }),
+                text: new ol.style.Text({
+                    font: 'bold 14px Microsoft YaHei',
+                    fill: new ol.style.Fill({ color: '#fff' }),
+                    stroke: new ol.style.Stroke({ color: '#000', width: 3 })
+                })
             }),
             dwarf: new ol.style.Style({
-                fill: new ol.style.Fill({ color: 'rgba(255, 183, 77, 0.6)' }),
-                stroke: new ol.style.Stroke({ color: '#ffb74d', width: 2 })
+                fill: new ol.style.Fill({ color: 'rgba(255, 183, 77, 0.5)' }),
+                stroke: new ol.style.Stroke({ color: '#ffb74d', width: 2 }),
+                text: new ol.style.Text({
+                    font: 'bold 14px Microsoft YaHei',
+                    fill: new ol.style.Fill({ color: '#fff' }),
+                    stroke: new ol.style.Stroke({ color: '#000', width: 3 })
+                })
             }),
             orc: new ol.style.Style({
-                fill: new ol.style.Fill({ color: 'rgba(229, 115, 115, 0.6)' }),
-                stroke: new ol.style.Stroke({ color: '#e57373', width: 2 })
+                fill: new ol.style.Fill({ color: 'rgba(229, 115, 115, 0.5)' }),
+                stroke: new ol.style.Stroke({ color: '#e57373', width: 2 }),
+                text: new ol.style.Text({
+                    font: 'bold 14px Microsoft YaHei',
+                    fill: new ol.style.Fill({ color: '#fff' }),
+                    stroke: new ol.style.Stroke({ color: '#000', width: 3 })
+                })
             }),
             dragon: new ol.style.Style({
-                fill: new ol.style.Fill({ color: 'rgba(186, 104, 200, 0.6)' }),
-                stroke: new ol.style.Stroke({ color: '#ba68c8', width: 2 })
+                fill: new ol.style.Fill({ color: 'rgba(186, 104, 200, 0.5)' }),
+                stroke: new ol.style.Stroke({ color: '#ba68c8', width: 2 }),
+                text: new ol.style.Text({
+                    font: 'bold 14px Microsoft YaHei',
+                    fill: new ol.style.Fill({ color: '#fff' }),
+                    stroke: new ol.style.Stroke({ color: '#000', width: 3 })
+                })
             }),
             abyss: new ol.style.Style({
-                fill: new ol.style.Fill({ color: 'rgba(149, 117, 205, 0.6)' }),
-                stroke: new ol.style.Stroke({ color: '#9575cd', width: 2 })
+                fill: new ol.style.Fill({ color: 'rgba(149, 117, 205, 0.5)' }),
+                stroke: new ol.style.Stroke({ color: '#9575cd', width: 2 }),
+                text: new ol.style.Text({
+                    font: 'bold 14px Microsoft YaHei',
+                    fill: new ol.style.Fill({ color: '#fff' }),
+                    stroke: new ol.style.Stroke({ color: '#000', width: 3 })
+                })
             }),
             rift: new ol.style.Style({
-                fill: new ol.style.Fill({ color: 'rgba(255, 82, 82, 0.6)' }),
-                stroke: new ol.style.Stroke({ color: '#ff5252', width: 2 })
+                fill: new ol.style.Fill({ color: 'rgba(255, 82, 82, 0.5)' }),
+                stroke: new ol.style.Stroke({ color: '#ff5252', width: 2 }),
+                text: new ol.style.Text({
+                    font: 'bold 14px Microsoft YaHei',
+                    fill: new ol.style.Fill({ color: '#ff5555' }),
+                    stroke: new ol.style.Stroke({ color: '#000', width: 3 })
+                })
             }),
             ice: new ol.style.Style({
-                fill: new ol.style.Fill({ color: 'rgba(216, 232, 240, 0.8)' }),
-                stroke: new ol.style.Stroke({ color: '#b8d4e3', width: 2 })
+                fill: new ol.style.Fill({ color: 'rgba(216, 232, 240, 0.7)' }),
+                stroke: new ol.style.Stroke({ color: '#b8d4e3', width: 2 }),
+                text: new ol.style.Text({
+                    font: 'bold 14px Microsoft YaHei',
+                    fill: new ol.style.Fill({ color: '#333' }),
+                    stroke: new ol.style.Stroke({ color: '#fff', width: 3 })
+                })
             }),
             city: new ol.style.Style({
                 image: new ol.style.Circle({
-                    radius: 8,
+                    radius: 10,
                     fill: new ol.style.Fill({ color: '#ffd700' }),
-                    stroke: new ol.style.Stroke({ color: '#fff', width: 2 })
+                    stroke: new ol.style.Stroke({ color: '#fff', width: 3 })
+                }),
+                text: new ol.style.Text({
+                    font: 'bold 12px Microsoft YaHei',
+                    fill: new ol.style.Fill({ color: '#ffd700' }),
+                    stroke: new ol.style.Stroke({ color: '#000', width: 2 }),
+                    offsetY: -15
                 })
             }),
             river: new ol.style.Style({
-                stroke: new ol.style.Stroke({ color: '#4a90d9', width: 4, opacity: 0.7 })
+                stroke: new ol.style.Stroke({ color: '#4a90d9', width: 3, opacity: 0.7 })
             })
         };
         
-        // 坐标转换（简单墨卡托投影）
+        // 坐标转换
         function toCoord(lon, lat) {
             return ol.proj.fromLonLat([lon, lat]);
         }
         
-        // 创建区域多边形
-        function createPolygon(coords, style, id) {
+        // 创建区域多边形（带标签）
+        function createPolygon(coords, style, id, label) {
+            const geometry = new ol.geom.Polygon([coords.map(c => toCoord(c[0], c[1]))]);
             const feature = new ol.Feature({
-                geometry: new ol.geom.Polygon([coords.map(c => toCoord(c[0], c[1]))]),
-                id: id
+                geometry: geometry,
+                id: id,
+                label: label
             });
-            feature.setStyle(style);
-            return feature;
-        }
-        
-        // 创建河流线
-        function createLine(coords, style) {
-            const feature = new ol.Feature({
-                geometry: new ol.geom.LineString(coords.map(c => toCoord(c[0], c[1])))
-            });
-            feature.setStyle(style);
+            
+            // 复制样式并添加文本
+            const styleWithText = style.clone();
+            if (style.getText()) {
+                styleWithText.getText().setText(label);
+            }
+            feature.setStyle(styleWithText);
+            
             return feature;
         }
         
         // 创建城市点
-        function createPoint(lon, lat, style, id) {
+        function createPoint(lon, lat, id, label) {
             const feature = new ol.Feature({
                 geometry: new ol.geom.Point(toCoord(lon, lat)),
-                id: id
+                id: id,
+                label: label
             });
-            feature.setStyle(style);
+            
+            const styleWithText = styles.city.clone();
+            styleWithText.getText().setText(label);
+            feature.setStyle(styleWithText);
+            
             return feature;
         }
         
-        // 区域数据（经纬度坐标）
+        // 区域数据（基于亚洲地理）
         const features = [];
         
-        // 北极冰盖
+        // 北极冰盖/冰龙遗迹
         features.push(createPolygon([
-            [-40, 75], [40, 75], [40, 85], [-40, 85]
-        ], styles.ice, 'iceDragon'));
+            [60, 70], [180, 72], [180, 82], [60, 82]
+        ], styles.ice, 'iceDragon', '❄️ 冰龙遗迹'));
         
-        // 北境荒原
+        // 北境荒原（西伯利亚）
         features.push(createPolygon([
-            [-20, 55], [20, 58], [25, 50], [15, 45], [0, 47], [-15, 50]
-        ], styles.orc, 'north'));
+            [60, 50], [120, 55], [140, 60], [180, 65], [180, 70], [60, 70], [50, 60]
+        ], styles.orc, 'north', '北境荒原'));
         
-        // 风暴高原
+        // 风暴高原（蒙古高原）
         features.push(createPolygon([
-            [35, 52], [55, 55], [60, 48], [50, 42], [38, 45]
-        ], styles.dragon, 'storm'));
+            [90, 40], [120, 45], [130, 50], [120, 55], [100, 50], [85, 45]
+        ], styles.dragon, 'storm', '风暴高原'));
         
-        // 主山脉
+        // 主山脉（中亚山脉）
         features.push(createPolygon([
-            [-25, 45], [5, 42], [15, 38], [10, 32], [-5, 34], [-20, 38]
-        ], styles.dwarf, 'mountain'));
+            [60, 35], [80, 40], [90, 45], [85, 50], [70, 45], [55, 40]
+        ], styles.dwarf, 'mountain', '🏔️ 主山脉'));
         
-        // 古老森林
+        // 古老森林（东西伯利亚）
         features.push(createPolygon([
-            [18, 42], [45, 40], [52, 32], [42, 27], [28, 30], [20, 35]
-        ], styles.elf, 'forest'));
+            [100, 55], [140, 55], [160, 60], [180, 60], [180, 65], [140, 60], [100, 58]
+        ], styles.elf, 'forest', '🌲 古老森林'));
         
-        // 中部平原
+        // 中部平原（中国中原）
         features.push(createPolygon([
-            [-20, 35], [12, 38], [20, 30], [15, 22], [0, 24], [-15, 28]
-        ], styles.human, 'plains'));
+            [100, 25], [120, 30], [125, 35], [120, 45], [100, 40], [95, 35], [100, 30]
+        ], styles.human, 'plains', '🏰 中部平原'));
         
-        // 火山群岛
+        // 火山群岛（日本）
         features.push(createPolygon([
-            [60, 35], [70, 38], [72, 32], [65, 28], [58, 30]
-        ], styles.dragon, 'volcano'));
+            [130, 30], [145, 35], [145, 45], [130, 42], [128, 35]
+        ], styles.dragon, 'volcano', '🌋 火山群岛'));
         
-        // 沙漠区
+        // 沙漠区（中亚/新疆沙漠）
         features.push(createPolygon([
-            [-18, 22], [15, 25], [22, 15], [12, 8], [-5, 10], [-15, 15]
-        ], styles.human, 'desert'));
+            [60, 30], [90, 35], [95, 40], [85, 45], [70, 40], [55, 35]
+        ], styles.human, 'desert', '🏜️ 沙漠区'));
         
-        // 深渊边境
+        // 深渊边境（印度次大陆）
         features.push(createPolygon([
-            [48, 28], [62, 32], [65, 22], [55, 15], [45, 20]
-        ], styles.abyss, 'abyss'));
+            [70, 5], [90, 15], [95, 25], [85, 30], [70, 25], [65, 15]
+        ], styles.abyss, 'abyss', '深渊边境'));
         
-        // 裂缝荒原
+        // 裂缝荒原（南海）
         features.push(createPolygon([
-            [5, 8], [30, 12], [38, 2], [28, -8], [10, -5], [2, 2]
-        ], styles.rift, 'rift'));
+            [105, 0], [120, 5], [125, 15], [120, 25], [110, 20], [105, 10]
+        ], styles.rift, 'rift', '⚡ 裂缝荒原'));
         
-        // 龙族圣地
+        // 龙族圣地（印度尼西亚）
         features.push(createPolygon([
-            [32, -5], [52, 0], [55, -12], [42, -18], [30, -12]
-        ], styles.dragon, 'sanctuary'));
+            [95, -10], [120, -8], [140, -5], [140, 5], [120, 0], [100, -5]
+        ], styles.dragon, 'sanctuary', '⛩️ 龙族圣地'));
         
-        // 南方森林
+        // 南方森林（东南亚）
         features.push(createPolygon([
-            [15, -10], [35, -8], [38, -22], [25, -28], [12, -20]
-        ], styles.elf, 'southForest'));
+            [95, 5], [110, 10], [115, 20], [105, 25], [95, 20], [90, 12]
+        ], styles.elf, 'southForest', '🌳 南方森林'));
         
-        // 河流
-        features.push(createLine([
-            [0, 40], [8, 32], [15, 25], [25, 18], [35, 12]
-        ], styles.river));
-        
-        features.push(createLine([
-            [5, 38], [10, 28], [12, 18], [14, 8]
-        ], styles.river));
-        
-        // 城市
-        features.push(createPoint(0, 30, styles.city, 'capital'));
-        features.push(createPoint(35, 35, styles.city, 'elfCity'));
-        features.push(createPoint(-5, 38, styles.city, 'dwarfFort'));
-        features.push(createPoint(42, -10, styles.city, 'altar'));
+        // 城市标记
+        features.push(createPoint(110, 35, 'capital', '王都'));
+        features.push(createPoint(130, 52, 'elfCity', '精灵城'));
+        features.push(createPoint(75, 43, 'dwarfFort', '矮人堡'));
+        features.push(createPoint(115, -5, 'altar', '圣坛'));
         
         // 创建矢量图层
         const vectorSource = new ol.source.Vector({
@@ -418,22 +458,22 @@
             source: vectorSource
         });
         
-        // 创建地图（使用简化的世界地图背景）
+        // 创建地图
         const map = new ol.Map({
             target: 'map',
             layers: [
-                // 简单的海洋背景
+                // OpenStreetMap底图
                 new ol.layer.Tile({
                     source: new ol.source.XYZ({
                         url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                         attributions: []
                     }),
-                    opacity: 0.3
+                    opacity: 0.4
                 }),
                 vectorLayer
             ],
             view: new ol.View({
-                center: ol.proj.fromLonLat([15, 25]),
+                center: ol.proj.fromLonLat([105, 35]),
                 zoom: 3,
                 minZoom: 2,
                 maxZoom: 8
