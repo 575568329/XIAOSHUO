@@ -95,14 +95,12 @@
     <script>
         const chart = echarts.init(document.getElementById('map'));
         
-        // 更新进度显示
         function updateProgress(text) {
             document.getElementById('progress').textContent = text;
         }
         
         // ========== 区域数据定义 ==========
         
-        // 中部平原省份数据（中国）
         const centralPlainsData = {
             '龙虾城': { region: '中央王领', status: '已开发', danger: '低', race: '人类', color: '#4fc3f7' },
             '王家直辖地': { region: '中央王领', status: '已开发', danger: '低', race: '人类', color: '#4fc3f7' },
@@ -126,50 +124,21 @@
             '边境哨站': { region: '南部边境', status: '已开发', danger: '中', race: '人类', color: '#4db6ac' }
         };
         
-        // 北境荒原区域数据（俄罗斯）
-        const northWastelandData = {
-            '冰霜堡垒': { region: '极北领地', status: '已开发', danger: '高', race: '北境人类', color: '#4fc3f7' },
-            '兽人王庭': { region: '中央草原', status: '已开发', danger: '高', race: '战吼兽人', color: '#e57373' },
-            '冰原猎场': { region: '东部冰原', status: '未开发', danger: '极高', race: '冰原巨兽', color: '#ef5350' },
-            '霜冻森林': { region: '西部森林', status: '未开发', danger: '高', race: '霜巨人', color: '#ff8a65' },
-            '北境商路': { region: '南部边界', status: '部分开发', danger: '中', race: '混合种族', color: '#ffb74d' },
-            '极光平原': { region: '中央草原', status: '未开发', danger: '中高', race: '猛犸象群', color: '#ff8a65' },
-            '永冻苔原': { region: '北部海岸', status: '未开发', danger: '极高', race: '冰龙后裔', color: '#ef5350' },
-            '狼群山谷': { region: '南部山区', status: '未开发', danger: '高', race: '恐狼群', color: '#ff8a65' }
-        };
-        
-        // 深渊边境区域数据（印度）
-        const abyssBorderData = {
-            '深渊王城': { region: '中央高地', status: '已开发', danger: '中', race: '深红深渊', color: '#9575cd' },
-            '暗影森林': { region: '东部森林', status: '未开发', danger: '高', race: '暗影深渊', color: '#ef5350' },
-            '苍白圣谷': { region: '北部山区', status: '部分开发', danger: '低', race: '苍白深渊', color: '#81c784' },
-            '裂隙观测站': { region: '南部平原', status: '已开发', danger: '中高', race: '裂隙深渊', color: '#ffb74d' },
-            '深渊商港': { region: '西部海岸', status: '已开发', danger: '中', race: '深渊族', color: '#4fc3f7' }
-        };
-        
-        // 火山群岛区域数据（日本）
-        const volcanoIslandsData = {
-            '赤焰城': { region: '主岛', status: '已开发', danger: '中', race: '红龙裔', color: '#ba68c8' },
-            '熔岩平原': { region: '主岛', status: '未开发', danger: '高', race: '火元素', color: '#ef5350' },
-            '火山神殿': { region: '北部岛屿', status: '圣地', danger: '低', race: '红龙裔', color: '#ba68c8' },
-            '黑沙滩': { region: '南部岛屿', status: '部分开发', danger: '中', race: '红龙裔', color: '#ff8a65' }
-        };
-        
-        // 世界其他区域数据
         const worldRegionsData = {
+            '北境荒原': { status: '未开发', danger: '高', race: '北境人类、兽人', color: '#e57373' },
             '风暴高原': { status: '未开发', danger: '中高', race: '蓝龙裔', color: '#ba68c8' },
             '主山脉': { status: '部分开发', danger: '中', race: '矮人', color: '#ffb74d' },
             '古老森林': { status: '未开发', danger: '低-中', race: '精灵', color: '#81c784' },
+            '火山群岛': { status: '未开发', danger: '高', race: '红龙裔', color: '#ba68c8' },
             '沙漠区': { status: '未开发', danger: '中', race: '沙漠人类', color: '#d4a855' },
+            '深渊边境': { status: '未开发', danger: '中高', race: '深渊族', color: '#9575cd' },
             '裂缝荒原': { status: '禁地', danger: '极高', race: '无', color: '#ff5252' },
             '龙族圣地': { status: '圣地', danger: '低', race: '银龙裔', color: '#ba68c8' },
             '南方森林': { status: '未开发', danger: '低-中', race: '木精灵', color: '#81c784' },
             '冰龙遗迹': { status: '遗迹', danger: '极高', race: '古代龙裔', color: '#b8d4e3' }
         };
         
-        // ========== 名称映射 ==========
-        
-        // 中国省份映射
+        // 名称映射
         const chinaProvinceMap = {
             '北京': '龙虾城', '天津': '王家直辖地', '河北': '寒风原', '山西': '铁矿山区',
             '内蒙古': '霜狼森林', '辽宁': '黑石关', '吉林': '古木森林', '黑龙江': '幽暗小径',
@@ -182,40 +151,6 @@
             '香港': '河口城', '澳门': '河口城', '南海诸岛': '南方湿地'
         };
         
-        // 俄罗斯区域映射（简化版 - 将联邦主体映射到8个大区）
-        const russiaRegionMap = {
-            'Moscow': '冰霜堡垒', 'Moscow City': '冰霜堡垒',
-            'Saint Petersburg': '北境商路', 'Leningrad': '北境商路',
-            'Murmansk': '永冻苔原', 'Arkhangelsk': '冰原猎场',
-            'Sakha': '冰原猎场', 'Chukotka': '冰原猎场',
-            'Krasnoyarsk': '极光平原', 'Irkutsk': '极光平原',
-            'Primorsky': '霜冻森林', 'Khabarovsk': '霜冻森林',
-            'Tatarstan': '兽人王庭', 'Bashkortostan': '兽人王庭',
-            'Sverdlovsk': '狼群山谷', 'Chelyabinsk': '狼群山谷',
-            'Novosibirsk': '北境商路', 'Omsk': '北境商路'
-        };
-        
-        // 印度邦映射
-        const indiaStateMap = {
-            'Delhi': '深渊王城', 'Maharashtra': '深渊商港',
-            'Karnataka': '深渊商港', 'Tamil Nadu': '深渊商港',
-            'West Bengal': '暗影森林', 'Assam': '暗影森林',
-            'Uttar Pradesh': '深渊王城', 'Madhya Pradesh': '深渊王城',
-            'Rajasthan': '裂隙观测站', 'Gujarat': '裂隙观测站',
-            'Himachal Pradesh': '苍白圣谷', 'Uttarakhand': '苍白圣谷',
-            'Kerala': '深渊商港', 'Andhra Pradesh': '深渊商港'
-        };
-        
-        // 日本都道府县映射
-        const japanPrefectureMap = {
-            'Tokyo': '赤焰城', 'Kanagawa': '赤焰城', 'Osaka': '赤焰城',
-            'Hokkaido': '火山神殿', 'Aomori': '火山神殿',
-            'Kyoto': '赤焰城', 'Hyogo': '熔岩平原',
-            'Fukuoka': '黑沙滩', 'Nagasaki': '黑沙滩',
-            'Okinawa': '黑沙滩', 'Kagoshima': '熔岩平原'
-        };
-        
-        // 世界国家映射
         const worldNameMap = {
             'China': '中部平原', 'Russia': '北境荒原', 'India': '深渊边境', 'Japan': '火山群岛',
             'Mongolia': '风暴高原', 'Kazakhstan': '主山脉',
@@ -235,111 +170,66 @@
         
         async function loadMap() {
             try {
-                // 1. 加载世界地图
                 updateProgress('加载世界地图...');
                 const worldRes = await fetch('https://cdn.jsdelivr.net/npm/echarts/map/json/world.json');
                 const worldJson = await worldRes.json();
                 
-                // 2. 加载中国省份
                 updateProgress('加载中部平原省份数据...');
                 const chinaRes = await fetch('https://cdn.jsdelivr.net/npm/echarts/map/json/china.json');
                 const chinaJson = await chinaRes.json();
                 
-                // 3. 从世界地图中移除要替换的国家
                 updateProgress('合并地图数据...');
-                const countriesToRemove = ['China', 'Russia', 'India', 'Japan'];
-                worldJson.features = worldJson.features.filter(f => 
+                
+                // 从世界地图中移除中国
+                const countriesToRemove = ['China'];
+                const originalWorldFeatures = worldJson.features.filter(f => 
                     !countriesToRemove.includes(f.properties.name)
                 );
                 
-                // 4. 添加中国省份（带名称转换）
-                chinaJson.features.forEach(f => {
+                // 处理中国省份
+                const chinaFeatures = chinaJson.features.map(f => {
                     const originalName = f.properties.name;
                     const newName = chinaProvinceMap[originalName] || originalName;
-                    f.properties.name = newName;
-                    f.properties.originalName = originalName;
-                    // 确保每个省份都有边框样式
-                    f.properties.cp = f.properties.cp || [0, 0];
+                    return {
+                        ...f,
+                        properties: {
+                            ...f.properties,
+                            name: newName,
+                            originalName: originalName
+                        }
+                    };
                 });
-                worldJson.features = worldJson.features.concat(chinaJson.features);
                 
-                // 5. 注册合并后的地图
+                // 合并所有features
+                const combinedFeatures = [...originalWorldFeatures, ...chinaFeatures];
+                
                 updateProgress('渲染地图...');
-                echarts.registerMap('combinedWorld', worldJson);
-                
-                // 6. 准备数据
-                const mapData = [];
-                
-                // 中部平原省份
-                Object.keys(centralPlainsData).forEach(name => {
-                    mapData.push({
-                        name: name,
-                        value: 1,
-                        itemStyle: { 
-                            areaColor: centralPlainsData[name].color,
-                            borderColor: '#ffffff',
-                            borderWidth: 1.5
-                        }
-                    });
+                echarts.registerMap('combinedWorld', {
+                    type: 'FeatureCollection',
+                    features: combinedFeatures
                 });
                 
-                // 北境荒原（用俄罗斯原名，因为GeoJSON没有详细数据）
-                mapData.push({
-                    name: '北境荒原',
-                    value: 1,
-                    itemStyle: { 
-                        areaColor: '#e57373',
-                        borderColor: '#ffffff',
-                        borderWidth: 1.5
-                    }
-                });
-                
-                // 深渊边境
-                mapData.push({
-                    name: '深渊边境',
-                    value: 1,
-                    itemStyle: { 
-                        areaColor: '#9575cd',
-                        borderColor: '#ffffff',
-                        borderWidth: 1.5
-                    }
-                });
-                
-                // 火山群岛
-                mapData.push({
-                    name: '火山群岛',
-                    value: 1,
-                    itemStyle: { 
-                        areaColor: '#ba68c8',
-                        borderColor: '#ffffff',
-                        borderWidth: 1.5
-                    }
-                });
-                
-                // 其他世界区域
-                Object.keys(worldRegionsData).forEach(name => {
-                    mapData.push({
-                        name: name,
-                        value: 1,
-                        itemStyle: { 
-                            areaColor: worldRegionsData[name].color,
-                            borderColor: '#ffffff',
-                            borderWidth: 1.5
-                        }
-                    });
-                });
-                
-                // 7. 配置图表
+                // 准备所有区域数据
                 const allData = {
                     ...centralPlainsData,
-                    '北境荒原': { status: '未开发', danger: '高', race: '北境人类、兽人' },
-                    '深渊边境': { status: '未开发', danger: '中高', race: '深渊族' },
-                    '火山群岛': { status: '未开发', danger: '高', race: '红龙裔' },
                     ...worldRegionsData
                 };
                 
+                // 准备series数据
+                const seriesData = [];
+                
+                // 中部平原省份
+                Object.keys(centralPlainsData).forEach(name => {
+                    seriesData.push({ name: name, value: 1 });
+                });
+                
+                // 世界其他区域
+                Object.keys(worldRegionsData).forEach(name => {
+                    seriesData.push({ name: name, value: 1 });
+                });
+                
                 const option = {
-                    backgroundColor: '#1a1a2e',
+                    backgroundColor: '#1a3a5c',
                     
                     tooltip: {
                         trigger: 'item',
@@ -375,7 +265,17 @@
                         }
                     },
                     
-                    geo: {
+                    visualMap: {
+                        show: false,
+                        min: 0,
+                        max: 2,
+                        inRange: {
+                            color: ['#3d5a4a']
+                        }
+                    },
+                    
+                    series: [{
+                        type: 'map',
                         map: 'combinedWorld',
                         roam: true,
                         zoom: 2.8,
@@ -384,73 +284,92 @@
                         label: { 
                             show: true, 
                             color: '#fff', 
-                            fontSize: 8,
+                            fontSize: 7,
                             formatter: function(params) {
-                                // 省份名可能很长，缩短显示
                                 const name = params.name;
-                                if (name.length > 4) {
-                                    return name.substring(0, 3) + '..';
-                                }
+                                if (name.length > 4) return name.substring(0, 3) + '..';
                                 return name;
                             }
                         },
-                        itemStyle: { 
-                            areaColor: '#3d5a4a', 
-                            borderColor: '#7a9a8a', 
-                            borderWidth: 1 
+                        itemStyle: {
+                            areaColor: '#3d5a4a',
+                            borderColor: '#8ab8a8',
+                            borderWidth: 1
                         },
                         emphasis: {
-                            label: { show: true, color: '#ffd700', fontSize: 11 },
-                            itemStyle: { areaColor: '#4a6a7a', shadowBlur: 10 }
-                        },
-                        regions: mapData.map(d => ({
-                            name: d.name,
-                            itemStyle: {
-                                areaColor: d.itemStyle.areaColor,
-                                borderColor: '#ffffff',
-                                borderWidth: 1
-                            },
-                            emphasis: { 
-                                itemStyle: { 
-                                    areaColor: d.itemStyle.areaColor,
-                                    borderColor: '#ffd700',
-                                    borderWidth: 2,
-                                    shadowBlur: 15 
-                                } 
-                            }
-                        }))
-                    },
-                    
-                    series: [
-                        {
-                            type: 'map',
-                            map: 'combinedWorld',
-                            geoIndex: 0,
-                            data: mapData
-                        },
-                        {
-                            name: '城市',
-                            type: 'scatter',
-                            coordinateSystem: 'geo',
-                            data: [
-                                { name: '王都', value: [116, 40], symbol: 'pin', symbolSize: 35, itemStyle: { color: '#ffd700' } },
-                                { name: '精灵城', value: [130, 52], symbol: 'pin', symbolSize: 28, itemStyle: { color: '#81c784' } },
-                                { name: '矮人堡', value: [82, 43], symbol: 'pin', symbolSize: 28, itemStyle: { color: '#ffb74d' } },
-                                { name: '深渊王城', value: [77, 28], symbol: 'pin', symbolSize: 28, itemStyle: { color: '#9575cd' } },
-                                { name: '兽人王庭', value: [90, 55], symbol: 'pin', symbolSize: 28, itemStyle: { color: '#e57373' } },
-                                { name: '赤焰城', value: [139, 35], symbol: 'pin', symbolSize: 25, itemStyle: { color: '#ba68c8' } },
-                                { name: '圣坛', value: [118, -2], symbol: 'pin', symbolSize: 25, itemStyle: { color: '#ba68c8' } }
-                            ],
                             label: { 
                                 show: true, 
-                                formatter: '{b}', 
-                                position: 'bottom', 
                                 color: '#ffd700', 
-                                fontSize: 10,
+                                fontSize: 11,
                                 fontWeight: 'bold'
+                            },
+                            itemStyle: {
+                                areaColor: '#5a8a7a',
+                                borderColor: '#ffd700',
+                                borderWidth: 2,
+                                shadowBlur: 10,
+                                shadowColor: 'rgba(0,0,0,0.5)'
                             }
+                        },
+                        data: seriesData,
+                        nameMap: worldNameMap,
+                        regions: [
+                            // 中部平原省份颜色
+                            ...Object.keys(centralPlainsData).map(name => ({
+                                name: name,
+                                itemStyle: {
+                                    areaColor: centralPlainsData[name].color,
+                                    borderColor: '#ffffff',
+                                    borderWidth: 1
+                                },
+                                emphasis: {
+                                    itemStyle: {
+                                        areaColor: centralPlainsData[name].color,
+                                        borderColor: '#ffd700',
+                                        borderWidth: 2
+                                    }
+                                }
+                            })),
+                            // 世界区域颜色
+                            ...Object.keys(worldRegionsData).map(name => ({
+                                name: name,
+                                itemStyle: {
+                                    areaColor: worldRegionsData[name].color,
+                                    borderColor: '#ffffff',
+                                    borderWidth: 1
+                                },
+                                emphasis: {
+                                    itemStyle: {
+                                        areaColor: worldRegionsData[name].color,
+                                        borderColor: '#ffd700',
+                                        borderWidth: 2
+                                    }
+                                }
+                            }))
+                        ]
+                    }, {
+                        name: '城市',
+                        type: 'scatter',
+                        coordinateSystem: 'geo',
+                        geoIndex: 0,
+                        data: [
+                            { name: '王都', value: [116, 40], symbol: 'pin', symbolSize: 35, itemStyle: { color: '#ffd700' } },
+                            { name: '精灵城', value: [130, 52], symbol: 'pin', symbolSize: 28, itemStyle: { color: '#81c784' } },
+                            { name: '矮人堡', value: [82, 43], symbol: 'pin', symbolSize: 28, itemStyle: { color: '#ffb74d' } },
+                            { name: '深渊王城', value: [77, 28], symbol: 'pin', symbolSize: 28, itemStyle: { color: '#9575cd' } },
+                            { name: '兽人王庭', value: [90, 55], symbol: 'pin', symbolSize: 28, itemStyle: { color: '#e57373' } },
+                            { name: '赤焰城', value: [139, 35], symbol: 'pin', symbolSize: 25, itemStyle: { color: '#ba68c8' } },
+                            { name: '圣坛', value: [118, -2], symbol: 'pin', symbolSize: 25, itemStyle: { color: '#ba68c8' } }
+                        ],
+                        label: { 
+                            show: true, 
+                            formatter: '{b}', 
+                            position: 'bottom', 
+                            color: '#ffd700', 
+                            fontSize: 10,
+                            fontWeight: 'bold'
                         }
-                    ]
+                    }]
                 };
                 
                 chart.setOption(option);
