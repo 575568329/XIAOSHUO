@@ -63,7 +63,7 @@
 <body>
     <div class="info-panel">
         <h1>🦞 世界地图</h1>
-        <p>已整合省级边界：<br>• 中部平原（34省）<br>• 北境荒原（85区）<br>• 深渊边境（36邦）<br>• 火山群岛（47都道府县）<br><br>拖拽移动，滚轮缩放</p>
+        <p>已整合省级边界：<br>• 中部平原（34省）<br><br>拖拽移动，滚轮缩放</p>
     </div>
     
     <div class="legend">
@@ -101,27 +101,42 @@
         
         // ========== 区域数据定义 ==========
         
+        // 中部平原省份 - 使用原名作为key
         const centralPlainsData = {
-            '龙虾城': { region: '中央王领', status: '已开发', danger: '低', race: '人类', color: '#4fc3f7' },
-            '王家直辖地': { region: '中央王领', status: '已开发', danger: '低', race: '人类', color: '#4fc3f7' },
-            '黑石关': { region: '北部边防区', status: '已开发', danger: '中', race: '人类', color: '#ffb74d' },
-            '寒风原': { region: '北部边防区', status: '未开发', danger: '高', race: '兽群', color: '#ef5350' },
-            '铁矿山区': { region: '北部边防区', status: '未开发', danger: '高', race: '哥布林', color: '#ef5350' },
-            '霜狼森林': { region: '北部边防区', status: '未开发', danger: '中高', race: '霜狼', color: '#ff8a65' },
-            '金麦城': { region: '东部平原', status: '已开发', danger: '低', race: '人类', color: '#81c784' },
-            '东部农场': { region: '东部平原', status: '已开发', danger: '低', race: '人类', color: '#81c784' },
-            '银龙河渡口': { region: '东部平原', status: '已开发', danger: '低', race: '人类', color: '#4fc3f7' },
-            '迷雾沼泽': { region: '东部平原', status: '未开发', danger: '中', race: '水怪', color: '#ff8a65' },
-            '月影镇': { region: '西部森林区', status: '已开发', danger: '低', race: '人类/精灵', color: '#81c784' },
-            '古木森林': { region: '西部森林区', status: '未开发', danger: '中高', race: '树人', color: '#ff8a65' },
-            '幽暗小径': { region: '西部森林区', status: '未开发', danger: '中', race: '强盗', color: '#ff8a65' },
-            '药草谷': { region: '西部森林区', status: '部分开发', danger: '低', race: '人类', color: '#a1887f' },
-            '赤岩镇': { region: '西南盆地', status: '已开发', danger: '低', race: '人类/矮人', color: '#ffb74d' },
-            '干燥荒原': { region: '西南盆地', status: '未开发', danger: '中', race: '沙蝎', color: '#ff8a65' },
-            '失落矿坑': { region: '西南盆地', status: '未开发', danger: '高', race: '地底生物', color: '#ef5350' },
-            '河口城': { region: '南部边境', status: '已开发', danger: '低', race: '人类', color: '#4fc3f7' },
-            '南方湿地': { region: '南部边境', status: '未开发', danger: '中', race: '水妖', color: '#ff8a65' },
-            '边境哨站': { region: '南部边境', status: '已开发', danger: '中', race: '人类', color: '#4db6ac' }
+            '北京': { fantasyName: '龙虾城', region: '中央王领', status: '已开发', danger: '低', race: '人类', color: '#4fc3f7' },
+            '天津': { fantasyName: '王家直辖地', region: '中央王领', status: '已开发', danger: '低', race: '人类', color: '#4fc3f7' },
+            '河北': { fantasyName: '寒风原', region: '北部边防区', status: '未开发', danger: '高', race: '兽群', color: '#ef5350' },
+            '山西': { fantasyName: '铁矿山区', region: '北部边防区', status: '未开发', danger: '高', race: '哥布林', color: '#ef5350' },
+            '内蒙古': { fantasyName: '霜狼森林', region: '北部边防区', status: '未开发', danger: '中高', race: '霜狼', color: '#ff8a65' },
+            '辽宁': { fantasyName: '黑石关', region: '北部边防区', status: '已开发', danger: '中', race: '人类', color: '#ffb74d' },
+            '吉林': { fantasyName: '古木森林', region: '西部森林区', status: '未开发', danger: '中高', race: '树人', color: '#ff8a65' },
+            '黑龙江': { fantasyName: '幽暗小径', region: '西部森林区', status: '未开发', danger: '中', race: '强盗', color: '#ff8a65' },
+            '上海': { fantasyName: '银龙河渡口', region: '东部平原', status: '已开发', danger: '低', race: '人类', color: '#4fc3f7' },
+            '江苏': { fantasyName: '东部农场', region: '东部平原', status: '已开发', danger: '低', race: '人类', color: '#81c784' },
+            '浙江': { fantasyName: '金麦城', region: '东部平原', status: '已开发', danger: '低', race: '人类', color: '#81c784' },
+            '安徽': { fantasyName: '药草谷', region: '西部森林区', status: '部分开发', danger: '低', race: '人类', color: '#a1887f' },
+            '福建': { fantasyName: '月影镇', region: '西部森林区', status: '已开发', danger: '低', race: '人类/精灵', color: '#81c784' },
+            '江西': { fantasyName: '古木森林', region: '西部森林区', status: '未开发', danger: '中高', race: '树人', color: '#ff8a65' },
+            '山东': { fantasyName: '东部农场', region: '东部平原', status: '已开发', danger: '低', race: '人类', color: '#81c784' },
+            '河南': { fantasyName: '王家直辖地', region: '中央王领', status: '已开发', danger: '低', race: '人类', color: '#4fc3f7' },
+            '湖北': { fantasyName: '迷雾沼泽', region: '东部平原', status: '未开发', danger: '中', race: '水怪', color: '#ff8a65' },
+            '湖南': { fantasyName: '南方湿地', region: '南部边境', status: '未开发', danger: '中', race: '水妖', color: '#ff8a65' },
+            '广东': { fantasyName: '河口城', region: '南部边境', status: '已开发', danger: '低', race: '人类', color: '#4fc3f7' },
+            '广西': { fantasyName: '边境哨站', region: '南部边境', status: '已开发', danger: '中', race: '人类', color: '#4db6ac' },
+            '海南': { fantasyName: '失落矿坑', region: '西南盆地', status: '未开发', danger: '高', race: '地底生物', color: '#ef5350' },
+            '重庆': { fantasyName: '赤岩镇', region: '西南盆地', status: '已开发', danger: '低', race: '人类/矮人', color: '#ffb74d' },
+            '四川': { fantasyName: '干燥荒原', region: '西南盆地', status: '未开发', danger: '中', race: '沙蝎', color: '#ff8a65' },
+            '贵州': { fantasyName: '幽暗小径', region: '西部森林区', status: '未开发', danger: '中', race: '强盗', color: '#ff8a65' },
+            '云南': { fantasyName: '古木森林', region: '西部森林区', status: '未开发', danger: '中高', race: '树人', color: '#ff8a65' },
+            '西藏': { fantasyName: '主山脉', region: '外部', status: '部分开发', danger: '中', race: '矮人', color: '#ffb74d' },
+            '陕西': { fantasyName: '铁矿山区', region: '北部边防区', status: '未开发', danger: '高', race: '哥布林', color: '#ef5350' },
+            '甘肃': { fantasyName: '寒风原', region: '北部边防区', status: '未开发', danger: '高', race: '兽群', color: '#ef5350' },
+            '青海': { fantasyName: '霜狼森林', region: '北部边防区', status: '未开发', danger: '中高', race: '霜狼', color: '#ff8a65' },
+            '宁夏': { fantasyName: '黑石关', region: '北部边防区', status: '已开发', danger: '中', race: '人类', color: '#ffb74d' },
+            '新疆': { fantasyName: '主山脉', region: '外部', status: '部分开发', danger: '中', race: '矮人', color: '#ffb74d' },
+            '台湾': { fantasyName: '火山群岛', region: '外部', status: '未开发', danger: '高', race: '红龙裔', color: '#ba68c8' },
+            '香港': { fantasyName: '河口城', region: '南部边境', status: '已开发', danger: '低', race: '人类', color: '#4fc3f7' },
+            '澳门': { fantasyName: '河口城', region: '南部边境', status: '已开发', danger: '低', race: '人类', color: '#4fc3f7' }
         };
         
         const worldRegionsData = {
@@ -138,19 +153,7 @@
             '冰龙遗迹': { status: '遗迹', danger: '极高', race: '古代龙裔', color: '#b8d4e3' }
         };
         
-        // 名称映射
-        const chinaProvinceMap = {
-            '北京': '龙虾城', '天津': '王家直辖地', '河北': '寒风原', '山西': '铁矿山区',
-            '内蒙古': '霜狼森林', '辽宁': '黑石关', '吉林': '古木森林', '黑龙江': '幽暗小径',
-            '上海': '银龙河渡口', '江苏': '东部农场', '浙江': '金麦城', '安徽': '药草谷',
-            '福建': '月影镇', '江西': '古木森林', '山东': '东部农场', '河南': '王家直辖地',
-            '湖北': '迷雾沼泽', '湖南': '南方湿地', '广东': '河口城', '广西': '边境哨站',
-            '海南': '失落矿坑', '重庆': '赤岩镇', '四川': '干燥荒原', '贵州': '幽暗小径',
-            '云南': '古木森林', '西藏': '主山脉', '陕西': '铁矿山区', '甘肃': '寒风原',
-            '青海': '霜狼森林', '宁夏': '黑石关', '新疆': '主山脉', '台湾': '火山群岛',
-            '香港': '河口城', '澳门': '河口城', '南海诸岛': '南方湿地'
-        };
-        
+        // 世界国家映射
         const worldNameMap = {
             'China': '中部平原', 'Russia': '北境荒原', 'India': '深渊边境', 'Japan': '火山群岛',
             'Mongolia': '风暴高原', 'Kazakhstan': '主山脉',
@@ -186,19 +189,8 @@
                     !countriesToRemove.includes(f.properties.name)
                 );
                 
-                // 处理中国省份
-                const chinaFeatures = chinaJson.features.map(f => {
-                    const originalName = f.properties.name;
-                    const newName = chinaProvinceMap[originalName] || originalName;
-                    return {
-                        ...f,
-                        properties: {
-                            ...f.properties,
-                            name: newName,
-                            originalName: originalName
-                        }
-                    };
-                });
+                // 中国省份保持原名
+                const chinaFeatures = chinaJson.features;
                 
                 // 合并所有features
                 const combinedFeatures = [...originalWorldFeatures, ...chinaFeatures];
@@ -209,23 +201,71 @@
                     features: combinedFeatures
                 });
                 
-                // 准备所有区域数据
-                const allData = {
-                    ...centralPlainsData,
-                    ...worldRegionsData
-                };
+                // 准备所有区域数据（用于tooltip）
+                const allData = {};
+                
+                // 中部平原省份 - 用原名作为key
+                Object.keys(centralPlainsData).forEach(name => {
+                    allData[name] = centralPlainsData[name];
+                });
+                
+                // 世界区域
+                Object.keys(worldRegionsData).forEach(name => {
+                    allData[name] = worldRegionsData[name];
+                });
                 
                 // 准备series数据
                 const seriesData = [];
                 
-                // 中部平原省份
+                // 中部平原省份 - 使用原名
                 Object.keys(centralPlainsData).forEach(name => {
                     seriesData.push({ name: name, value: 1 });
                 });
                 
-                // 世界其他区域
+                // 世界其他区域 - 使用映射后的名称
                 Object.keys(worldRegionsData).forEach(name => {
                     seriesData.push({ name: name, value: 1 });
+                });
+                
+                // 准备regions配置
+                const regions = [];
+                
+                // 中部平原省份颜色 - 使用原名
+                Object.keys(centralPlainsData).forEach(name => {
+                    regions.push({
+                        name: name,
+                        itemStyle: {
+                            areaColor: centralPlainsData[name].color,
+                            borderColor: '#ffffff',
+                            borderWidth: 1
+                        },
+                        emphasis: {
+                            itemStyle: {
+                                areaColor: centralPlainsData[name].color,
+                                borderColor: '#ffd700',
+                                borderWidth: 2
+                            }
+                        }
+                    });
+                });
+                
+                // 世界区域颜色
+                Object.keys(worldRegionsData).forEach(name => {
+                    regions.push({
+                        name: name,
+                        itemStyle: {
+                            areaColor: worldRegionsData[name].color,
+                            borderColor: '#ffffff',
+                            borderWidth: 1
+                        },
+                        emphasis: {
+                            itemStyle: {
+                                areaColor: worldRegionsData[name].color,
+                                borderColor: '#ffd700',
+                                borderWidth: 2
+                            }
+                        }
+                    });
                 });
                 
                 const option = {
@@ -245,6 +285,7 @@
                             const info = allData[params.name];
                             if (!info) return params.name;
                             
+                            const displayName = info.fantasyName || params.name;
                             const statusColor = info.status === '未开发' ? '#ff8a65' : 
                                                info.status === '禁地' ? '#ff5252' : 
                                                info.status === '部分开发' ? '#ffb74d' : '#81c784';
@@ -253,7 +294,7 @@
                             
                             return `
                                 <div style="padding:8px;max-width:280px;">
-                                    <div style="font-size:15px;font-weight:bold;color:#ffd700;margin-bottom:8px;">${params.name}</div>
+                                    <div style="font-size:15px;font-weight:bold;color:#ffd700;margin-bottom:8px;">${displayName}</div>
                                     <div style="font-size:12px;line-height:1.8;">
                                         <div><span style="color:#87ceeb;">状态：</span><span style="color:${statusColor};">${info.status}</span></div>
                                         <div><span style="color:#87ceeb;">危险：</span><span style="color:${dangerColor};">${info.danger}</span></div>
@@ -262,15 +303,6 @@
                                     </div>
                                 </div>
                             `;
-                        }
-                    },
-                    
-                    visualMap: {
-                        show: false,
-                        min: 0,
-                        max: 2,
-                        inRange: {
-                            color: ['#3d5a4a']
                         }
                     },
                     
@@ -286,6 +318,14 @@
                             color: '#fff', 
                             fontSize: 7,
                             formatter: function(params) {
+                                // 如果是中部平原省份，显示奇幻名
+                                const info = allData[params.name];
+                                if (info && info.fantasyName) {
+                                    const name = info.fantasyName;
+                                    if (name.length > 4) return name.substring(0, 3) + '..';
+                                    return name;
+                                }
+                                // 世界区域显示原名
                                 const name = params.name;
                                 if (name.length > 4) return name.substring(0, 3) + '..';
                                 return name;
@@ -313,43 +353,10 @@
                         },
                         data: seriesData,
                         nameMap: worldNameMap,
-                        regions: [
-                            // 中部平原省份颜色
-                            ...Object.keys(centralPlainsData).map(name => ({
-                                name: name,
-                                itemStyle: {
-                                    areaColor: centralPlainsData[name].color,
-                                    borderColor: '#ffffff',
-                                    borderWidth: 1
-                                },
-                                emphasis: {
-                                    itemStyle: {
-                                        areaColor: centralPlainsData[name].color,
-                                        borderColor: '#ffd700',
-                                        borderWidth: 2
-                                    }
-                                }
-                            })),
-                            // 世界区域颜色
-                            ...Object.keys(worldRegionsData).map(name => ({
-                                name: name,
-                                itemStyle: {
-                                    areaColor: worldRegionsData[name].color,
-                                    borderColor: '#ffffff',
-                                    borderWidth: 1
-                                },
-                                emphasis: {
-                                    itemStyle: {
-                                        areaColor: worldRegionsData[name].color,
-                                        borderColor: '#ffd700',
-                                        borderWidth: 2
-                                    }
-                                }
-                            }))
-                        ]
+                        regions: regions
                     }, {
                         name: '城市',
-                        type: 'scatter',
+                        type: 'effectScatter',
                         coordinateSystem: 'geo',
                         geoIndex: 0,
                         data: [
